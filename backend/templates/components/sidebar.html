@@ -1,0 +1,79 @@
+<div class="sidebar">
+
+    <div class="logo">
+        <h3>🛡 ECDP</h3>
+        <p>Cyber Defense Platform</p>
+    </div>
+
+    <hr>
+
+    <ul class="menu">
+
+        <li>
+            <a href="{{ url_for('dashboard') }}">
+                <i class="bi bi-speedometer2"></i>
+                Dashboard
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ url_for('assets.assets') }}">
+                <i class="bi bi-pc-display"></i>
+                Asset Inventory
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ url_for('scanner.scanner') }}">
+                <i class="bi bi-shield-check"></i>
+                Vulnerability Scanner
+            </a>
+        </li>
+
+        <li>
+            <a href="#">
+                <i class="bi bi-globe"></i>
+                Threat Intelligence
+            </a>
+        </li>
+
+        <li>
+            <a href="#">
+                <i class="bi bi-exclamation-triangle"></i>
+                Incident Response
+            </a>
+        </li>
+
+        <li>
+            <a href="#">
+                <i class="bi bi-file-earmark-bar-graph"></i>
+                Reports
+            </a>
+        </li>
+
+        <li>
+            <a href="#">
+                <i class="bi bi-robot"></i>
+                AI Assistant
+            </a>
+        </li>
+
+        <li>
+            <a href="#">
+                <i class="bi bi-gear"></i>
+                Settings
+            </a>
+        </li>
+
+    </ul>
+
+    <div class="logout">
+
+        <a href="{{ url_for('auth.logout') }}">
+            <i class="bi bi-box-arrow-right"></i>
+            Logout
+        </a>
+
+    </div>
+
+</div>

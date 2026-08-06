@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Vulnerability Scanner</h2>
+
+<hr>
+
+<form method="POST">
+
+    {{ form.hidden_tag() }}
+
+    <p>
+        {{ form.target.label }}<br>
+        {{ form.target(size=40) }}
+    </p>
+
+    <p>
+        {{ form.submit() }}
+    </p>
+
+</form>
+
+<hr>
+
+<h2>Scan History</h2>
+
+<table border="1" cellpadding="10">
+
+    <tr>
+        <th>ID</th>
+        <th>Target</th>
+        <th>Open Ports</th>
+        <th>Services</th>
+        <th>Status</th>
+    </tr>
+
+    {% for scan in scans %}
+
+    <tr>
+
+        <td>{{ scan.id }}</td>
+        <td>{{ scan.target }}</td>
+        <td>{{ scan.open_ports }}</td>
+        <td>{{ scan.services }}</td>
+        <td>{{ scan.status }}</td>
+
+    </tr>
+
+    {% endfor %}
+
+</table>
+
+{% endblock %}

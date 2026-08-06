@@ -1,0 +1,125 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Segoe UI, Arial, sans-serif;
+}
+
+body {
+    background: #0f172a;
+    color: #fff;
+}
+
+/* Sidebar */
+
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 260px;
+    height: 100vh;
+    background: #111827;
+    padding: 25px;
+}
+
+.logo h3 {
+    color: #3b82f6;
+    font-size: 28px;
+}
+
+.logo p {
+    color: #9ca3af;
+    font-size: 13px;
+}
+
+.menu {
+    list-style: none;
+    margin-top: 30px;
+}
+
+.menu li {
+    margin: 12px 0;
+}
+
+.menu a {
+    color: #d1d5db;
+    text-decoration: none;
+    display: block;
+    padding: 12px;
+    border-radius: 10px;
+    transition: .3s;
+}
+
+.menu a:hover {
+    background: #2563eb;
+    color: white;
+}
+
+.logout {
+    position: absolute;
+    bottom: 25px;
+    width: 210px;
+}
+
+.logout a {
+    display: block;
+    text-decoration: none;
+    color: white;
+    background: #dc2626;
+    padding: 12px;
+    text-align: center;
+    border-radius: 10px;
+}
+
+/* Main */
+
+.content {
+    margin-left: 260px;
+}
+
+/* Navbar */
+
+.navbar-custom {
+    height: 80px;
+    background: #1e293b;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 35px;
+    border-bottom: 1px solid #334155;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.notification {
+    color: #fbbf24;
+    font-size: 22px;
+}
+
+/* Dashboard Cards */
+
+.card-box {
+    background: #1e293b;
+    border-radius: 15px;
+    padding: 25px;
+    text-align: center;
+    transition: .3s;
+}
+
+.card-box:hover {
+    transform: translateY(-5px);
+}
+
+.card-box h3 {
+    color: #94a3b8;
+}
+
+.card-box h2 {
+    margin-top: 15px;
+    color: #3b82f6;
+    font-size: 40px;
+}

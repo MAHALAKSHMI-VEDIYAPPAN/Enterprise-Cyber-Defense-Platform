@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="row mb-4">
+
+        <div class="col">
+            <h2>Dashboard</h2>
+            <p class="text-secondary">
+                Welcome back, {{ current_user.username }} 👋
+            </p>
+        </div>
+
+    </div>
+
+    <!-- Statistics Cards -->
+
+    <div class="row g-4">
+
+        <div class="col-lg-3 col-md-6">
+
+            <div class="card-box">
+
+                <h3>Total Assets</h3>
+
+                <h2>{{ total_assets }}</h2>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+
+            <div class="card-box">
+
+                <h3>Threats</h3>
+
+                <h2>18</h2>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+
+            <div class="card-box">
+
+                <h3>Incidents</h3>
+
+                <h2>3</h2>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+
+            <div class="card-box">
+
+                <h3>Security Score</h3>
+
+                <h2>92%</h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Charts & Activity -->
+
+    <div class="row mt-5">
+
+        <div class="col-lg-8">
+
+            <div class="card-box">
+
+                <h3>Threat Trend</h3>
+
+                <hr>
+
+                <canvas id="threatChart" height="120"></canvas>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-4">
+
+            <div class="card-box">
+
+                <h3>Recent Activities</h3>
+
+                <hr>
+
+                <ul class="list-group">
+
+                    <li class="list-group-item">
+                        ✅ Asset Added
+                    </li>
+
+                    <li class="list-group-item">
+                        🔍 Scan Completed
+                    </li>
+
+                    <li class="list-group-item">
+                        🛡 Login Successful
+                    </li>
+
+                    <li class="list-group-item">
+                        📊 Dashboard Loaded
+                    </li>
+
+                </ul>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register | Enterprise Cyber Defense Platform</title>
+</head>
+
+<body>
+
+    <h1>Enterprise Cyber Defense Platform</h1>
+
+    <h2>Create Account</h2>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <p><strong>{{ message }}</strong></p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <form method="POST">
+
+        {{ form.hidden_tag() }}
+
+        <p>
+            {{ form.username.label }}<br>
+            {{ form.username(size=40) }}
+        </p>
+
+        <p>
+            {{ form.email.label }}<br>
+            {{ form.email(size=40) }}
+        </p>
+
+        <p>
+            {{ form.password.label }}<br>
+            {{ form.password(size=40) }}
+        </p>
+
+        <p>
+            {{ form.submit() }}
+        </p>
+
+    </form>
+
+    <hr>
+
+    <p>
+        Already have an account?
+        <a href="{{ url_for('auth.login') }}">Login Here</a>
+    </p>
+
+</body>
+
+</html>
