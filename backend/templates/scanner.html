@@ -2,53 +2,136 @@
 
 {% block content %}
 
-<h2>Vulnerability Scanner</h2>
+<div class="container mt-4">
 
-<hr>
+    <h2 class="mb-4">
+        Vulnerability Scanner
+    </h2>
 
-<form method="POST">
+    <!-- Scan Form -->
+    <div class="card shadow mb-4">
 
-    {{ form.hidden_tag() }}
+        <div class="card-header bg-primary text-white">
+            <h4>New Scan</h4>
+        </div>
 
-    <p>
-        {{ form.target.label }}<br>
-        {{ form.target(size=40) }}
-    </p>
+        <div class="card-body">
 
-    <p>
-        {{ form.submit() }}
-    </p>
+            <form method="POST">
 
-</form>
+                {{ form.hidden_tag() }}
 
-<hr>
+                <div class="row">
 
-<h2>Scan History</h2>
+                    <div class="col-md-10">
 
-<table border="1" cellpadding="10">
+                        {{ form.target.label(class="form-label") }}
 
-    <tr>
-        <th>ID</th>
-        <th>Target</th>
-        <th>Open Ports</th>
-        <th>Services</th>
-        <th>Status</th>
-    </tr>
+                        {{ form.target(
+                        class="form-control",
+                        placeholder="Example: scanme.nmap.org or 127.0.0.1"
+                        ) }}
 
-    {% for scan in scans %}
+                    </div>
 
-    <tr>
+                    <div class="col-md-2 d-flex align-items-end">
 
-        <td>{{ scan.id }}</td>
-        <td>{{ scan.target }}</td>
-        <td>{{ scan.open_ports }}</td>
-        <td>{{ scan.services }}</td>
-        <td>{{ scan.status }}</td>
+                        {{ form.submit(class="btn btn-success w-100") }}
 
-    </tr>
+                    </div>
 
-    {% endfor %}
+                </div>
 
-</table>
+            </form>
+
+        </div>
+
+    </div>
+
+    <!-- Scan History -->
+
+    <div class="card shadow">
+
+        <div class="card-header bg-dark text-white">
+
+            <h4>Scan History</h4>
+
+        </div>
+
+        <div class="card-body">
+
+            <table class="table table-striped table-hover">
+
+                <thead class="table-dark">
+
+                    <tr>
+
+                        <th>ID</th>
+
+                        <th>Target</th>
+
+                        <th>Open Ports</th>
+
+                        <th>Services</th>
+
+                        <th>Status</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for scan in scans %}
+
+                    <tr>
+
+                        <td>{{ scan.id }}</td>
+
+                        <td>{{ scan.target }}</td>
+
+                        <td>{{ scan.open_ports }}</td>
+
+                        <td style="white-space: pre-line;">
+                            {{ scan.services }}
+                        </td>
+
+                        <td>
+
+                            {% if scan.status == "Completed" %}
+
+                            <span class="badge bg-success">
+                                Completed
+                            </span>
+
+                            {% elif scan.status == "Host Down" %}
+
+                            <span class="badge bg-warning text-dark">
+                                Host Down
+                            </span>
+
+                            {% else %}
+
+                            <span class="badge bg-danger">
+                                Error
+                            </span>
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
 
 {% endblock %}
