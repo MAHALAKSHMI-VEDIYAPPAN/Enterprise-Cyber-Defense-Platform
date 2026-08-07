@@ -4,84 +4,95 @@
 
 <div class="container-fluid">
 
-    <div class="row mb-4">
+    <h2 class="mb-4">
+        Welcome, {{ current_user.username }}
+    </h2>
 
-        <div class="col">
-            <h2>Dashboard</h2>
-            <p class="text-secondary">
-                Welcome back, {{ current_user.username }} 👋
-            </p>
+    <div class="row">
+
+        <div class="col-lg-3 col-md-6 mb-4">
+
+            <div class="card shadow-lg border-0 bg-primary text-white">
+
+                <div class="card-body">
+
+                    <h5>Total Assets</h5>
+
+                    <h2>{{ total_assets }}</h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-4">
+
+            <div class="card shadow-lg border-0 bg-success text-white">
+
+                <div class="card-body">
+
+                    <h5>Total Scans</h5>
+
+                    <h2>{{ total_scans }}</h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-4">
+
+            <div class="card shadow-lg border-0 bg-warning text-dark">
+
+                <div class="card-body">
+
+                    <h5>Incidents</h5>
+
+                    <h2>{{ total_incidents }}</h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-4">
+
+            <div class="card shadow-lg border-0 bg-danger text-white">
+
+                <div class="card-body">
+
+                    <h5>Security Score</h5>
+
+                    <h2>{{ security_score }}%</h2>
+
+                </div>
+
+            </div>
+
         </div>
 
     </div>
 
-    <!-- Statistics Cards -->
-
-    <div class="row g-4">
-
-        <div class="col-lg-3 col-md-6">
-
-            <div class="card-box">
-
-                <h3>Total Assets</h3>
-
-                <h2>{{ total_assets }}</h2>
-
-            </div>
-
-        </div>
-
-        <div class="col-lg-3 col-md-6">
-
-            <div class="card-box">
-
-                <h3>Threats</h3>
-
-                <h2>18</h2>
-
-            </div>
-
-        </div>
-
-        <div class="col-lg-3 col-md-6">
-
-            <div class="card-box">
-
-                <h3>Incidents</h3>
-
-                <h2>3</h2>
-
-            </div>
-
-        </div>
-
-        <div class="col-lg-3 col-md-6">
-
-            <div class="card-box">
-
-                <h3>Security Score</h3>
-
-                <h2>92%</h2>
-
-            </div>
-
-        </div>
-
-    </div>
-
-    <!-- Charts & Activity -->
-
-    <div class="row mt-5">
+    <div class="row">
 
         <div class="col-lg-8">
 
-            <div class="card-box">
+            <div class="card shadow">
 
-                <h3>Threat Trend</h3>
+                <div class="card-header">
 
-                <hr>
+                    <h4>Threat Detection Trend</h4>
 
-                <canvas id="threatChart" height="120"></canvas>
+                </div>
+
+                <div class="card-body">
+
+                    <canvas id="threatChart"></canvas>
+
+                </div>
 
             </div>
 
@@ -89,31 +100,37 @@
 
         <div class="col-lg-4">
 
-            <div class="card-box">
+            <div class="card shadow">
 
-                <h3>Recent Activities</h3>
+                <div class="card-header">
 
-                <hr>
+                    <h4>Recent Activities</h4>
 
-                <ul class="list-group">
+                </div>
 
-                    <li class="list-group-item">
-                        ✅ Asset Added
-                    </li>
+                <div class="card-body">
 
-                    <li class="list-group-item">
-                        🔍 Scan Completed
-                    </li>
+                    <ul class="list-group">
 
-                    <li class="list-group-item">
-                        🛡 Login Successful
-                    </li>
+                        <li class="list-group-item">
+                            ✔ Login Successful
+                        </li>
 
-                    <li class="list-group-item">
-                        📊 Dashboard Loaded
-                    </li>
+                        <li class="list-group-item">
+                            ✔ Asset Added
+                        </li>
 
-                </ul>
+                        <li class="list-group-item">
+                            ✔ Scan Completed
+                        </li>
+
+                        <li class="list-group-item">
+                            ✔ Dashboard Loaded
+                        </li>
+
+                    </ul>
+
+                </div>
 
             </div>
 

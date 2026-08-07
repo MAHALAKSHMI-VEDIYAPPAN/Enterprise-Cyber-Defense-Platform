@@ -43,9 +43,18 @@ def dashboard():
 
     total_assets = Asset.query.count()
 
+    total_scans = Scan.query.count()
+
+    total_incidents = 3
+
+    security_score = 92
+
     return render_template(
         "dashboard.html",
-        total_assets=total_assets
+        total_assets=total_assets,
+        total_scans=total_scans,
+        total_incidents=total_incidents,
+        security_score=security_score
     )
 
 # ==========================================

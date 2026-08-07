@@ -1,15 +1,14 @@
-const ctx = document.getElementById("threatChart");
+const chart = document.getElementById("threatChart");
 
-if (ctx) {
+if (chart) {
 
-    new Chart(ctx, {
+    new Chart(chart, {
 
         type: "line",
 
         data: {
 
             labels: [
-
                 "Mon",
                 "Tue",
                 "Wed",
@@ -17,27 +16,22 @@ if (ctx) {
                 "Fri",
                 "Sat",
                 "Sun"
-
             ],
 
             datasets: [
-
                 {
+                    label: "Threats",
 
-                    label: "Detected Threats",
+                    data: [3, 5, 2, 8, 6, 9, 4],
 
-                    data: [2, 5, 3, 8, 6, 9, 4],
+                    borderColor: "#0d6efd",
 
-                    borderColor: "#3b82f6",
+                    backgroundColor: "rgba(13,110,253,0.2)",
 
-                    backgroundColor: "rgba(59,130,246,0.2)",
+                    fill: true,
 
-                    tension: 0.4,
-
-                    fill: true
-
+                    tension: 0.4
                 }
-
             ]
 
         },
