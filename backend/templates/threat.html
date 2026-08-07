@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <h2>Threat Intelligence</h2>
+
+    <div class="card shadow mt-3">
+
+        <div class="card-body">
+
+            <form method="POST">
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+                        IP Address
+                    </label>
+
+                    <input type="text" name="ip" class="form-control" placeholder="Example: 8.8.8.8" required>
+
+                </div>
+
+                <button class="btn btn-primary">
+
+                    Analyze
+
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    {% if result %}
+
+    <div class="card shadow mt-4">
+
+        <div class="card-header bg-dark text-white">
+
+            Analysis Result
+
+        </div>
+
+        <div class="card-body">
+
+            {% if result.success %}
+
+            <table class="table table-bordered">
+
+                <tr>
+                    <th>Malicious</th>
+                    <td>{{ result.malicious }}</td>
+                </tr>
+
+                <tr>
+                    <th>Suspicious</th>
+                    <td>{{ result.suspicious }}</td>
+                </tr>
+
+                <tr>
+                    <th>Harmless</th>
+                    <td>{{ result.harmless }}</td>
+                </tr>
+
+                <tr>
+                    <th>Undetected</th>
+                    <td>{{ result.undetected }}</td>
+                </tr>
+
+            </table>
+
+            {% else %}
+
+            <div class="alert alert-danger">
+
+                {{ result.message }}
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

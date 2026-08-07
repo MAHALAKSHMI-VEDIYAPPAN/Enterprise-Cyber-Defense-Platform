@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2 class="mb-4">Edit Incident</h2>
+
+<div class="card">
+
+    <div class="card-body">
+
+        <form method="POST">
+
+            {{ form.hidden_tag() }}
+
+            <div class="mb-3">
+
+                {{ form.title.label(class="form-label") }}
+
+                {{ form.title(class="form-control") }}
+
+            </div>
+
+            <div class="mb-3">
+
+                {{ form.asset.label(class="form-label") }}
+
+                {{ form.asset(class="form-control") }}
+
+            </div>
+
+            <div class="mb-3">
+
+                {{ form.severity.label(class="form-label") }}
+
+                {{ form.severity(class="form-select") }}
+
+            </div>
+
+            <div class="mb-3">
+
+                {{ form.assigned_to.label(class="form-label") }}
+
+                {{ form.assigned_to(class="form-control") }}
+
+            </div>
+
+            <div class="mb-3">
+
+                {{ form.description.label(class="form-label") }}
+
+                {{ form.description(class="form-control", rows="4") }}
+
+            </div>
+
+            <button class="btn btn-success">
+
+                Update Incident
+
+            </button>
+
+            <a href="{{ url_for('incidents.incidents') }}" class="btn btn-secondary">
+
+                Cancel
+
+            </a>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

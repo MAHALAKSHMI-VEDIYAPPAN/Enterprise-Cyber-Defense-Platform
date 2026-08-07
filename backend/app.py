@@ -3,11 +3,19 @@ from flask_login import login_required, current_user
 
 from config import Config
 from extensions import db, login_manager
+
 from routes.auth import auth_bp
-from models.asset import Asset
 from routes.assets import assets_bp
-from models.scan import Scan
 from routes.scanner import scanner_bp
+from routes.threat import threat_bp
+from routes.incidents import incidents_bp
+from routes.cve import cve_bp
+
+
+from models.asset import Asset
+from models.scan import Scan
+from models.incident import Incident
+
 
 # ==========================================
 # Create Flask Application
@@ -25,6 +33,9 @@ login_manager.init_app(app)
 app.register_blueprint(auth_bp)
 app.register_blueprint(assets_bp)
 app.register_blueprint(scanner_bp)
+app.register_blueprint(threat_bp)
+app.register_blueprint(incidents_bp)
+app.register_blueprint(cve_bp)
 
 # ==========================================
 # Home Page
@@ -45,7 +56,7 @@ def dashboard():
 
     total_scans = Scan.query.count()
 
-    total_incidents = 3
+    total_incidents = Incident.query.count()
 
     security_score = 92
 

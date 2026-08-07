@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="row">
+
+    <div class="col-md-12">
+
+        <h1 class="mb-4">Incident Response</h1>
+
+    </div>
+
+</div>
+
+<!-- Search -->
+
+<form method="GET" class="mb-4">
+
+    <div class="input-group">
+
+        <input type="text" name="search" class="form-control" placeholder="Search Incident..."
+            value="{{ search if search else '' }}">
+
+        <button class="btn btn-primary">
+            Search
+        </button>
+
+    </div>
+
+</form>
+
+<!-- Add Incident -->
+
+<div class="card mb-4">
+
+    <div class="card-header bg-danger text-white">
+
+        <h3>Create New Incident</h3>
+
+    </div>
+
+    <div class="card-body">
+
+        <form method="POST">
+
+            {{ form.hidden_tag() }}
+
+            <div class="row">
+
+                <div class="col-md-6 mb-3">
+
+                    {{ form.title.label(class="form-label") }}
+
+                    {{ form.title(class="form-control") }}
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    {{ form.asset.label(class="form-label") }}
+
+                    {{ form.asset(class="form-control") }}
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    {{ form.severity.label(class="form-label") }}
+
+                    {{ form.severity(class="form-select") }}
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    {{ form.assigned_to.label(class="form-label") }}
+
+                    {{ form.assigned_to(class="form-control") }}
+
+                </div>
+
+                <div class="col-md-12 mb-3">
+
+                    {{ form.description.label(class="form-label") }}
+
+                    {{ form.description(class="form-control", rows="4") }}
+
+                </div>
+
+            </div>
+
+            {{ form.submit(class="btn btn-danger") }}
+
+        </form>
+
+    </div>
+
+</div>
+
+<!-- Incident Table -->
+
+<div class="card">
+
+    <div class="card-header bg-dark text-white">
+
+        <h3>Incident List</h3>
+
+    </div>
+
+    <div class="card-body">
+
+        <table class="table table-dark table-hover">
+
+            <thead>
+
+                <tr>
+
+                    <th>ID</th>
+                    <th>Incident</th>
+                    <th>Asset</th>
+                    <th>Severity</th>
+                    <th>Status</th>
+                    <th>Assigned</th>
+                    <th>Actions</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for incident in incidents %}
+
+                <tr>
+
+                    <td>{{ incident.incident_id }}</td>
+
+                    <td>{{ incident.title }}</td>
+
+                    <td>{{ incident.asset }}</td>
+
+                    <td>
+
+                        {% if incident.severity == "Critical" %}
+                        <span class="badge bg-danger">Critical</span>
+
+                        {% elif incident.severity == "High" %}
+                        <span class="badge bg-warning text-dark">High</span>
+
+                        {% elif incident.severity == "Medium" %}
+                        <span class="badge bg-info">Medium</span>
+
+                        {% else %}
+                        <span class="badge bg-success">Low</span>
+                        {% endif %}
+
+                    </td>
+
+                    <td>
+
+                        <span class="badge bg-primary">
+
+                            {{ incident.status }}
+
+                        </span>
+
+                    </td>
+
+                    <td>{{ incident.assigned_to }}</td>
+
+                    <td>
+
+                        <a href="{{ url_for('incidents.edit_incident', id=incident.id) }}"
+                            class="btn btn-warning btn-sm">
+
+                            Edit
+
+                        </a>
+
+                        <a href="{{ url_for('incidents.delete_incident', id=incident.id) }}"
+                            class="btn btn-danger btn-sm">
+
+                            Delete
+
+                        </a>
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% endblock %}

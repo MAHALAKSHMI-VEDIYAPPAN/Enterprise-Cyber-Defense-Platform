@@ -1,8 +1,14 @@
 <div class="sidebar">
 
     <div class="logo">
-        <h3>🛡 ECDP</h3>
+
+        <h3>
+            <i class="bi bi-shield-lock"></i>
+            ECDP
+        </h3>
+
         <p>Cyber Defense Platform</p>
+
     </div>
 
     <hr>
@@ -31,14 +37,21 @@
         </li>
 
         <li>
-            <a href="#">
+            <a href="{{ url_for('threat.threat') }}">
                 <i class="bi bi-globe"></i>
                 Threat Intelligence
             </a>
         </li>
 
         <li>
-            <a href="#">
+            <a href="{{ url_for('cve.cve') }}">
+                <i class="bi bi-bug"></i>
+                CVE Intelligence
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ url_for('incidents.incidents') }}">
                 <i class="bi bi-exclamation-triangle"></i>
                 Incident Response
             </a>
@@ -54,7 +67,7 @@
         <li>
             <a href="#">
                 <i class="bi bi-robot"></i>
-                AI Assistant
+                AI Security Assistant
             </a>
         </li>
 

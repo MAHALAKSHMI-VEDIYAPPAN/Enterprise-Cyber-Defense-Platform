@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="row">
+
+    <div class="col-md-12">
+
+        <h2 class="mb-4">
+            <i class="bi bi-bug"></i>
+            CVE Intelligence
+        </h2>
+
+    </div>
+
+</div>
+
+<div class="card mb-4">
+
+    <div class="card-header bg-primary text-white">
+
+        <h4>Search Vulnerabilities</h4>
+
+    </div>
+
+    <div class="card-body">
+
+        <form method="POST">
+
+            {{ form.hidden_tag() }}
+
+            <div class="row">
+
+                <div class="col-md-10">
+
+                    {{ form.keyword.label(class="form-label") }}
+
+                    {{ form.keyword(class="form-control",
+                    placeholder="Example: Apache 2.4.49, OpenSSH, Windows 11") }}
+
+                </div>
+
+                <div class="col-md-2 d-flex align-items-end">
+
+                    {{ form.submit(class="btn btn-primary w-100") }}
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% if results %}
+
+<div class="card">
+
+    <div class="card-header bg-dark text-white">
+
+        <h4>Search Results</h4>
+
+    </div>
+
+    <div class="card-body">
+
+        <div class="table-responsive">
+
+            <table class="table table-dark table-hover">
+
+                <thead>
+
+                    <tr>
+
+                        <th>CVE ID</th>
+                        <th>Severity</th>
+                        <th>CVSS Score</th>
+                        <th>Published</th>
+                        <th>Description</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for cve in results %}
+
+                    <tr>
+
+                        <td>
+
+                            <strong>{{ cve.id }}</strong>
+
+                        </td>
+
+                        <td>
+
+                            {% if cve.severity == "CRITICAL" %}
+
+                            <span class="badge bg-danger">
+                                Critical
+                            </span>
+
+                            {% elif cve.severity == "HIGH" %}
+
+                            <span class="badge bg-warning text-dark">
+                                High
+                            </span>
+
+                            {% elif cve.severity == "MEDIUM" %}
+
+                            <span class="badge bg-info">
+                                Medium
+                            </span>
+
+                            {% else %}
+
+                            <span class="badge bg-success">
+                                Low
+                            </span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+
+                            {{ cve.score }}
+
+                        </td>
+
+                        <td>
+
+                            {{ cve.published[:10] }}
+
+                        </td>
+
+                        <td>
+
+                            {{ cve.description }}
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endif %}
+
+{% endblock %}
