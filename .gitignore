@@ -1,19 +1,39 @@
-# Python cache
-__pycache__/
+# ===========================
+# Environment Variables
+# ===========================
+backend/.env
+
+# ===========================
+# Virtual Environment
+# ===========================
+backend/.venv/
+
+# ===========================
+# Python Cache
+# ===========================
+**/__pycache__/
 *.py[cod]
 
-# Virtual environments
-venv/
-.venv/
+# ===========================
+# SQLite Database
+# ===========================
+backend/database/*.db
 
+# ===========================
 # VS Code
+# ===========================
 .vscode/
 
-# Environment variables
-.env
+# ===========================
+# Logs
+# ===========================
+*.log
+gcm-diagnose.log
 
-# Windows
-Thumbs.db
-
-# macOS
+# ===========================
+# OS Files
+# ===========================
+# OS Files
+# ===========================
 .DS_Store
+Thumbs.db
