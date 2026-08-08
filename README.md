@@ -1,28 +1,25 @@
-# 🛡 Enterprise Cyber Defense Platform (ECDP)
+# 🛡️ Enterprise Cyber Defense Platform (ECDP)
 
-![Python](https://img.shields.io/badge/Python-3.12-blue)
-![Flask](https://img.shields.io/badge/Framework-Flask-black)
-![SQLite](https://img.shields.io/badge/Database-SQLite-green)
-![Bootstrap](https://img.shields.io/badge/UI-Bootstrap%205-purple)
-![Status](https://img.shields.io/badge/Status-In%20Development-orange)
-![License](https://img.shields.io/badge/License-MIT-brightgreen)
-
-An enterprise-grade cybersecurity platform developed using **Python**, **Flask**, and modern security technologies to centralize asset management, vulnerability assessment, threat intelligence, CVE analysis, and incident response within a single dashboard.
+An enterprise-oriented cybersecurity platform developed using **Python**, **Flask**, and modern security technologies to centralize asset management, vulnerability assessment, threat intelligence, CVE analysis, and incident response within a unified security dashboard.
 
 ---
 
-# 📖 Table of Contents
+## 📖 Table of Contents
 
 - [Overview](#-overview)
-- [Features](#-features)
+- [Objectives](#-objectives)
+- [Key Features](#-key-features)
 - [Technology Stack](#-technology-stack)
-- [Project Architecture](#-project-architecture)
+- [Security Integrations](#-security-integrations)
+- [System Architecture](#-system-architecture)
+- [Architecture Documentation](#-architecture-documentation)
 - [Project Structure](#-project-structure)
 - [Installation](#-installation)
 - [Configuration](#-configuration)
-- [Running the Project](#-running-the-project)
+- [Running the Application](#-running-the-application)
+- [Application Modules](#-application-modules)
 - [Screenshots](#-screenshots)
-- [APIs Used](#-apis-used)
+- [Security Considerations](#-security-considerations)
 - [Future Enhancements](#-future-enhancements)
 - [Learning Outcomes](#-learning-outcomes)
 - [Developer](#-developer)
@@ -32,99 +29,156 @@ An enterprise-grade cybersecurity platform developed using **Python**, **Flask**
 
 # 📌 Overview
 
-The **Enterprise Cyber Defense Platform (ECDP)** is a centralized cybersecurity web application developed to support Security Operations Center (SOC) activities. The platform integrates multiple cybersecurity modules into a single dashboard, enabling analysts to manage enterprise assets, perform vulnerability scanning, analyze threat intelligence, search CVE information, and manage security incidents efficiently.
+The **Enterprise Cyber Defense Platform (ECDP)** is a centralized cybersecurity web application designed to support Security Operations Center (SOC) activities.
+
+The platform brings multiple cybersecurity capabilities together into a single interface, allowing security analysts to:
+
+- Manage enterprise assets
+- Perform network and vulnerability scanning
+- Analyze threat intelligence
+- Search and analyze CVE information
+- Track and manage security incidents
+- Monitor security-related information through a centralized dashboard
+
+ECDP combines **web application development, cybersecurity tools, external security APIs, database management, and SOC workflows** into one practical cybersecurity platform.
 
 ---
 
-# 🚀 Features
+# 🎯 Objectives
 
-## 🔐 User Authentication
+The primary objectives of the Enterprise Cyber Defense Platform are:
 
-- Secure User Login
+- To provide a centralized security management interface
+- To simplify enterprise asset management
+- To perform vulnerability assessment using Nmap
+- To analyze malicious or suspicious indicators using VirusTotal
+- To retrieve vulnerability information from the NVD database
+- To provide structured incident management
+- To demonstrate practical SOC workflows
+- To securely integrate external cybersecurity APIs
+- To provide a scalable foundation for future security automation and AI capabilities
+
+---
+
+# 🚀 Key Features
+
+## 🔐 1. User Authentication
+
+The platform provides authentication and access control functionality.
+
+### Features
+
 - User Registration
+- User Login
 - Session Management
 - Protected Routes
+- Logout
+- Flask-Login integration
 
 ---
 
-## 📊 Security Dashboard
+## 📊 2. Security Dashboard
 
-- Asset Statistics
-- Vulnerability Statistics
-- Incident Summary
-- Security Overview
+The dashboard provides a centralized overview of security operations.
+
+### Features
+
+- Total Asset Statistics
+- Scan Statistics
+- Incident Overview
+- Security Score
+- Centralized Security Monitoring
+- Security Module Navigation
 
 ---
 
-## 💻 Asset Inventory
+## 💻 3. Asset Inventory
+
+The Asset Inventory module allows analysts to maintain information about enterprise assets.
+
+### Features
 
 - Add Assets
+- View Assets
 - Edit Assets
 - Delete Assets
-- Search Assets
-- Risk Classification
+- Asset Classification
+- IP Address Management
+- Operating System Information
+- Asset Status Tracking
 
 ---
 
-## 🔍 Vulnerability Scanner
+## 🔍 4. Vulnerability Scanner
 
-Integrated with **Nmap**
+The Vulnerability Scanner integrates **Nmap** for network reconnaissance and security assessment.
 
-Features:
+### Features
 
-- Open Port Detection
+- Network Scanning
+- Port Scanning
 - Service Detection
+- Target Scanning
+- Scan Result Processing
 - Scan History
-- Scan Result Storage
+- Vulnerability Discovery
 
 ---
 
-## 🌍 Threat Intelligence
+## 🌍 5. Threat Intelligence
 
-Integrated with **VirusTotal API**
+The Threat Intelligence module integrates the **VirusTotal API**.
 
-Supports:
+### Supported Analysis
 
-- IP Reputation Lookup
-- URL Reputation Lookup
+- IP Address Reputation
+- URL Reputation
 - File Hash Analysis
 - Threat Detection
+- Security Indicator Analysis
+- Threat Intelligence Results
+
+The module helps analysts investigate potentially malicious indicators before taking further action.
 
 ---
 
-## 🐞 CVE Intelligence
+## 🐞 6. CVE Intelligence
 
-Integrated with **NVD API**
+The CVE Intelligence module integrates the **NVD API** to retrieve vulnerability information.
 
-Displays:
+### Information Provided
 
-- CVE Details
+- CVE ID
+- Vulnerability Description
 - CVSS Score
 - Severity
 - Published Date
-- Vulnerability Description
+- Vulnerability References
+- CVE Details
+
+This helps security analysts understand known vulnerabilities and their severity.
 
 ---
 
-## 🚨 Incident Response
+## 🚨 7. Incident Response
+
+The Incident Response module provides structured incident tracking.
+
+### Features
 
 - Create Incidents
-- Update Incident Status
-- Severity Tracking
-- Incident History
+- View Incidents
+- Edit Incidents
+- Incident Severity
+- Incident Status
+- Incident Assignment
+- Incident Description
+- Incident Tracking
+- Resolution Tracking
 
 ---
 
-## 🔒 Security Features
-
-- Secure API Key Storage using `.env`
-- SQLAlchemy ORM
-- Flask Authentication
-- Environment Variable Configuration
-
----
-
-# 🛠 Technology Stack
+# 🛠️ Technology Stack
 
 ## Backend
 
@@ -145,225 +199,83 @@ Displays:
 ## Database
 
 - SQLite
+- SQLAlchemy ORM
 
-## Cybersecurity Tools
+## Cybersecurity Tools & APIs
 
 - Nmap
 - VirusTotal API
 - NVD API
 
+## Development Environment
+
+- Visual Studio Code
+- Git
+- GitHub
+- Python Virtual Environment
+
 ---
 
-# 🏗 Project Architecture
+# 🔗 Security Integrations
+
+| Tool / API | Purpose |
+|---|---|
+| **Nmap** | Network scanning, port detection, and service discovery |
+| **VirusTotal API** | Threat intelligence and reputation analysis |
+| **NVD API** | CVE and vulnerability intelligence |
+
+---
+
+# 🏗️ System Architecture
+
+The Enterprise Cyber Defense Platform follows a modular architecture where the Flask web application acts as the central application layer.
 
 ```text
-                     User
-                       │
-                       ▼
-              Flask Web Application
-                       │
-      ┌────────────────┼────────────────┐
-      ▼                ▼                ▼
- Authentication    Dashboard    Security Modules
-                                         │
-      ┌────────────┬────────────┬────────────┐
-      ▼            ▼            ▼            ▼
- Asset Inventory Scanner Threat Intelligence CVE Intelligence
-                                         │
-                                         ▼
-                               Incident Response
-                                         │
-                                         ▼
-                                  SQLite Database
-```
-
----
-
-# 📁 Project Structure
-
-```text
-Enterprise-Cyber-Defense-Platform
-│
-├── backend
-│   ├── database
-│   ├── docs
-│   │   ├── screenshots
-│   │   ├── diagrams
-│   │   └── reports
-│   ├── forms
-│   ├── models
-│   ├── routes
-│   ├── services
-│   ├── static
-│   ├── templates
-│   ├── utils
-│   ├── .env
-│   ├── app.py
-│   ├── config.py
-│   ├── extensions.py
-│   └── requirements.txt
-│
-├── LICENSE
-├── README.md
-└── .gitignore
-```
-
----
-
-# ⚙️ Installation
-
-## Clone Repository
-
-```bash
-git clone https://github.com/MAHALAKSHMI_VEDIYAPPAN/Enterprise-Cyber-Defense-Platform.git
-```
-
-## Navigate to Project
-
-```bash
-cd Enterprise-Cyber-Defense-Platform/backend
-```
-
-## Create Virtual Environment
-
-```bash
-python -m venv .venv
-```
-
-## Activate Virtual Environment
-
-### Windows
-
-```bash
-.venv\Scripts\activate
-```
-
-### Linux / macOS
-
-```bash
-source .venv/bin/activate
-```
-
-## Install Dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
----
-
-# ⚙️ Configuration
-
-Create a `.env` file inside the `backend` folder.
-
-Example:
-
-```env
-SECRET_KEY=your_secret_key
-VIRUSTOTAL_API_KEY=your_virustotal_api_key
-```
-
----
-
-# ▶️ Running the Project
-
-Run the application:
-
-```bash
-python app.py
-```
-
-Open your browser:
-
-```
-http://127.0.0.1:5000
-```
-
----
-
-# 📷 Screenshots
-
-Screenshots will be added after the UI development is completed.
-
-The following pages will be included:
-
-- 🔐 Login Page
-- 📊 Dashboard
-- 💻 Asset Inventory
-- 🔍 Vulnerability Scanner
-- 🌍 Threat Intelligence
-- 🐞 CVE Intelligence
-- 🚨 Incident Response
-
----
-
-# 🔗 APIs Used
-
-| API | Purpose |
-|------|---------|
-| VirusTotal API | Threat Intelligence |
-| NVD API | CVE Intelligence |
-
----
-
-# 🛣 Future Enhancements
-
-- 🤖 AI Security Assistant (Ollama + Llama)
-- 📊 Advanced Security Analytics Dashboard
-- 📄 PDF Report Generator
-- 📧 Email Alerts
-- 👥 Role-Based Access Control
-- 📜 Audit Logging
-- 🎯 MITRE ATT&CK Framework Mapping
-- ☁️ Docker Deployment
-- 🌐 Cloud Deployment
-- 🔔 Real-Time Notifications
-
----
-
-# 🎯 Learning Outcomes
-
-This project demonstrates practical knowledge in:
-
-- Python Programming
-- Flask Web Development
-- SQLAlchemy ORM
-- Authentication & Authorization
-- Network Security
-- Vulnerability Assessment
-- Threat Intelligence
-- CVE Analysis
-- Incident Response
-- REST API Integration
-- Git & GitHub
-- Secure Configuration Management
-
----
-
-# 👩‍💻 Developer
-
-**Mahalakshmi V**
-
-🎓 Final Year – B.Sc. Computer Science with Cyber Security
-
-🏫 PSGR Krishnammal College for Women
-
-💼 Aspiring SOC Analyst | Cybersecurity Analyst | Security Engineer
-
-**GitHub:** https://github.com/MAHALAKSHMI_VEDIYAPPAN
-
----
-
-# 📄 License
-
-This project is licensed under the **MIT License**.
-
----
-
-# ⭐ Support
-
-If you found this project useful, please consider giving it a ⭐ on GitHub.
-
----
-
-> **Enterprise Cyber Defense Platform (ECDP)** is being developed as a hands-on cybersecurity project to strengthen practical skills in secure software development, vulnerability assessment, threat intelligence, incident response, and Security Operations Center (SOC) workflows.
+                         ┌──────────────────────┐
+                         │   SOC / Security     │
+                         │       Analyst        │
+                         └──────────┬───────────┘
+                                    │
+                                    ▼
+                         ┌──────────────────────┐
+                         │ Flask Web Application │
+                         │        ECDP          │
+                         └──────────┬───────────┘
+                                    │
+             ┌──────────────────────┼──────────────────────┐
+             │                      │                      │
+             ▼                      ▼                      ▼
+      ┌──────────────┐       ┌──────────────┐       ┌──────────────┐
+      │ Authentication│       │  Dashboard   │       │    Asset     │
+      │ Flask-Login   │       │              │       │  Inventory   │
+      └──────────────┘       └──────┬───────┘       └──────────────┘
+                                    │
+                                    ▼
+                         ┌──────────────────────┐
+                         │   Security Modules   │
+                         └──────────┬───────────┘
+                                    │
+             ┌──────────────────────┼──────────────────────┐
+             │                      │                      │
+             ▼                      ▼                      ▼
+      ┌──────────────┐       ┌──────────────┐       ┌──────────────┐
+      │ Vulnerability│       │    Threat    │       │     CVE      │
+      │    Scanner   │       │ Intelligence │       │ Intelligence │
+      │    (Nmap)    │       │ (VirusTotal) │       │   (NVD API)  │
+      └──────────────┘       └──────────────┘       └──────────────┘
+             │                      │                      │
+             └──────────────────────┼──────────────────────┘
+                                    ▼
+                         ┌──────────────────────┐
+                         │   Incident Response  │
+                         └──────────┬───────────┘
+                                    │
+                                    ▼
+                         ┌──────────────────────┐
+                         │    SQLAlchemy ORM    │
+                         └──────────┬───────────┘
+                                    │
+                                    ▼
+                         ┌──────────────────────┐
+                         │    SQLite Database   │
+                         └──────────────────────┘
