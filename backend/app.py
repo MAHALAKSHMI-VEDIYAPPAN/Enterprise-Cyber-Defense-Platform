@@ -52,20 +52,114 @@ def home():
 @login_required
 def dashboard():
 
+    # ==============================
+    # Asset Statistics
+    # ==============================
+
     total_assets = Asset.query.count()
+
+    active_assets = Asset.query.filter_by(
+        status="Active"
+    ).count()
+
+    high_risk_assets = Asset.query.filter(
+        Asset.risk_level.in_(["High", "Critical"])
+    ).count()
+
+
+    # ==============================
+    # Scan Statistics
+    # ==============================
 
     total_scans = Scan.query.count()
 
+    completed_scans = Scan.query.filter_by(
+        status="Completed"
+    ).count()
+
+
+    # ==============================
+    # Incident Statistics
+    # ==============================
+
     total_incidents = Incident.query.count()
 
-    security_score = 92
+    open_incidents = Incident.query.filter_by(
+        status="Open"
+    ).count()
+
+    critical_incidents = Incident.query.filter(
+        Incident.severity.in_(["Critical", "High"])
+    ).filter(
+        Incident.status != "Closed"
+    ).count()
+
+
+    # ==============================
+    # Security Score
+    # ==============================
+
+    if total_assets > 0:
+        asset_score = (
+            (total_assets - high_risk_assets)
+            / total_assets
+        ) * 100
+    else:
+        asset_score = 100
+
+    if total_incidents > 0:
+        incident_score = (
+            (total_incidents - critical_incidents)
+            / total_incidents
+        ) * 100
+    else:
+        incident_score = 100
+
+    security_score = round(
+        (asset_score + incident_score) / 2
+    )
+
+
+    # ==============================
+    # Recent Scans
+    # ==============================
+
+    recent_scans = Scan.query.order_by(
+        Scan.scan_date.desc()
+    ).limit(5).all()
+
+
+    # ==============================
+    # Recent Incidents
+    # ==============================
+
+    recent_incidents = Incident.query.order_by(
+        Incident.created_at.desc()
+    ).limit(5).all()
+
+
+    # ==============================
+    # Dashboard
+    # ==============================
 
     return render_template(
         "dashboard.html",
+
         total_assets=total_assets,
+        active_assets=active_assets,
+        high_risk_assets=high_risk_assets,
+
         total_scans=total_scans,
+        completed_scans=completed_scans,
+
         total_incidents=total_incidents,
-        security_score=security_score
+        open_incidents=open_incidents,
+        critical_incidents=critical_incidents,
+
+        security_score=security_score,
+
+        recent_scans=recent_scans,
+        recent_incidents=recent_incidents
     )
 
 # ==========================================

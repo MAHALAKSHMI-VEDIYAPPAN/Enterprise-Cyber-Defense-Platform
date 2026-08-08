@@ -1,38 +1,282 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enterprise Cyber Defense Platform</title>
-</head>
+{% block title %}Home - Enterprise Cyber Defense Platform{% endblock %}
 
-<body>
+{% block content %}
 
-    <h1>Enterprise Cyber Defense Platform</h1>
+<div class="container-fluid">
 
-    <hr>
+    <!-- Hero Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
 
-    <h2>Welcome to ECDP</h2>
+                    <h1 class="display-5 fw-bold">
+                        <i class="bi bi-shield-lock-fill me-2"></i>
+                        Enterprise Cyber Defense Platform
+                    </h1>
 
-    <p>
-        Enterprise Cyber Defense Platform is an integrated security management
-        system designed to monitor, detect, analyze, and respond to cyber threats.
-    </p>
+                    <p class="lead text-muted mt-3">
+                        An integrated security management platform designed
+                        to monitor, detect, analyze, and respond to cyber threats.
+                    </p>
 
-    <h3>Project Modules</h3>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <ul>
-        <li>Dashboard</li>
-        <li>Asset Management</li>
-        <li>Vulnerability Scanner</li>
-        <li>Threat Intelligence</li>
-        <li>Log Monitoring</li>
-        <li>Incident Response</li>
-        <li>Reports</li>
-        <li>AI Security Assistant</li>
-    </ul>
+    <!-- Welcome Section -->
+    <div class="row mb-4">
 
-</body>
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 h-100">
 
-</html>
+                <div class="card-body p-4">
+
+                    <h2 class="h4 fw-bold mb-3">
+                        <i class="bi bi-shield-check me-2"></i>
+                        Welcome to ECDP
+                    </h2>
+
+                    <p class="text-muted">
+                        The Enterprise Cyber Defense Platform (ECDP) is a
+                        centralized cybersecurity platform that brings
+                        asset management, vulnerability assessment, threat
+                        intelligence, CVE analysis, and incident response
+                        together within a unified security environment.
+                    </p>
+
+                    <p class="text-muted mb-0">
+                        It is designed to support practical Security Operations
+                        Center (SOC) workflows and provide security analysts
+                        with a centralized platform for security monitoring
+                        and analysis.
+                    </p>
+
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Security Status -->
+        <div class="col-lg-4 mt-3 mt-lg-0">
+
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-body p-4">
+
+                    <h2 class="h5 fw-bold mb-3">
+                        <i class="bi bi-activity me-2"></i>
+                        Platform Status
+                    </h2>
+
+                    <div class="d-flex align-items-center mb-3">
+                        <span class="badge bg-success me-2">
+                            Active
+                        </span>
+                        <span class="text-muted">
+                            Platform Online
+                        </span>
+                    </div>
+
+                    <div class="d-flex align-items-center mb-3">
+                        <span class="badge bg-primary me-2">
+                            SOC
+                        </span>
+                        <span class="text-muted">
+                            Security Operations
+                        </span>
+                    </div>
+
+                    <div class="d-flex align-items-center">
+                        <span class="badge bg-warning text-dark me-2">
+                            Monitoring
+                        </span>
+                        <span class="text-muted">
+                            Security Modules
+                        </span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Project Modules -->
+    <div class="row">
+
+        <div class="col-12">
+
+            <div class="card shadow-sm border-0">
+
+                <div class="card-body p-4">
+
+                    <h2 class="h4 fw-bold mb-4">
+                        <i class="bi bi-grid-3x3-gap-fill me-2"></i>
+                        Security Modules
+                    </h2>
+
+                    <div class="row g-4">
+
+                        <!-- Dashboard -->
+                        <div class="col-md-6 col-lg-3">
+                            <div class="card h-100 border-0 shadow-sm">
+                                <div class="card-body">
+                                    <i class="bi bi-speedometer2 fs-2 text-primary"></i>
+
+                                    <h3 class="h6 fw-bold mt-3">
+                                        Security Dashboard
+                                    </h3>
+
+                                    <p class="small text-muted mb-0">
+                                        Centralized overview of security
+                                        operations and activities.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Asset Management -->
+                        <div class="col-md-6 col-lg-3">
+                            <div class="card h-100 border-0 shadow-sm">
+                                <div class="card-body">
+                                    <i class="bi bi-pc-display fs-2 text-primary"></i>
+
+                                    <h3 class="h6 fw-bold mt-3">
+                                        Asset Inventory
+                                    </h3>
+
+                                    <p class="small text-muted mb-0">
+                                        Manage enterprise assets,
+                                        systems, and infrastructure.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Vulnerability Scanner -->
+                        <div class="col-md-6 col-lg-3">
+                            <div class="card h-100 border-0 shadow-sm">
+                                <div class="card-body">
+                                    <i class="bi bi-search fs-2 text-primary"></i>
+
+                                    <h3 class="h6 fw-bold mt-3">
+                                        Vulnerability Scanner
+                                    </h3>
+
+                                    <p class="small text-muted mb-0">
+                                        Perform network scanning and
+                                        vulnerability assessment using Nmap.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Threat Intelligence -->
+                        <div class="col-md-6 col-lg-3">
+                            <div class="card h-100 border-0 shadow-sm">
+                                <div class="card-body">
+                                    <i class="bi bi-globe2 fs-2 text-primary"></i>
+
+                                    <h3 class="h6 fw-bold mt-3">
+                                        Threat Intelligence
+                                    </h3>
+
+                                    <p class="small text-muted mb-0">
+                                        Analyze suspicious IPs, URLs,
+                                        and file hashes using threat intelligence.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CVE Intelligence -->
+                        <div class="col-md-6 col-lg-3">
+                            <div class="card h-100 border-0 shadow-sm">
+                                <div class="card-body">
+                                    <i class="bi bi-bug-fill fs-2 text-danger"></i>
+
+                                    <h3 class="h6 fw-bold mt-3">
+                                        CVE Intelligence
+                                    </h3>
+
+                                    <p class="small text-muted mb-0">
+                                        Search and analyze known
+                                        vulnerabilities using NVD data.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Incident Response -->
+                        <div class="col-md-6 col-lg-3">
+                            <div class="card h-100 border-0 shadow-sm">
+                                <div class="card-body">
+                                    <i class="bi bi-exclamation-triangle-fill fs-2 text-warning"></i>
+
+                                    <h3 class="h6 fw-bold mt-3">
+                                        Incident Response
+                                    </h3>
+
+                                    <p class="small text-muted mb-0">
+                                        Track, manage, and resolve
+                                        cybersecurity incidents.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Log Monitoring -->
+                        <div class="col-md-6 col-lg-3">
+                            <div class="card h-100 border-0 shadow-sm">
+                                <div class="card-body">
+                                    <i class="bi bi-file-earmark-text fs-2 text-success"></i>
+
+                                    <h3 class="h6 fw-bold mt-3">
+                                        Log Monitoring
+                                    </h3>
+
+                                    <p class="small text-muted mb-0">
+                                        Monitor security-related events
+                                        and system activity.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Reports -->
+                        <div class="col-md-6 col-lg-3">
+                            <div class="card h-100 border-0 shadow-sm">
+                                <div class="card-body">
+                                    <i class="bi bi-file-earmark-bar-graph-fill fs-2 text-info"></i>
+
+                                    <h3 class="h6 fw-bold mt-3">
+                                        Reports
+                                    </h3>
+
+                                    <p class="small text-muted mb-0">
+                                        Generate and review security
+                                        analysis and incident reports.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

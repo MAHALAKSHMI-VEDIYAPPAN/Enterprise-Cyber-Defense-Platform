@@ -1,21 +1,53 @@
 import os
 from dotenv import load_dotenv
 
-BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
-# Load variables from .env
-load_dotenv(os.path.join(BASE_DIR, ".env"))
+# ==========================================================
+# Base Directory
+# ==========================================================
+
+BASE_DIR = os.path.abspath(
+    os.path.dirname(__file__)
+)
+
+
+# ==========================================================
+# Load Environment Variables
+# ==========================================================
+
+load_dotenv(
+    os.path.join(
+        BASE_DIR,
+        ".env"
+    )
+)
+
+
+# ==========================================================
+# Flask Configuration
+# ==========================================================
 
 class Config:
 
-    SECRET_KEY = "ecdp_secret_key_2026"
+    # Flask Secret Key
+    SECRET_KEY = os.getenv(
+        "SECRET_KEY",
+        "ecdp-development-secret-key"
+    )
 
-    SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(
-        BASE_DIR,
-        "database",
-        "ecdp.db"
+    # SQLite Database
+    SQLALCHEMY_DATABASE_URI = (
+        "sqlite:///"
+        + os.path.join(
+            BASE_DIR,
+            "database",
+            "ecdp.db"
+        )
     )
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-    VIRUSTOTAL_API_KEY = os.getenv("VIRUSTOTAL_API_KEY")
+    # VirusTotal API
+    VIRUSTOTAL_API_KEY = os.getenv(
+        "VIRUSTOTAL_API_KEY"
+    )

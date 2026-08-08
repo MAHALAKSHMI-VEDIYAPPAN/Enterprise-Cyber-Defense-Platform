@@ -1,70 +1,202 @@
 {% extends "base.html" %}
 
+{% block title %}Edit Incident - ECDP{% endblock %}
+
 {% block content %}
 
-<h2 class="mb-4">Edit Incident</h2>
+<div class="container-fluid">
 
-<div class="card">
+    <!-- Page Header -->
 
-    <div class="card-body">
+    <div class="mb-4">
 
-        <form method="POST">
+        <h2 class="fw-bold mb-1">
 
-            {{ form.hidden_tag() }}
+            <i class="bi bi-pencil-square me-2"></i>
 
-            <div class="mb-3">
+            Edit Incident
 
-                {{ form.title.label(class="form-label") }}
+        </h2>
 
-                {{ form.title(class="form-control") }}
+        <p class="text-muted mb-0">
 
-            </div>
+            Update incident details, status, assignment,
+            and resolution.
 
-            <div class="mb-3">
+        </p>
 
-                {{ form.asset.label(class="form-label") }}
+    </div>
 
-                {{ form.asset(class="form-control") }}
 
-            </div>
+    <!-- Incident Information -->
 
-            <div class="mb-3">
+    <div class="card shadow border-0 mb-4">
 
-                {{ form.severity.label(class="form-label") }}
+        <div class="card-header">
 
-                {{ form.severity(class="form-select") }}
+            <h5 class="mb-0 fw-bold">
 
-            </div>
+                <i class="bi bi-shield-exclamation me-2"></i>
 
-            <div class="mb-3">
+                {{ incident.incident_id }}
 
-                {{ form.assigned_to.label(class="form-label") }}
+            </h5>
 
-                {{ form.assigned_to(class="form-control") }}
+        </div>
 
-            </div>
+        <div class="card-body">
 
-            <div class="mb-3">
+            <form method="POST">
 
-                {{ form.description.label(class="form-label") }}
+                {{ form.hidden_tag() }}
 
-                {{ form.description(class="form-control", rows="4") }}
+                <div class="row g-3">
 
-            </div>
+                    <!-- Title -->
 
-            <button class="btn btn-success">
+                    <div class="col-md-6">
 
-                Update Incident
+                        {{ form.title.label(
+                        class="form-label"
+                        ) }}
 
-            </button>
+                        {{ form.title(
+                        class="form-control"
+                        ) }}
 
-            <a href="{{ url_for('incidents.incidents') }}" class="btn btn-secondary">
+                        {% for error in form.title.errors %}
 
-                Cancel
+                        <small class="text-danger">
+                            {{ error }}
+                        </small>
 
-            </a>
+                        {% endfor %}
 
-        </form>
+                    </div>
+
+
+                    <!-- Asset -->
+
+                    <div class="col-md-6">
+
+                        {{ form.asset.label(
+                        class="form-label"
+                        ) }}
+
+                        {{ form.asset(
+                        class="form-control"
+                        ) }}
+
+                    </div>
+
+
+                    <!-- Severity -->
+
+                    <div class="col-md-6">
+
+                        {{ form.severity.label(
+                        class="form-label"
+                        ) }}
+
+                        {{ form.severity(
+                        class="form-select"
+                        ) }}
+
+                    </div>
+
+
+                    <!-- Status -->
+
+                    <div class="col-md-6">
+
+                        {{ form.status.label(
+                        class="form-label"
+                        ) }}
+
+                        {{ form.status(
+                        class="form-select"
+                        ) }}
+
+                    </div>
+
+
+                    <!-- Assigned Analyst -->
+
+                    <div class="col-md-6">
+
+                        {{ form.assigned_to.label(
+                        class="form-label"
+                        ) }}
+
+                        {{ form.assigned_to(
+                        class="form-control"
+                        ) }}
+
+                    </div>
+
+
+                    <!-- Description -->
+
+                    <div class="col-md-6">
+
+                        {{ form.description.label(
+                        class="form-label"
+                        ) }}
+
+                        {{ form.description(
+                        class="form-control",
+                        rows="4"
+                        ) }}
+
+                    </div>
+
+
+                    <!-- Resolution -->
+
+                    <div class="col-md-12">
+
+                        {{ form.resolution.label(
+                        class="form-label"
+                        ) }}
+
+                        {{ form.resolution(
+                        class="form-control",
+                        rows="4"
+                        ) }}
+
+                    </div>
+
+                </div>
+
+
+                <!-- Buttons -->
+
+                <div class="mt-4 d-flex gap-2">
+
+                    <button type="submit" class="btn btn-primary">
+
+                        <i class="bi bi-check-circle me-1"></i>
+
+                        Update Incident
+
+                    </button>
+
+
+                    <a href="{{ url_for(
+                            'incidents.incidents'
+                        ) }}" class="btn btn-secondary">
+
+                        <i class="bi bi-arrow-left me-1"></i>
+
+                        Back
+
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
 
     </div>
 

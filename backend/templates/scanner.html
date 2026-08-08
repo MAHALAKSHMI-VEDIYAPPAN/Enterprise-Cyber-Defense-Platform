@@ -1,18 +1,43 @@
 {% extends "base.html" %}
 
+{% block title %}Vulnerability Scanner - ECDP{% endblock %}
+
 {% block content %}
 
-<div class="container mt-4">
+<div class="container-fluid">
 
-    <h2 class="mb-4">
-        Vulnerability Scanner
-    </h2>
+    <!-- =========================
+         Page Header
+    ========================== -->
 
-    <!-- Scan Form -->
-    <div class="card shadow mb-4">
+    <div class="mb-4">
 
-        <div class="card-header bg-primary text-white">
-            <h4>New Scan</h4>
+        <h2 class="fw-bold mb-1">
+            <i class="bi bi-shield-check me-2"></i>
+            Vulnerability Scanner
+        </h2>
+
+        <p class="text-muted mb-0">
+            Perform network reconnaissance and service discovery
+            using Nmap.
+        </p>
+
+    </div>
+
+
+    <!-- =========================
+         New Scan
+    ========================== -->
+
+    <div class="card shadow border-0 mb-4">
+
+        <div class="card-header">
+
+            <h5 class="mb-0 fw-bold">
+                <i class="bi bi-radar me-2"></i>
+                New Security Scan
+            </h5>
+
         </div>
 
         <div class="card-body">
@@ -21,22 +46,47 @@
 
                 {{ form.hidden_tag() }}
 
-                <div class="row">
+                <div class="row g-3">
 
-                    <div class="col-md-10">
+                    <div class="col-lg-10">
 
                         {{ form.target.label(class="form-label") }}
 
                         {{ form.target(
                         class="form-control",
-                        placeholder="Example: scanme.nmap.org or 127.0.0.1"
+                        placeholder="Example: 127.0.0.1 or 192.168.1.1"
                         ) }}
+
+                        {% if form.target.errors %}
+
+                        <div class="text-danger mt-2">
+
+                            {% for error in form.target.errors %}
+
+                            <small>
+                                <i class="bi bi-exclamation-circle me-1"></i>
+                                {{ error }}
+                            </small>
+
+                            {% endfor %}
+
+                        </div>
+
+                        {% else %}
+
+                        <small class="text-muted">
+                            Enter an authorized IPv4 address for security testing.
+                        </small>
+
+                        {% endif %}
 
                     </div>
 
-                    <div class="col-md-2 d-flex align-items-end">
+                    <div class="col-lg-2 d-flex align-items-end">
 
-                        {{ form.submit(class="btn btn-success w-100") }}
+                        {{ form.submit(
+                        class="btn btn-primary w-100"
+                        ) }}
 
                     </div>
 
@@ -48,85 +98,316 @@
 
     </div>
 
-    <!-- Scan History -->
 
-    <div class="card shadow">
+    <!-- =========================
+         Scanner Statistics
+    ========================== -->
 
-        <div class="card-header bg-dark text-white">
+    <div class="row g-4 mb-4">
 
-            <h4>Scan History</h4>
+        <!-- Total Scans -->
+
+        <div class="col-md-4">
+
+            <div class="card border-0 shadow h-100">
+
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div>
+
+                            <p class="text-muted mb-1">
+                                Total Scans
+                            </p>
+
+                            <h3 class="fw-bold mb-0">
+                                {{ scans|length }}
+                            </h3>
+
+                        </div>
+
+                        <i class="bi bi-search fs-1 text-primary"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
 
         </div>
 
-        <div class="card-body">
 
-            <table class="table table-striped table-hover">
+        <!-- Completed Scans -->
 
-                <thead class="table-dark">
+        <div class="col-md-4">
 
-                    <tr>
+            <div class="card border-0 shadow h-100">
 
-                        <th>ID</th>
+                <div class="card-body">
 
-                        <th>Target</th>
+                    <div class="d-flex justify-content-between align-items-center">
 
-                        <th>Open Ports</th>
+                        <div>
 
-                        <th>Services</th>
+                            <p class="text-muted mb-1">
+                                Completed Scans
+                            </p>
 
-                        <th>Status</th>
+                            <h3 class="fw-bold mb-0">
 
-                    </tr>
+                                {{ scans
+                                |selectattr("status", "equalto", "Completed")
+                                |list
+                                |length }}
 
-                </thead>
+                            </h3>
 
-                <tbody>
+                        </div>
 
-                    {% for scan in scans %}
+                        <i class="bi bi-check-circle fs-1 text-success"></i>
 
-                    <tr>
+                    </div>
 
-                        <td>{{ scan.id }}</td>
+                </div>
 
-                        <td>{{ scan.target }}</td>
+            </div>
 
-                        <td>{{ scan.open_ports }}</td>
+        </div>
 
-                        <td style="white-space: pre-line;">
-                            {{ scan.services }}
-                        </td>
 
-                        <td>
+        <!-- Unique Targets -->
 
-                            {% if scan.status == "Completed" %}
+        <div class="col-md-4">
 
-                            <span class="badge bg-success">
-                                Completed
-                            </span>
+            <div class="card border-0 shadow h-100">
 
-                            {% elif scan.status == "Host Down" %}
+                <div class="card-body">
 
-                            <span class="badge bg-warning text-dark">
-                                Host Down
-                            </span>
+                    <div class="d-flex justify-content-between align-items-center">
 
-                            {% else %}
+                        <div>
 
-                            <span class="badge bg-danger">
-                                Error
-                            </span>
+                            <p class="text-muted mb-1">
+                                Targets Scanned
+                            </p>
 
-                            {% endif %}
+                            <h3 class="fw-bold mb-0">
+                                {{ scans|map(attribute="target")|unique|list|length }}
+                            </h3>
 
-                        </td>
+                        </div>
 
-                    </tr>
+                        <i class="bi bi-bullseye fs-1 text-warning"></i>
 
-                    {% endfor %}
+                    </div>
 
-                </tbody>
+                </div>
 
-            </table>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         Scan History
+    ========================== -->
+
+    <div class="card shadow border-0">
+
+        <div class="card-header">
+
+            <h5 class="mb-0 fw-bold">
+
+                <i class="bi bi-clock-history me-2"></i>
+                Scan History
+
+            </h5>
+
+        </div>
+
+        <div class="card-body p-0">
+
+            {% if scans %}
+
+            <div class="table-responsive">
+
+                <table class="table table-hover mb-0">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>ID</th>
+
+                            <th>Target</th>
+
+                            <th>Open Ports</th>
+
+                            <th>Services</th>
+
+                            <th>Status</th>
+
+                            <th>Scan Date</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for scan in scans %}
+
+                        <tr>
+
+                            <!-- ID -->
+
+                            <td>
+                                {{ scan.id }}
+                            </td>
+
+
+                            <!-- Target -->
+
+                            <td>
+
+                                <strong>
+                                    {{ scan.target }}
+                                </strong>
+
+                            </td>
+
+
+                            <!-- Open Ports -->
+
+                            <td>
+
+                                {% if scan.open_ports and scan.open_ports != "None" %}
+
+                                {% for port in scan.open_ports.split(", ") %}
+
+                                <span class="badge bg-primary me-1 mb-1">
+                                    {{ port }}
+                                </span>
+
+                                {% endfor %}
+
+                                {% else %}
+
+                                <span class="text-muted">
+                                    None
+                                </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <!-- Services -->
+
+                            <td>
+
+                                {% if scan.services %}
+
+                                <pre class="scanner-output mb-0">{{ scan.services }}</pre>
+
+                                {% else %}
+
+                                <span class="text-muted">
+                                    None
+                                </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <!-- Status -->
+
+                            <td>
+
+                                {% if scan.status == "Completed" %}
+
+                                <span class="badge bg-success">
+
+                                    <i class="bi bi-check-circle me-1"></i>
+
+                                    Completed
+
+                                </span>
+
+                                {% elif scan.status == "Host Down" %}
+
+                                <span class="badge bg-warning text-dark">
+
+                                    <i class="bi bi-exclamation-circle me-1"></i>
+
+                                    Host Down
+
+                                </span>
+
+                                {% else %}
+
+                                <span class="badge bg-danger">
+
+                                    <i class="bi bi-x-circle me-1"></i>
+
+                                    Error
+
+                                </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <!-- Scan Date -->
+
+                            <td>
+
+                                {% if scan.scan_date %}
+
+                                {{ scan.scan_date.strftime("%Y-%m-%d %H:%M") }}
+
+                                {% else %}
+
+                                N/A
+
+                                {% endif %}
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            {% else %}
+
+            <!-- No Scan Data -->
+
+            <div class="text-center p-5">
+
+                <i class="bi bi-radar fs-1 text-muted"></i>
+
+                <h5 class="mt-3">
+                    No scans recorded
+                </h5>
+
+                <p class="text-muted mb-0">
+                    Start your first authorized Nmap scan above.
+                </p>
+
+            </div>
+
+            {% endif %}
 
         </div>
 

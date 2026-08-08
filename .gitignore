@@ -1,39 +1,48 @@
-# ===========================
-# Environment Variables
-# ===========================
-backend/.env
-
-# ===========================
-# Virtual Environment
-# ===========================
-backend/.venv/
-
-# ===========================
-# Python Cache
-# ===========================
-**/__pycache__/
+# Python
+__pycache__/
 *.py[cod]
+*.pyo
+*.pyd
 
-# ===========================
-# SQLite Database
-# ===========================
-backend/database/*.db
+# Virtual Environment
+.venv/
+venv/
+env/
 
-# ===========================
-# VS Code
-# ===========================
+# Environment Variables / Secrets
+.env
+backend/.env
+*.env
+
+# Database Files
+*.db
+*.sqlite
+*.sqlite3
+
+# IDE / Editor
 .vscode/
+.idea/
 
-# ===========================
-# Logs
-# ===========================
-*.log
-gcm-diagnose.log
-
-# ===========================
-# OS Files
-# ===========================
-# OS Files
-# ===========================
+# Operating System Files
 .DS_Store
 Thumbs.db
+
+# Logs
+*.log
+
+# Temporary Files
+*.tmp
+*.temp
+
+# Flask
+instance/
+
+# Test / Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Build / Distribution
+build/
+dist/
+*.egg-info/

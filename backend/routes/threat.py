@@ -1,24 +1,47 @@
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, flash
 from flask_login import login_required
 
 from services.threat_service import check_ip_reputation
 
-threat_bp = Blueprint("threat", __name__)
 
+# ==========================================================
+# Threat Intelligence Blueprint
+# ==========================================================
+
+threat_bp = Blueprint(
+    "threat",
+    __name__
+)
+
+
+# ==========================================================
+# Threat Intelligence
+# ==========================================================
 
 @threat_bp.route("/threat", methods=["GET", "POST"])
 @login_required
 def threat():
 
     result = None
+    ip_address = ""
 
     if request.method == "POST":
 
-        ip = request.form.get("ip")
+        ip_address = request.form.get("ip", "").strip()
 
-        result = check_ip_reputation(ip)
+        if not ip_address:
+
+            flash(
+                "Please enter an IP address.",
+                "warning"
+            )
+
+        else:
+
+            result = check_ip_reputation(ip_address)
 
     return render_template(
         "threat.html",
-        result=result
+        result=result,
+        ip_address=ip_address
     )

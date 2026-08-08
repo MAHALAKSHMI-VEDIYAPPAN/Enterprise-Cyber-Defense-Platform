@@ -8,8 +8,12 @@ class ScanForm(FlaskForm):
     target = StringField(
         "Target IP Address",
         validators=[
-            DataRequired(),
-            IPAddress(ipv4=True)
+            DataRequired(
+                message="Please enter a target IP address."
+            ),
+            IPAddress(
+                ipv4=True
+            )
         ]
     )
 
