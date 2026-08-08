@@ -12,6 +12,7 @@ An enterprise-oriented cybersecurity platform developed using **Python**, **Flas
 - [Technology Stack](#-technology-stack)
 - [Security Integrations](#-security-integrations)
 - [System Architecture](#-system-architecture)
+- [Architecture Flow](#-architecture-flow)
 - [Architecture Documentation](#-architecture-documentation)
 - [Project Structure](#-project-structure)
 - [Installation](#-installation)
@@ -48,15 +49,15 @@ ECDP combines **web application development, cybersecurity tools, external secur
 
 The primary objectives of the Enterprise Cyber Defense Platform are:
 
-- To provide a centralized security management interface
-- To simplify enterprise asset management
-- To perform vulnerability assessment using Nmap
-- To analyze malicious or suspicious indicators using VirusTotal
-- To retrieve vulnerability information from the NVD database
-- To provide structured incident management
-- To demonstrate practical SOC workflows
-- To securely integrate external cybersecurity APIs
-- To provide a scalable foundation for future security automation and AI capabilities
+- Provide a centralized security management interface
+- Simplify enterprise asset management
+- Perform vulnerability assessment using Nmap
+- Analyze suspicious indicators using VirusTotal
+- Retrieve vulnerability information from the NVD
+- Provide structured incident management
+- Demonstrate practical SOC workflows
+- Integrate external cybersecurity APIs securely
+- Provide a scalable foundation for future security automation and AI capabilities
 
 ---
 
@@ -86,7 +87,7 @@ The dashboard provides a centralized overview of security operations.
 - Total Asset Statistics
 - Scan Statistics
 - Incident Overview
-- Security Score
+- Security Overview
 - Centralized Security Monitoring
 - Security Module Navigation
 
@@ -94,7 +95,7 @@ The dashboard provides a centralized overview of security operations.
 
 ## 💻 3. Asset Inventory
 
-The Asset Inventory module allows analysts to maintain information about enterprise assets.
+The Asset Inventory module allows analysts to manage enterprise assets.
 
 ### Features
 
@@ -230,52 +231,28 @@ The Incident Response module provides structured incident tracking.
 
 The Enterprise Cyber Defense Platform follows a modular architecture where the Flask web application acts as the central application layer.
 
-```text
-                         ┌──────────────────────┐
-                         │   SOC / Security     │
-                         │       Analyst        │
-                         └──────────┬───────────┘
-                                    │
-                                    ▼
-                         ┌──────────────────────┐
-                         │ Flask Web Application │
-                         │        ECDP          │
-                         └──────────┬───────────┘
-                                    │
-             ┌──────────────────────┼──────────────────────┐
-             │                      │                      │
-             ▼                      ▼                      ▼
-      ┌──────────────┐       ┌──────────────┐       ┌──────────────┐
-      │ Authentication│       │  Dashboard   │       │    Asset     │
-      │ Flask-Login   │       │              │       │  Inventory   │
-      └──────────────┘       └──────┬───────┘       └──────────────┘
-                                    │
-                                    ▼
-                         ┌──────────────────────┐
-                         │   Security Modules   │
-                         └──────────┬───────────┘
-                                    │
-             ┌──────────────────────┼──────────────────────┐
-             │                      │                      │
-             ▼                      ▼                      ▼
-      ┌──────────────┐       ┌──────────────┐       ┌──────────────┐
-      │ Vulnerability│       │    Threat    │       │     CVE      │
-      │    Scanner   │       │ Intelligence │       │ Intelligence │
-      │    (Nmap)    │       │ (VirusTotal) │       │   (NVD API)  │
-      └──────────────┘       └──────────────┘       └──────────────┘
-             │                      │                      │
-             └──────────────────────┼──────────────────────┘
-                                    ▼
-                         ┌──────────────────────┐
-                         │   Incident Response  │
-                         └──────────┬───────────┘
-                                    │
-                                    ▼
-                         ┌──────────────────────┐
-                         │    SQLAlchemy ORM    │
-                         └──────────┬───────────┘
-                                    │
-                                    ▼
-                         ┌──────────────────────┐
-                         │    SQLite Database   │
-                         └──────────────────────┘
+The high-level system architecture is:
+
+```mermaid
+flowchart TB
+
+    A["SOC / Security Analyst"] --> B["Flask Web Application<br/>ECDP"]
+
+    B --> C["Authentication<br/>Flask-Login"]
+    B --> D["Security Dashboard"]
+    B --> E["Asset Inventory"]
+
+    D --> F["Security Modules"]
+
+    F --> G["Vulnerability Scanner<br/>Nmap"]
+    F --> H["Threat Intelligence<br/>VirusTotal API"]
+    F --> I["CVE Intelligence<br/>NVD API"]
+
+    G --> J["Security Analysis"]
+    H --> J
+    I --> J
+
+    J --> K["Incident Response"]
+
+    K --> L["SQLAlchemy ORM"]
+    L --> M[("SQLite Database")]
