@@ -1,9 +1,28 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField
-from wtforms.validators import DataRequired, IPAddress
+
+from wtforms import (
+    StringField,
+    SelectField,
+    SubmitField
+)
+
+from wtforms.validators import (
+    DataRequired,
+    IPAddress
+)
 
 
 class ScanForm(FlaskForm):
+
+    asset_id = SelectField(
+        "Select Asset",
+        coerce=int,
+        validators=[
+            DataRequired(
+                message="Please select an asset."
+            )
+        ]
+    )
 
     target = StringField(
         "Target IP Address",
@@ -17,4 +36,6 @@ class ScanForm(FlaskForm):
         ]
     )
 
-    submit = SubmitField("Start Scan")
+    submit = SubmitField(
+        "Start Scan"
+    )

@@ -13,7 +13,12 @@ from wtforms.validators import (
 )
 
 
+# ==========================================================
+# Incident Form
+# ==========================================================
+
 class IncidentForm(FlaskForm):
+
 
     # ======================================================
     # Incident Title
@@ -67,25 +72,13 @@ class IncidentForm(FlaskForm):
 
         choices=[
 
-            (
-                "Low",
-                "Low"
-            ),
+            ("Low", "Low"),
 
-            (
-                "Medium",
-                "Medium"
-            ),
+            ("Medium", "Medium"),
 
-            (
-                "High",
-                "High"
-            ),
+            ("High", "High"),
 
-            (
-                "Critical",
-                "Critical"
-            )
+            ("Critical", "Critical")
 
         ],
 
@@ -104,25 +97,13 @@ class IncidentForm(FlaskForm):
 
         choices=[
 
-            (
-                "Open",
-                "Open"
-            ),
+            ("Open", "Open"),
 
-            (
-                "In Progress",
-                "In Progress"
-            ),
+            ("In Progress", "In Progress"),
 
-            (
-                "Resolved",
-                "Resolved"
-            ),
+            ("Resolved", "Resolved"),
 
-            (
-                "Closed",
-                "Closed"
-            )
+            ("Closed", "Closed")
 
         ],
 
@@ -166,7 +147,7 @@ class IncidentForm(FlaskForm):
 
 
     # ======================================================
-    # Resolution
+    # Resolution / Remediation
     # ======================================================
 
     resolution = TextAreaField(

@@ -1,38 +1,133 @@
-from extensions import db
 from datetime import datetime
 
+from extensions import db
+
+
+# ==========================================================
+# Incident Model
+# ==========================================================
 
 class Incident(db.Model):
+
     __tablename__ = "incidents"
 
-    id = db.Column(db.Integer, primary_key=True)
 
-    incident_id = db.Column(db.String(20), unique=True)
+    # ======================================================
+    # Primary Key
+    # ======================================================
 
-    title = db.Column(db.String(200), nullable=False)
+    id = db.Column(
+        db.Integer,
+        primary_key=True
+    )
 
-    asset = db.Column(db.String(100))
 
-    severity = db.Column(db.String(20))
+    # ======================================================
+    # Incident ID
+    # ======================================================
 
-    status = db.Column(db.String(30), default="Open")
+    incident_id = db.Column(
+        db.String(20),
+        unique=True,
+        nullable=False
+    )
 
-    assigned_to = db.Column(db.String(100))
 
-    description = db.Column(db.Text)
+    # ======================================================
+    # Incident Title
+    # ======================================================
 
-    resolution = db.Column(db.Text)
+    title = db.Column(
+        db.String(200),
+        nullable=False
+    )
+
+
+    # ======================================================
+    # Affected Asset
+    # ======================================================
+
+    asset = db.Column(
+        db.String(100)
+    )
+
+
+    # ======================================================
+    # Severity
+    # ======================================================
+
+    severity = db.Column(
+        db.String(20),
+        nullable=False,
+        default="Medium"
+    )
+
+
+    # ======================================================
+    # Status
+    # ======================================================
+
+    status = db.Column(
+        db.String(30),
+        nullable=False,
+        default="Open"
+    )
+
+
+    # ======================================================
+    # Assigned Analyst
+    # ======================================================
+
+    assigned_to = db.Column(
+        db.String(100)
+    )
+
+
+    # ======================================================
+    # Description
+    # ======================================================
+
+    description = db.Column(
+        db.Text
+    )
+
+
+    # ======================================================
+    # Resolution
+    # ======================================================
+
+    resolution = db.Column(
+        db.Text
+    )
+
+
+    # ======================================================
+    # Created Timestamp
+    # ======================================================
 
     created_at = db.Column(
         db.DateTime,
-        default=datetime.utcnow
+        default=datetime.utcnow,
+        nullable=False
     )
+
+
+    # ======================================================
+    # Updated Timestamp
+    # ======================================================
 
     updated_at = db.Column(
         db.DateTime,
         default=datetime.utcnow,
-        onupdate=datetime.utcnow
+        onupdate=datetime.utcnow,
+        nullable=False
     )
 
+
+    # ======================================================
+    # String Representation
+    # ======================================================
+
     def __repr__(self):
+
         return f"<Incident {self.incident_id}>"

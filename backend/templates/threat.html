@@ -4,394 +4,1073 @@
 
 {% block content %}
 
-<div class="container-fluid">
+<!-- ==========================================================
+     Page Header
+========================================================== -->
 
-    <!-- =========================
-         Page Header
-    ========================== -->
+<div class="mb-4">
 
-    <div class="mb-4">
+    <h2 class="fw-bold mb-1">
+        <i class="bi bi-globe2 me-2"></i>
+        Threat Intelligence
+    </h2>
 
-        <h2 class="fw-bold mb-1">
+    <p class="text-muted mb-0">
+        Investigate IP reputation, threat indicators, network
+        intelligence, and security engine detections using VirusTotal.
+    </p>
 
-            <i class="bi bi-globe2 me-2"></i>
-
-            Threat Intelligence
-
-        </h2>
-
-        <p class="text-muted mb-0">
-
-            Investigate IP reputation and analyze threat intelligence
-            using VirusTotal.
-
-        </p>
-
-    </div>
+</div>
 
 
-    <!-- =========================
-         Threat Analysis Form
-    ========================== -->
+<!-- ==========================================================
+     IP Analysis Form
+========================================================== -->
 
-    <div class="card shadow border-0 mb-4">
+{% if current_user.role in ["Admin", "Analyst"] %}
 
-        <div class="card-header">
+<div class="card shadow border-0 mb-4">
 
-            <h5 class="mb-0 fw-bold">
+    <div class="card-header">
 
-                <i class="bi bi-search me-2"></i>
+        <h5 class="mb-0 fw-bold">
 
-                IP Reputation Analysis
+            <i class="bi bi-search me-2"></i>
 
-            </h5>
+            IP Reputation Analysis
 
-        </div>
-
-        <div class="card-body">
-
-            <form method="POST">
-
-                <div class="row g-3">
-
-                    <div class="col-lg-10">
-
-                        <label for="ip" class="form-label">
-                            IP Address
-                        </label>
-
-                        <input type="text" id="ip" name="ip" class="form-control" value="{{ ip_address }}"
-                            placeholder="Example: 8.8.8.8" required>
-
-                        <small class="text-muted">
-
-                            Enter an IP address for authorized
-                            security analysis.
-
-                        </small>
-
-                    </div>
-
-                    <div class="col-lg-2 d-flex align-items-end">
-
-                        <button type="submit" class="btn btn-primary w-100">
-
-                            <i class="bi bi-search me-1"></i>
-
-                            Analyze
-
-                        </button>
-
-                    </div>
-
-                </div>
-
-            </form>
-
-        </div>
+        </h5>
 
     </div>
 
+    <div class="card-body">
 
-    <!-- =========================
-         Analysis Result
-    ========================== -->
+        <form method="POST">
 
-    {% if result %}
+            {{ form.hidden_tag() }}
 
-    {% if result.success %}
+            <div class="row g-3">
 
-    <!-- =========================
-             Risk Summary
-        ========================== -->
+                <div class="col-lg-10">
 
-    <div class="row g-4 mb-4">
+                    <label for="ip" class="form-label">
+                        IP Address
+                    </label>
 
-        <!-- Risk Level -->
-
-        <div class="col-md-4">
-
-            <div class="card shadow border-0 h-100">
-
-                <div class="card-body">
-
-                    <div class="d-flex justify-content-between align-items-center">
-
-                        <div>
-
-                            <p class="text-muted mb-1">
-                                Risk Level
-                            </p>
-
-                            {% if result.risk_level == "High" %}
-
-                            <h3 class="fw-bold text-danger mb-0">
-                                High
-                            </h3>
-
-                            {% elif result.risk_level == "Medium" %}
-
-                            <h3 class="fw-bold text-warning mb-0">
-                                Medium
-                            </h3>
-
-                            {% else %}
-
-                            <h3 class="fw-bold text-success mb-0">
-                                Low
-                            </h3>
-
-                            {% endif %}
-
-                        </div>
-
-                        <i class="bi bi-shield-exclamation fs-1
-                            {% if result.risk_level == 'High' %}
-                                text-danger
-                            {% elif result.risk_level == 'Medium' %}
-                                text-warning
-                            {% else %}
-                                text-success
-                            {% endif %}
-                            "></i>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <!-- IP Address -->
-
-        <div class="col-md-4">
-
-            <div class="card shadow border-0 h-100">
-
-                <div class="card-body">
-
-                    <p class="text-muted mb-1">
-                        Analyzed IP
-                    </p>
-
-                    <h4 class="fw-bold mb-0">
-                        {{ result.ip }}
-                    </h4>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <!-- Total Engines -->
-
-        <div class="col-md-4">
-
-            <div class="card shadow border-0 h-100">
-
-                <div class="card-body">
-
-                    <p class="text-muted mb-1">
-                        Analysis Results
-                    </p>
-
-                    <h3 class="fw-bold mb-0">
-                        {{ result.total }}
-                    </h3>
+                    <input type="text" id="ip" name="ip" class="form-control" value="{{ ip_address }}"
+                        placeholder="Example: 8.8.8.8" required>
 
                     <small class="text-muted">
-                        Security engine results
+                        Enter an IP address for authorized security analysis.
                     </small>
 
                 </div>
 
-            </div>
 
-        </div>
+                <div class="col-lg-2 d-flex align-items-end">
 
-    </div>
+                    <button type="submit" class="btn btn-primary w-100">
 
+                        <i class="bi bi-search me-1"></i>
 
-    <!-- =========================
-             VirusTotal Results
-        ========================== -->
+                        Analyze
 
-    <div class="card shadow border-0">
+                    </button>
 
-        <div class="card-header">
-
-            <h5 class="mb-0 fw-bold">
-
-                <i class="bi bi-bar-chart-line me-2"></i>
-
-                VirusTotal Analysis
-
-            </h5>
-
-        </div>
-
-        <div class="card-body">
-
-            <div class="table-responsive">
-
-                <table class="table table-hover align-middle">
-
-                    <thead>
-
-                        <tr>
-
-                            <th>
-                                Detection Category
-                            </th>
-
-                            <th>
-                                Count
-                            </th>
-
-                            <th>
-                                Interpretation
-                            </th>
-
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                        <!-- Malicious -->
-
-                        <tr>
-
-                            <td>
-
-                                <span class="badge bg-danger">
-                                    Malicious
-                                </span>
-
-                            </td>
-
-                            <td class="fw-bold">
-                                {{ result.malicious }}
-                            </td>
-
-                            <td>
-                                Security engines that identified
-                                the IP as malicious.
-                            </td>
-
-                        </tr>
-
-
-                        <!-- Suspicious -->
-
-                        <tr>
-
-                            <td>
-
-                                <span class="badge bg-warning text-dark">
-                                    Suspicious
-                                </span>
-
-                            </td>
-
-                            <td class="fw-bold">
-                                {{ result.suspicious }}
-                            </td>
-
-                            <td>
-                                Security engines that reported
-                                suspicious activity.
-                            </td>
-
-                        </tr>
-
-
-                        <!-- Harmless -->
-
-                        <tr>
-
-                            <td>
-
-                                <span class="badge bg-success">
-                                    Harmless
-                                </span>
-
-                            </td>
-
-                            <td class="fw-bold">
-                                {{ result.harmless }}
-                            </td>
-
-                            <td>
-                                Security engines that found
-                                no malicious activity.
-                            </td>
-
-                        </tr>
-
-
-                        <!-- Undetected -->
-
-                        <tr>
-
-                            <td>
-
-                                <span class="badge bg-secondary">
-                                    Undetected
-                                </span>
-
-                            </td>
-
-                            <td class="fw-bold">
-                                {{ result.undetected }}
-                            </td>
-
-                            <td>
-                                Engines that did not detect
-                                a classification.
-                            </td>
-
-                        </tr>
-
-                    </tbody>
-
-                </table>
+                </div>
 
             </div>
 
-        </div>
+        </form>
 
     </div>
-
-
-    {% else %}
-
-    <!-- =========================
-             Error Result
-        ========================== -->
-
-    <div class="alert alert-danger shadow-sm">
-
-        <i class="bi bi-exclamation-triangle me-2"></i>
-
-        <strong>Threat Analysis Failed</strong>
-
-        <div class="mt-1">
-
-            {{ result.message }}
-
-        </div>
-
-    </div>
-
-    {% endif %}
-
-    {% endif %}
 
 </div>
+
+{% else %}
+
+<!-- ==========================================================
+     Viewer Read-Only Notice
+========================================================== -->
+
+<div class="alert alert-info shadow-sm mb-4">
+
+    <i class="bi bi-eye me-2"></i>
+
+    <strong>Read-only access:</strong>
+
+    You can view Threat Intelligence information,
+    but only Admins and Analysts can perform IP reputation analysis.
+
+</div>
+
+{% endif %}
+
+<!-- ==========================================================
+     Analysis Result
+========================================================== -->
+
+{% if result %}
+
+{% if result.success %}
+
+
+<!-- ==========================================================
+     1. Threat Overview
+========================================================== -->
+
+<div class="row g-4 mb-4">
+
+
+    <!-- Risk Level -->
+
+    <div class="col-md-3">
+
+        <div class="card shadow border-0 h-100">
+
+            <div class="card-body">
+
+                <p class="text-muted mb-1">
+                    Risk Level
+                </p>
+
+                {% if result.risk_level == "Critical" %}
+
+                <h3 class="fw-bold text-danger mb-0">
+                    Critical
+                </h3>
+
+                {% elif result.risk_level == "High" %}
+
+                <h3 class="fw-bold text-danger mb-0">
+                    High
+                </h3>
+
+                {% elif result.risk_level == "Medium" %}
+
+                <h3 class="fw-bold text-warning mb-0">
+                    Medium
+                </h3>
+
+                {% else %}
+
+                <h3 class="fw-bold text-success mb-0">
+                    Low
+                </h3>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ECDP Risk Score -->
+
+    <div class="col-md-3">
+
+        <div class="card shadow border-0 h-100">
+
+            <div class="card-body">
+
+                <p class="text-muted mb-1">
+                    ECDP Risk Score
+                </p>
+
+                <h3 class="fw-bold mb-0">
+
+                    {{ result.risk_score }}
+
+                    <small class="text-muted">
+                        / 100
+                    </small>
+
+                </h3>
+
+                <small class="text-muted">
+                    Application-level risk score
+                </small>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Detection Rate -->
+
+    <div class="col-md-3">
+
+        <div class="card shadow border-0 h-100">
+
+            <div class="card-body">
+
+                <p class="text-muted mb-1">
+                    Detection Rate
+                </p>
+
+                <h3 class="fw-bold mb-0">
+
+                    {{ result.detection_rate }}%
+
+                </h3>
+
+                <small class="text-muted">
+                    Malicious + suspicious detections
+                </small>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- IP Address -->
+
+    <div class="col-md-3">
+
+        <div class="card shadow border-0 h-100">
+
+            <div class="card-body">
+
+                <p class="text-muted mb-1">
+                    Analyzed IP
+                </p>
+
+                <h5 class="fw-bold mb-0">
+
+                    {{ result.ip }}
+
+                </h5>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ==========================================================
+     2. Threat Assessment
+========================================================== -->
+
+<div class="card shadow border-0 mb-4">
+
+    <div class="card-header">
+
+        <h5 class="mb-0 fw-bold">
+
+            <i class="bi bi-shield-exclamation me-2"></i>
+
+            Threat Assessment
+
+        </h5>
+
+    </div>
+
+    <div class="card-body">
+
+        {% if result.risk_level == "Critical" %}
+
+        <div class="alert alert-danger mb-0">
+
+            <i class="bi bi-exclamation-octagon-fill me-2"></i>
+
+            <strong>Critical Threat</strong>
+
+            <div class="mt-2">
+                {{ result.assessment }}
+            </div>
+
+        </div>
+
+        {% elif result.risk_level == "High" %}
+
+        <div class="alert alert-danger mb-0">
+
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+
+            <strong>High Risk</strong>
+
+            <div class="mt-2">
+                {{ result.assessment }}
+            </div>
+
+        </div>
+
+        {% elif result.risk_level == "Medium" %}
+
+        <div class="alert alert-warning mb-0">
+
+            <i class="bi bi-exclamation-circle-fill me-2"></i>
+
+            <strong>Medium Risk</strong>
+
+            <div class="mt-2">
+                {{ result.assessment }}
+            </div>
+
+        </div>
+
+        {% else %}
+
+        <div class="alert alert-success mb-0">
+
+            <i class="bi bi-check-circle-fill me-2"></i>
+
+            <strong>Low Risk</strong>
+
+            <div class="mt-2">
+                {{ result.assessment }}
+            </div>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+<!-- ==========================================================
+     3. VirusTotal Detection Statistics
+========================================================== -->
+
+<div class="card shadow border-0 mb-4">
+
+    <div class="card-header">
+
+        <h5 class="mb-0 fw-bold">
+
+            <i class="bi bi-bar-chart-line me-2"></i>
+
+            VirusTotal Analysis
+
+        </h5>
+
+    </div>
+
+    <div class="card-body">
+
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle mb-0">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Detection Category
+                        </th>
+
+                        <th>
+                            Count
+                        </th>
+
+                        <th>
+                            Interpretation
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+
+                    <!-- Malicious -->
+
+                    <tr>
+
+                        <td>
+
+                            <span class="badge bg-danger">
+                                Malicious
+                            </span>
+
+                        </td>
+
+                        <td class="fw-bold">
+
+                            {{ result.malicious }}
+
+                        </td>
+
+                        <td>
+
+                            Security engines that identified
+                            the IP as malicious.
+
+                        </td>
+
+                    </tr>
+
+
+                    <!-- Suspicious -->
+
+                    <tr>
+
+                        <td>
+
+                            <span class="badge bg-warning text-dark">
+                                Suspicious
+                            </span>
+
+                        </td>
+
+                        <td class="fw-bold">
+
+                            {{ result.suspicious }}
+
+                        </td>
+
+                        <td>
+
+                            Security engines that reported
+                            suspicious activity.
+
+                        </td>
+
+                    </tr>
+
+
+                    <!-- Harmless -->
+
+                    <tr>
+
+                        <td>
+
+                            <span class="badge bg-success">
+                                Harmless
+                            </span>
+
+                        </td>
+
+                        <td class="fw-bold">
+
+                            {{ result.harmless }}
+
+                        </td>
+
+                        <td>
+
+                            Security engines that found
+                            no malicious activity.
+
+                        </td>
+
+                    </tr>
+
+
+                    <!-- Undetected -->
+
+                    <tr>
+
+                        <td>
+
+                            <span class="badge bg-secondary">
+                                Undetected
+                            </span>
+
+                        </td>
+
+                        <td class="fw-bold">
+
+                            {{ result.undetected }}
+
+                        </td>
+
+                        <td>
+
+                            Engines that did not detect
+                            a classification.
+
+                        </td>
+
+                    </tr>
+
+
+                    <!-- Timeout -->
+
+                    <tr>
+
+                        <td>
+
+                            <span class="badge bg-dark">
+                                Timeout
+                            </span>
+
+                        </td>
+
+                        <td class="fw-bold">
+
+                            {{ result.timeout }}
+
+                        </td>
+
+                        <td>
+
+                            Security engines that did not
+                            complete their analysis.
+
+                        </td>
+
+                    </tr>
+
+
+                    <!-- Total -->
+
+                    <tr class="table-light">
+
+                        <td>
+                            <strong>Total Engines</strong>
+                        </td>
+
+                        <td class="fw-bold">
+
+                            {{ result.total }}
+
+                        </td>
+
+                        <td>
+
+                            Total available analysis results.
+
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ==========================================================
+     4. IP Infrastructure Intelligence
+========================================================== -->
+
+<div class="card shadow border-0 mb-4">
+
+    <div class="card-header">
+
+        <h5 class="mb-0 fw-bold">
+
+            <i class="bi bi-diagram-3 me-2"></i>
+
+            IP Infrastructure Intelligence
+
+        </h5>
+
+    </div>
+
+    <div class="card-body">
+
+        <div class="row g-4">
+
+
+            <!-- Country -->
+
+            <div class="col-md-4">
+
+                <p class="text-muted mb-1">
+                    Country
+                </p>
+
+                <h6 class="fw-bold">
+
+                    {{ result.country }}
+
+                </h6>
+
+            </div>
+
+
+            <!-- Continent -->
+
+            <div class="col-md-4">
+
+                <p class="text-muted mb-1">
+                    Continent
+                </p>
+
+                <h6 class="fw-bold">
+
+                    {{ result.continent }}
+
+                </h6>
+
+            </div>
+
+
+            <!-- ASN -->
+
+            <div class="col-md-4">
+
+                <p class="text-muted mb-1">
+                    ASN
+                </p>
+
+                <h6 class="fw-bold">
+
+                    {{ result.asn }}
+
+                </h6>
+
+            </div>
+
+
+            <!-- Organization -->
+
+            <div class="col-md-6">
+
+                <p class="text-muted mb-1">
+                    Network Owner / Organization
+                </p>
+
+                <h6 class="fw-bold">
+
+                    {{ result.as_owner }}
+
+                </h6>
+
+            </div>
+
+
+            <!-- Network -->
+
+            <div class="col-md-6">
+
+                <p class="text-muted mb-1">
+                    Network
+                </p>
+
+                <h6 class="fw-bold">
+
+                    {{ result.network }}
+
+                </h6>
+
+            </div>
+
+
+            <!-- Regional Internet Registry -->
+
+            <div class="col-md-6">
+
+                <p class="text-muted mb-1">
+                    Regional Internet Registry
+                </p>
+
+                <h6 class="fw-bold">
+
+                    {{ result.regional_internet_registry }}
+
+                </h6>
+
+            </div>
+
+
+            <!-- VirusTotal Reputation -->
+
+            <div class="col-md-6">
+
+                <p class="text-muted mb-1">
+                    VirusTotal Reputation
+                </p>
+
+                <h6 class="fw-bold">
+
+                    {{ result.reputation }}
+
+                </h6>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ==========================================================
+     5. Community Reputation
+========================================================== -->
+
+<div class="card shadow border-0 mb-4">
+
+    <div class="card-header">
+
+        <h5 class="mb-0 fw-bold">
+
+            <i class="bi bi-people me-2"></i>
+
+            Community Reputation
+
+        </h5>
+
+    </div>
+
+    <div class="card-body">
+
+        <div class="row g-4">
+
+
+            <!-- Community Malicious -->
+
+            <div class="col-md-6">
+
+                <div class="border rounded p-3">
+
+                    <p class="text-muted mb-1">
+                        Community Malicious Votes
+                    </p>
+
+                    <h3 class="fw-bold text-danger mb-0">
+
+                        {{ result.community_votes.malicious }}
+
+                    </h3>
+
+                </div>
+
+            </div>
+
+
+            <!-- Community Harmless -->
+
+            <div class="col-md-6">
+
+                <div class="border rounded p-3">
+
+                    <p class="text-muted mb-1">
+                        Community Harmless Votes
+                    </p>
+
+                    <h3 class="fw-bold text-success mb-0">
+
+                        {{ result.community_votes.harmless }}
+
+                    </h3>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ==========================================================
+     6. Threat Intelligence Tags
+========================================================== -->
+
+<div class="card shadow border-0 mb-4">
+
+    <div class="card-header">
+
+        <h5 class="mb-0 fw-bold">
+
+            <i class="bi bi-tags me-2"></i>
+
+            Threat Intelligence Tags
+
+        </h5>
+
+    </div>
+
+    <div class="card-body">
+
+        {% if result.tags %}
+
+        {% for tag in result.tags %}
+
+        <span class="badge bg-secondary me-2 mb-2">
+
+            {{ tag }}
+
+        </span>
+
+        {% endfor %}
+
+        {% else %}
+
+        <span class="text-muted">
+
+            No threat intelligence tags reported.
+
+        </span>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+<!-- ==========================================================
+     7. Analysis Information
+========================================================== -->
+
+<div class="card shadow border-0 mb-4">
+
+    <div class="card-header">
+
+        <h5 class="mb-0 fw-bold">
+
+            <i class="bi bi-clock-history me-2"></i>
+
+            Analysis Information
+
+        </h5>
+
+    </div>
+
+    <div class="card-body">
+
+        <div class="row g-4">
+
+
+            <!-- Last Analysis -->
+
+            <div class="col-md-6">
+
+                <p class="text-muted mb-1">
+                    Last Analysis
+                </p>
+
+                <h6 class="fw-bold">
+
+                    {% if result.last_analysis_date %}
+
+                    {{ result.last_analysis_date }}
+
+                    {% else %}
+
+                    Not available
+
+                    {% endif %}
+
+                </h6>
+
+            </div>
+
+
+            <!-- Last Modification -->
+
+            <div class="col-md-6">
+
+                <p class="text-muted mb-1">
+                    Last Modification
+                </p>
+
+                <h6 class="fw-bold">
+
+                    {% if result.last_modification_date %}
+
+                    {{ result.last_modification_date }}
+
+                    {% else %}
+
+                    Not available
+
+                    {% endif %}
+
+                </h6>
+
+            </div>
+
+
+            <!-- WHOIS -->
+
+            <div class="col-md-6">
+
+                <p class="text-muted mb-1">
+                    WHOIS Information
+                </p>
+
+                {% if result.whois_available %}
+
+                <span class="badge bg-success">
+                    Available
+                </span>
+
+                {% else %}
+
+                <span class="badge bg-secondary">
+                    Not Available
+                </span>
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- IP -->
+
+            <div class="col-md-6">
+
+                <p class="text-muted mb-1">
+                    Analyzed Address
+                </p>
+
+                <h6 class="fw-bold">
+
+                    {{ result.ip }}
+
+                </h6>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ==========================================================
+     8. SOC Recommendation
+========================================================== -->
+
+<div class="card shadow border-0 mb-4">
+
+    <div class="card-header">
+
+        <h5 class="mb-0 fw-bold">
+
+            <i class="bi bi-shield-check me-2"></i>
+
+            SOC Recommendation
+
+        </h5>
+
+    </div>
+
+    <div class="card-body">
+
+        {% if result.risk_level == "Critical" %}
+
+        <div class="alert alert-danger mb-0">
+
+            <strong>
+                Immediate Action Required
+            </strong>
+
+            <p class="mb-0 mt-2">
+
+                Investigate the IP immediately, validate
+                associated assets, review related incidents,
+                and consider containment or blocking based
+                on your organization's security policy.
+
+            </p>
+
+        </div>
+
+        {% elif result.risk_level == "High" %}
+
+        <div class="alert alert-danger mb-0">
+
+            <strong>
+                High Priority Investigation
+            </strong>
+
+            <p class="mb-0 mt-2">
+
+                Investigate the IP address, identify any
+                affected assets, review associated activity,
+                and consider blocking or containment if the
+                malicious activity is confirmed.
+
+            </p>
+
+        </div>
+
+        {% elif result.risk_level == "Medium" %}
+
+        <div class="alert alert-warning mb-0">
+
+            <strong>
+                Investigation Recommended
+            </strong>
+
+            <p class="mb-0 mt-2">
+
+                Perform additional investigation and correlate
+                this IP with network logs, assets, and security
+                incidents.
+
+            </p>
+
+        </div>
+
+        {% else %}
+
+        <div class="alert alert-success mb-0">
+
+            <strong>
+                Continue Monitoring
+            </strong>
+
+            <p class="mb-0 mt-2">
+
+                No significant malicious activity was detected.
+                Continue regular monitoring and reassess the IP
+                if new security indicators appear.
+
+            </p>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+{% else %}
+
+<!-- ==========================================================
+     Error Result
+========================================================== -->
+
+<div class="alert alert-danger shadow-sm">
+
+    <i class="bi bi-exclamation-triangle me-2"></i>
+
+    <strong>
+        Threat Analysis Failed
+    </strong>
+
+    <div class="mt-1">
+
+        {{ result.message }}
+
+    </div>
+
+</div>
+
+{% endif %}
+
+{% endif %}
 
 {% endblock %}

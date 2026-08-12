@@ -1,0 +1,839 @@
+{% extends "base.html" %}
+
+{% block title %}Security Reports - ECDP{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <!-- ==================================================
+         Header
+    =================================================== -->
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+
+            <h2 class="fw-bold mb-1">
+
+                <i class="bi bi-file-earmark-bar-graph me-2"></i>
+
+                Security Reports
+
+            </h2>
+
+            <p class="text-muted mb-0">
+
+                Centralized security posture and operational
+                overview of the Enterprise Cyber Defense Platform.
+
+            </p>
+
+        </div>
+
+        <div>
+
+            <a href="{{ url_for('reports.reports_pdf') }}" class="btn btn-primary">
+
+                <i class="bi bi-file-earmark-pdf me-2"></i>
+
+                Generate PDF Report
+
+            </a>
+
+        </div>
+
+    </div>
+
+    <!-- ==================================================
+         Security Score
+    =================================================== -->
+
+    <div class="card shadow border-0 mb-4">
+
+        <div class="card-body">
+
+            <div class="row align-items-center">
+
+                <div class="col-md-8">
+
+                    <h5 class="fw-bold">
+                        Overall Security Posture
+                    </h5>
+
+                    <p class="text-muted mb-3">
+
+                        Application-level security posture
+                        calculated from current asset,
+                        scan, and incident data.
+
+                    </p>
+
+                    <div class="progress" style="height: 20px;">
+
+                        <div class="progress-bar
+                            {% if report.security_score >= 80 %}
+                                bg-success
+                            {% elif report.security_score >= 60 %}
+                                bg-warning
+                            {% else %}
+                                bg-danger
+                            {% endif %}" role="progressbar" style="width: {{ report.security_score }}%;">
+
+                            {{ report.security_score }}%
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-4 text-center">
+
+                    <h1 class="display-4 fw-bold">
+
+                        {{ report.security_score }}%
+
+                    </h1>
+
+                    {% if report.security_score >= 80 %}
+
+                    <span class="badge bg-success">
+                        Good Security Posture
+                    </span>
+
+                    {% elif report.security_score >= 60 %}
+
+                    <span class="badge bg-warning text-dark">
+                        Moderate Security Posture
+                    </span>
+
+                    {% else %}
+
+                    <span class="badge bg-danger">
+                        High Risk Posture
+                    </span>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==================================================
+         Summary Cards
+    =================================================== -->
+
+    <div class="row g-4 mb-4">
+
+        <!-- Assets -->
+
+        <div class="col-xl-3 col-md-6">
+
+            <div class="card shadow border-0 h-100">
+
+                <div class="card-body">
+
+                    <div class="d-flex
+                        justify-content-between
+                        align-items-center">
+
+                        <div>
+
+                            <p class="text-muted mb-1">
+                                Total Assets
+                            </p>
+
+                            <h2 class="fw-bold">
+                                {{ report.assets.total }}
+                            </h2>
+
+                        </div>
+
+                        <i class="bi bi-pc-display
+                           fs-1 text-primary"></i>
+
+                    </div>
+
+                    <small class="text-muted">
+
+                        Active:
+                        {{ report.assets.active }}
+
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Scans -->
+
+        <div class="col-xl-3 col-md-6">
+
+            <div class="card shadow border-0 h-100">
+
+                <div class="card-body">
+
+                    <div class="d-flex
+                        justify-content-between
+                        align-items-center">
+
+                        <div>
+
+                            <p class="text-muted mb-1">
+                                Total Scans
+                            </p>
+
+                            <h2 class="fw-bold">
+                                {{ report.scans.total }}
+                            </h2>
+
+                        </div>
+
+                        <i class="bi bi-shield-check
+                           fs-1 text-success"></i>
+
+                    </div>
+
+                    <small class="text-muted">
+
+                        Completed:
+                        {{ report.scans.completed }}
+
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Incidents -->
+
+        <div class="col-xl-3 col-md-6">
+
+            <div class="card shadow border-0 h-100">
+
+                <div class="card-body">
+
+                    <div class="d-flex
+                        justify-content-between
+                        align-items-center">
+
+                        <div>
+
+                            <p class="text-muted mb-1">
+                                Total Incidents
+                            </p>
+
+                            <h2 class="fw-bold">
+                                {{ report.incidents.total }}
+                            </h2>
+
+                        </div>
+
+                        <i class="bi bi-exclamation-triangle
+                           fs-1 text-warning"></i>
+
+                    </div>
+
+                    <small class="text-muted">
+
+                        Open:
+                        {{ report.incidents.open }}
+
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Critical -->
+
+        <div class="col-xl-3 col-md-6">
+
+            <div class="card shadow border-0 h-100">
+
+                <div class="card-body">
+
+                    <div class="d-flex
+                        justify-content-between
+                        align-items-center">
+
+                        <div>
+
+                            <p class="text-muted mb-1">
+                                Critical Incidents
+                            </p>
+
+                            <h2 class="fw-bold">
+                                {{ report.incidents.critical }}
+                            </h2>
+
+                        </div>
+
+                        <i class="bi bi-shield-fill-exclamation
+                           fs-1 text-danger"></i>
+
+                    </div>
+
+                    <small class="text-muted">
+
+                        High:
+                        {{ report.incidents.high }}
+
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==================================================
+         Asset & Scan Summary
+    =================================================== -->
+
+    <div class="row g-4 mb-4">
+
+        <!-- Asset Summary -->
+
+        <div class="col-lg-6">
+
+            <div class="card shadow border-0 h-100">
+
+                <div class="card-header">
+
+                    <h5 class="mb-0 fw-bold">
+
+                        <i class="bi bi-pc-display me-2"></i>
+
+                        Asset Summary
+
+                    </h5>
+
+                </div>
+
+                <div class="card-body">
+
+                    <div class="row text-center">
+
+                        <div class="col-4">
+
+                            <h3>
+                                {{ report.assets.total }}
+                            </h3>
+
+                            <small class="text-muted">
+                                Total
+                            </small>
+
+                        </div>
+
+                        <div class="col-4">
+
+                            <h3 class="text-success">
+                                {{ report.assets.active }}
+                            </h3>
+
+                            <small class="text-muted">
+                                Active
+                            </small>
+
+                        </div>
+
+                        <div class="col-4">
+
+                            <h3 class="text-danger">
+                                {{ report.assets.high_risk }}
+                            </h3>
+
+                            <small class="text-muted">
+                                High Risk
+                            </small>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Scan Summary -->
+
+        <div class="col-lg-6">
+
+            <div class="card shadow border-0 h-100">
+
+                <div class="card-header">
+
+                    <h5 class="mb-0 fw-bold">
+
+                        <i class="bi bi-radar me-2"></i>
+
+                        Vulnerability Scan Summary
+
+                    </h5>
+
+                </div>
+
+                <div class="card-body">
+
+                    <div class="row text-center">
+
+                        <div class="col-4">
+
+                            <h3>
+                                {{ report.scans.total }}
+                            </h3>
+
+                            <small class="text-muted">
+                                Total
+                            </small>
+
+                        </div>
+
+                        <div class="col-4">
+
+                            <h3 class="text-success">
+                                {{ report.scans.completed }}
+                            </h3>
+
+                            <small class="text-muted">
+                                Completed
+                            </small>
+
+                        </div>
+
+                        <div class="col-4">
+
+                            <h3 class="text-danger">
+                                {{ report.scans.failed }}
+                            </h3>
+
+                            <small class="text-muted">
+                                Failed
+                            </small>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==================================================
+         Incident Summary
+    =================================================== -->
+
+    <div class="card shadow border-0 mb-4">
+
+        <div class="card-header">
+
+            <h5 class="mb-0 fw-bold">
+
+                <i class="bi bi-exclamation-octagon me-2"></i>
+
+                Incident Summary
+
+            </h5>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="row text-center">
+
+                <div class="col-md-3">
+
+                    <h3 class="text-danger">
+                        {{ report.incidents.open }}
+                    </h3>
+
+                    <small class="text-muted">
+                        Open
+                    </small>
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <h3 class="text-warning">
+                        {{ report.incidents.in_progress }}
+                    </h3>
+
+                    <small class="text-muted">
+                        In Progress
+                    </small>
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <h3 class="text-success">
+                        {{ report.incidents.resolved }}
+                    </h3>
+
+                    <small class="text-muted">
+                        Resolved
+                    </small>
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <h3 class="text-secondary">
+                        {{ report.incidents.closed }}
+                    </h3>
+
+                    <small class="text-muted">
+                        Closed
+                    </small>
+
+                </div>
+
+            </div>
+
+            <hr>
+
+            <div class="row text-center">
+
+                <div class="col-md-3">
+
+                    <span class="badge bg-danger">
+                        Critical
+                    </span>
+
+                    <h4 class="mt-2">
+                        {{ report.incidents.critical }}
+                    </h4>
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <span class="badge bg-warning text-dark">
+                        High
+                    </span>
+
+                    <h4 class="mt-2">
+                        {{ report.incidents.high }}
+                    </h4>
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <span class="badge bg-info text-dark">
+                        Medium
+                    </span>
+
+                    <h4 class="mt-2">
+                        {{ report.incidents.medium }}
+                    </h4>
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <span class="badge bg-success">
+                        Low
+                    </span>
+
+                    <h4 class="mt-2">
+                        {{ report.incidents.low }}
+                    </h4>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==================================================
+         Recent Incidents
+    =================================================== -->
+
+    <div class="card shadow border-0 mb-4">
+
+        <div class="card-header">
+
+            <h5 class="mb-0 fw-bold">
+
+                <i class="bi bi-clock-history me-2"></i>
+
+                Recent Incidents
+
+            </h5>
+
+        </div>
+
+        <div class="card-body p-0">
+
+            {% if report.recent_incidents %}
+
+            <div class="table-responsive">
+
+                <table class="table table-hover mb-0">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Incident ID</th>
+                            <th>Title</th>
+                            <th>Severity</th>
+                            <th>Status</th>
+                            <th>Assigned</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for incident in report.recent_incidents %}
+
+                        <tr>
+
+                            <td>
+                                <strong>
+                                    {{ incident.incident_id }}
+                                </strong>
+                            </td>
+
+                            <td>
+                                {{ incident.title }}
+                            </td>
+
+                            <td>
+
+                                {% if incident.severity == "Critical" %}
+
+                                <span class="badge bg-danger">
+                                    Critical
+                                </span>
+
+                                {% elif incident.severity == "High" %}
+
+                                <span class="badge bg-warning text-dark">
+                                    High
+                                </span>
+
+                                {% elif incident.severity == "Medium" %}
+
+                                <span class="badge bg-info text-dark">
+                                    Medium
+                                </span>
+
+                                {% else %}
+
+                                <span class="badge bg-success">
+                                    Low
+                                </span>
+
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+                                {{ incident.status }}
+                            </td>
+
+                            <td>
+                                {{ incident.assigned_to or "Unassigned" }}
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            {% else %}
+
+            <div class="p-4 text-center">
+
+                <p class="text-muted mb-0">
+                    No incidents available.
+                </p>
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <!-- ==================================================
+         Recent Scans
+    =================================================== -->
+
+    <div class="card shadow border-0 mb-4">
+
+        <div class="card-header">
+
+            <h5 class="mb-0 fw-bold">
+
+                <i class="bi bi-search me-2"></i>
+
+                Recent Vulnerability Scans
+
+            </h5>
+
+        </div>
+
+        <div class="card-body p-0">
+
+            {% if report.recent_scans %}
+
+            <div class="table-responsive">
+
+                <table class="table table-hover mb-0">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Target</th>
+                            <th>Open Ports</th>
+                            <th>Status</th>
+                            <th>Date</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for scan in report.recent_scans %}
+
+                        <tr>
+
+                            <td>
+                                {{ scan.target }}
+                            </td>
+
+                            <td>
+                                {{ scan.open_ports or "None" }}
+                            </td>
+
+                            <td>
+
+                                {% if scan.status == "Completed" %}
+
+                                <span class="badge bg-success">
+                                    Completed
+                                </span>
+
+                                {% elif scan.status == "Host Down" %}
+
+                                <span class="badge bg-warning text-dark">
+                                    Host Down
+                                </span>
+
+                                {% else %}
+
+                                <span class="badge bg-danger">
+                                    Error
+                                </span>
+
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+
+                                {% if scan.scan_date %}
+
+                                {{ scan.scan_date.strftime(
+                                "%Y-%m-%d %H:%M"
+                                ) }}
+
+                                {% else %}
+
+                                N/A
+
+                                {% endif %}
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            {% else %}
+
+            <div class="p-4 text-center">
+
+                <p class="text-muted mb-0">
+                    No scans available.
+                </p>
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <!-- ==================================================
+         Report Footer
+    =================================================== -->
+
+    <div class="text-center text-muted py-3">
+
+        <small>
+
+            Enterprise Cyber Defense Platform (ECDP)
+            Security Operations Report
+
+        </small>
+
+    </div>
+
+</div>
+
+{% endblock %}

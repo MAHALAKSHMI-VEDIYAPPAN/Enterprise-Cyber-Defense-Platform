@@ -219,6 +219,8 @@
          Create Incident
     =================================================== -->
 
+    {% if current_user.role in ["Admin", "Analyst"] %}
+
     <div class="card shadow border-0 mb-4">
 
         <div class="card-header">
@@ -385,6 +387,8 @@
 
     </div>
 
+    {% endif %}
+
 
     <!-- ==================================================
          Incident List
@@ -428,6 +432,8 @@
 
                             <th>Assigned</th>
 
+                            <th>Resolution</th>
+
                             <th>Created</th>
 
                             <th>Actions</th>
@@ -435,6 +441,7 @@
                         </tr>
 
                     </thead>
+
 
                     <tbody>
 
@@ -548,6 +555,31 @@
                             </td>
 
 
+                            <!-- Resolution -->
+
+                            <td>
+
+                                {% if incident.resolution %}
+
+                                    <span
+                                        class="text-truncate d-inline-block"
+                                        style="max-width: 220px;"
+                                        title="{{ incident.resolution }}"
+                                    >
+                                        {{ incident.resolution }}
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="text-muted">
+                                        Not resolved
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+
                             <!-- Created -->
 
                             <td>
@@ -573,15 +605,25 @@
 
                                 <div class="d-flex gap-1">
 
+                                    <!-- Edit -->
+
+                                    {% if current_user.role in ["Admin", "Analyst"] %}
+
                                     <a href="{{ url_for(
                                             'incidents.edit_incident',
                                             id=incident.id
-                                        ) }}" class="btn btn-warning btn-sm">
+                                        ) }}" class="btn btn-warning btn-sm" title="Edit Incident">
 
                                         <i class="bi bi-pencil"></i>
 
                                     </a>
 
+                                    {% endif %}
+
+
+                                    <!-- Delete -->
+
+                                    {% if current_user.role == "Admin" %}
 
                                     <form method="POST" action="{{ url_for(
                                             'incidents.delete_incident',
@@ -590,13 +632,25 @@
                                             'Are you sure you want to delete this incident?'
                                         );">
 
-                                        <button type="submit" class="btn btn-danger btn-sm">
+                                        {{ form.hidden_tag() }}
+
+                                        <button type="submit" class="btn btn-danger btn-sm" title="Delete Incident">
 
                                             <i class="bi bi-trash"></i>
 
                                         </button>
 
                                     </form>
+
+                                    {% endif %}
+
+                                    {% if current_user.role == "Viewer" %}
+
+                                    <span class="text-muted small">
+                                        Read-only
+                                    </span>
+
+                                    {% endif %}
 
                                 </div>
 
@@ -631,7 +685,15 @@
 
                     {% else %}
 
+                    {% if current_user.role in ["Admin", "Analyst"] %}
+
                     Create your first security incident above.
+
+                    {% else %}
+
+                    No security incidents are currently available.
+
+                    {% endif %}
 
                     {% endif %}
 

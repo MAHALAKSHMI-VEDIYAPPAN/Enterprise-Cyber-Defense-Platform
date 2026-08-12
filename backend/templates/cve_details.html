@@ -1,0 +1,744 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container-fluid px-0">
+
+
+    <!-- ================================================== -->
+    <!-- PAGE HEADER -->
+    <!-- ================================================== -->
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+
+            <h1 class="fw-bold mb-1">
+
+                <i class="bi bi-bug-fill me-2"></i>
+
+                CVE Vulnerability Details
+
+            </h1>
+
+            <p class="text-muted mb-0">
+
+                Detailed vulnerability intelligence from NVD.
+
+            </p>
+
+        </div>
+
+
+        <a href="{{ url_for('cve.cve') }}" class="btn btn-secondary">
+
+            <i class="bi bi-arrow-left me-1"></i>
+
+            Back to CVE Intelligence
+
+        </a>
+
+    </div>
+
+
+
+    {% if cve %}
+
+
+    <!-- ================================================== -->
+    <!-- CVE HEADER -->
+    <!-- ================================================== -->
+
+    <div class="card shadow-sm mb-4">
+
+
+        <div class="card-header bg-primary text-white">
+
+            <div class="d-flex justify-content-between align-items-center">
+
+                <h4 class="mb-0">
+
+                    <i class="bi bi-shield-exclamation me-2"></i>
+
+                    {{ cve.id }}
+
+                </h4>
+
+
+                <span class="badge bg-light text-dark">
+
+                    NVD Record
+
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="card-body">
+
+
+            <!-- ========================================== -->
+            <!-- DESCRIPTION -->
+            <!-- ========================================== -->
+
+            <h5 class="fw-bold mb-3">
+
+                Vulnerability Summary
+
+            </h5>
+
+
+            <div class="alert alert-light border">
+
+                {% if cve.description %}
+
+                {{ cve.description }}
+
+                {% else %}
+
+                No vulnerability description is available.
+
+                {% endif %}
+
+            </div>
+
+
+
+            <!-- ========================================== -->
+            <!-- SUMMARY INFORMATION -->
+            <!-- ========================================== -->
+
+            <div class="row g-3">
+
+
+                <!-- Priority -->
+
+                <div class="col-md-3">
+
+                    <div class="border rounded p-3 h-100">
+
+                        <small class="text-muted">
+
+                            ECDP Priority
+
+                        </small>
+
+                        <h5 class="mt-2 mb-0">
+
+                            {% set severity = cve.severity|default("N/A")|upper %}
+
+
+                            {% if severity == "CRITICAL" %}
+
+                            <span class="badge bg-danger">
+
+                                CRITICAL
+
+                            </span>
+
+
+                            {% elif severity == "HIGH" %}
+
+                            <span class="badge bg-warning text-dark">
+
+                                HIGH
+
+                            </span>
+
+
+                            {% elif severity == "MEDIUM" %}
+
+                            <span class="badge bg-warning text-dark">
+
+                                MEDIUM
+
+                            </span>
+
+
+                            {% elif severity == "LOW" %}
+
+                            <span class="badge bg-success">
+
+                                LOW
+
+                            </span>
+
+
+                            {% else %}
+
+                            <span class="badge bg-secondary">
+
+                                N/A
+
+                            </span>
+
+                            {% endif %}
+
+                        </h5>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- Severity -->
+
+                <div class="col-md-3">
+
+                    <div class="border rounded p-3 h-100">
+
+                        <small class="text-muted">
+
+                            Severity
+
+                        </small>
+
+                        <h5 class="mt-2 mb-0">
+
+                            {{ cve.severity|default("N/A") }}
+
+                        </h5>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- CVSS -->
+
+                <div class="col-md-3">
+
+                    <div class="border rounded p-3 h-100">
+
+                        <small class="text-muted">
+
+                            CVSS Score
+
+                        </small>
+
+                        <h5 class="mt-2 mb-0">
+
+                            {{ cve.cvss|default("N/A") }}
+
+                        </h5>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- NVD -->
+
+                <div class="col-md-3">
+
+                    <div class="border rounded p-3 h-100">
+
+                        <small class="text-muted">
+
+                            Official Source
+
+                        </small>
+
+                        <div class="mt-2">
+
+                            <span class="badge bg-success">
+
+                                NVD
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ================================================== -->
+    <!-- CVSS INFORMATION -->
+    <!-- ================================================== -->
+
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-header bg-dark text-white">
+
+            <h5 class="mb-0">
+
+                <i class="bi bi-shield-check me-2"></i>
+
+                CVSS Technical Information
+
+            </h5>
+
+        </div>
+
+
+        <div class="card-body p-0">
+
+            <div class="table-responsive">
+
+                <table class="table table-bordered mb-0">
+
+
+                    <tbody>
+
+
+                        <tr>
+
+                            <th style="width: 30%;">
+
+                                CVSS Version
+
+                            </th>
+
+                            <td>
+
+                                {{ cve.cvss_version|default("N/A") }}
+
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <th>
+
+                                Base Score
+
+                            </th>
+
+                            <td>
+
+                                {{ cve.cvss|default("N/A") }}
+
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <th>
+
+                                Severity
+
+                            </th>
+
+                            <td>
+
+                                {{ cve.severity|default("N/A") }}
+
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <th>
+
+                                Vector
+
+                            </th>
+
+                            <td>
+
+                                <code>
+
+                                        {{ cve.vector|default("N/A") }}
+
+                                    </code>
+
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <th>
+
+                                Exploitability Score
+
+                            </th>
+
+                            <td>
+
+                                {{ cve.exploitability_score|default("N/A") }}
+
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <th>
+
+                                Impact Score
+
+                            </th>
+
+                            <td>
+
+                                {{ cve.impact_score|default("N/A") }}
+
+                            </td>
+
+                        </tr>
+
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ================================================== -->
+    <!-- TIMELINE -->
+    <!-- ================================================== -->
+
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-header bg-dark text-white">
+
+            <h5 class="mb-0">
+
+                <i class="bi bi-clock-history me-2"></i>
+
+                Vulnerability Timeline
+
+            </h5>
+
+        </div>
+
+
+        <div class="card-body">
+
+            <div class="row g-3">
+
+
+                <div class="col-md-6">
+
+                    <div class="border rounded p-3">
+
+                        <small class="text-muted">
+
+                            Published
+
+                        </small>
+
+                        <div class="fw-bold mt-2">
+
+                            {{ cve.published|default("N/A") }}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6">
+
+                    <div class="border rounded p-3">
+
+                        <small class="text-muted">
+
+                            Last Modified
+
+                        </small>
+
+                        <div class="fw-bold mt-2">
+
+                            {{ cve.last_modified|default("N/A") }}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ================================================== -->
+    <!-- CWE -->
+    <!-- ================================================== -->
+
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-header bg-dark text-white">
+
+            <h5 class="mb-0">
+
+                <i class="bi bi-code-square me-2"></i>
+
+                CWE / Weakness
+
+            </h5>
+
+        </div>
+
+
+        <div class="card-body">
+
+
+            {% if cve.cwe %}
+
+            {% for weakness in cve.cwe %}
+
+            <span class="badge bg-secondary me-2">
+
+                {{ weakness }}
+
+            </span>
+
+            {% endfor %}
+
+            {% else %}
+
+            <span class="text-muted">
+
+                No CWE information available.
+
+            </span>
+
+            {% endif %}
+
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ================================================== -->
+    <!-- AFFECTED PRODUCTS -->
+    <!-- ================================================== -->
+
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-header bg-dark text-white">
+
+            <h5 class="mb-0">
+
+                <i class="bi bi-pc-display me-2"></i>
+
+                Affected Products / CPE
+
+            </h5>
+
+        </div>
+
+
+        <div class="card-body">
+
+
+            {% if cve.products %}
+
+            {% for product in cve.products %}
+
+            <div class="border rounded p-2 mb-2">
+
+                <code>
+
+                                {{ product }}
+
+                            </code>
+
+            </div>
+
+            {% endfor %}
+
+            {% else %}
+
+            <span class="text-muted">
+
+                No affected product information available.
+
+            </span>
+
+            {% endif %}
+
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ================================================== -->
+    <!-- REFERENCES -->
+    <!-- ================================================== -->
+
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-header bg-dark text-white">
+
+            <h5 class="mb-0">
+
+                <i class="bi bi-link-45deg me-2"></i>
+
+                References
+
+            </h5>
+
+        </div>
+
+
+        <div class="card-body">
+
+
+            {% if cve.references %}
+
+            {% for reference in cve.references %}
+
+            <div class="mb-3">
+
+                <a href="{{ reference.url }}" target="_blank" rel="noopener noreferrer" class="text-primary">
+
+                    {{ reference.url }}
+
+                </a>
+
+
+                {% if reference.source %}
+
+                <div class="small text-muted">
+
+                    Source:
+                    {{ reference.source }}
+
+                </div>
+
+                {% endif %}
+
+            </div>
+
+            {% endfor %}
+
+            {% else %}
+
+            <span class="text-muted">
+
+                No external references available.
+
+            </span>
+
+            {% endif %}
+
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ================================================== -->
+    <!-- NVD INFORMATION -->
+    <!-- ================================================== -->
+
+    <div class="alert alert-info">
+
+        <i class="bi bi-info-circle me-2"></i>
+
+        The vulnerability information above is displayed
+        inside the <strong>Enterprise Cyber Defense Platform</strong>.
+
+        The official NVD record can be opened separately.
+
+    </div>
+
+
+
+    <!-- ================================================== -->
+    <!-- ACTION BUTTONS -->
+    <!-- ================================================== -->
+
+    <div class="d-flex gap-2 mb-5">
+
+
+        <!-- OFFICIAL NVD -->
+
+        <a href="https://nvd.nist.gov/vuln/detail/{{ cve.id }}" target="_blank" rel="noopener noreferrer"
+            class="btn btn-primary">
+
+            <i class="bi bi-box-arrow-up-right me-2"></i>
+
+            Open Official NVD Record
+
+        </a>
+
+
+        <!-- BACK -->
+
+        <a href="{{ url_for('cve.cve') }}" class="btn btn-secondary">
+
+            <i class="bi bi-arrow-left me-2"></i>
+
+            Back to CVE Intelligence
+
+        </a>
+
+
+    </div>
+
+
+    {% else %}
+
+
+    <!-- ================================================== -->
+    <!-- CVE NOT FOUND -->
+    <!-- ================================================== -->
+
+    <div class="alert alert-warning">
+
+        <i class="bi bi-exclamation-triangle me-2"></i>
+
+        The requested CVE could not be found.
+
+    </div>
+
+
+    <a href="{{ url_for('cve.cve') }}" class="btn btn-secondary">
+
+        <i class="bi bi-arrow-left me-2"></i>
+
+        Back to CVE Intelligence
+
+    </a>
+
+
+    {% endif %}
+
+
+</div>
+
+{% endblock %}

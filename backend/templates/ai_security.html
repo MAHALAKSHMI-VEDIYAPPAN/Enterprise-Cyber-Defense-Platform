@@ -1,0 +1,948 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <!-- ==================================================
+         Page Header
+    =================================================== -->
+
+    <div class="mb-4">
+
+        <h2 class="fw-bold">
+
+            <i class="bi bi-robot me-2"></i>
+
+            AI Security Assistant
+
+        </h2>
+
+        <p class="text-muted">
+
+            AI-powered analysis of your Enterprise Cyber Defense Platform
+            security environment.
+
+        </p>
+
+    </div>
+
+
+    <!-- ==================================================
+         Security Analysis
+    =================================================== -->
+
+    {% if current_user.role in ["Admin", "Analyst"] and analysis %}
+
+    <!-- ==================================================
+         Security Overview
+    =================================================== -->
+
+    <div class="row mb-4">
+
+        <!-- Security Score -->
+
+        <div class="col-lg-4 col-md-6 mb-3">
+
+            <div class="card h-100">
+
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between">
+
+                        <div>
+
+                            <h6 class="text-muted">
+                                Security Score
+                            </h6>
+
+                            <h2 class="fw-bold">
+                                {{ analysis.score }}%
+                            </h2>
+
+                        </div>
+
+                        <i class="bi bi-shield-check fs-1 text-primary"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Risk Level -->
+
+        <div class="col-lg-4 col-md-6 mb-3">
+
+            <div class="card h-100">
+
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between">
+
+                        <div>
+
+                            <h6 class="text-muted">
+                                Risk Level
+                            </h6>
+
+                            {% if analysis.risk_level == "Low" %}
+
+                            <h2 class="fw-bold text-success">
+                                Low
+                            </h2>
+
+                            {% elif analysis.risk_level == "Moderate" %}
+
+                            <h2 class="fw-bold text-warning">
+                                Moderate
+                            </h2>
+
+                            {% elif analysis.risk_level == "High" %}
+
+                            <h2 class="fw-bold text-danger">
+                                High
+                            </h2>
+
+                            {% else %}
+
+                            <h2 class="fw-bold text-danger">
+                                Critical
+                            </h2>
+
+                            {% endif %}
+
+                        </div>
+
+                        <i class="bi bi-exclamation-triangle fs-1 text-warning"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Open Incidents -->
+
+        <div class="col-lg-4 col-md-12 mb-3">
+
+            <div class="card h-100">
+
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between">
+
+                        <div>
+
+                            <h6 class="text-muted">
+                                Open Incidents
+                            </h6>
+
+                            <h2 class="fw-bold">
+                                {{ analysis.statistics.open_incidents }}
+                            </h2>
+
+                        </div>
+
+                        <i class="bi bi-shield-exclamation fs-1 text-danger"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==================================================
+         AI Analysis
+    =================================================== -->
+
+    <div class="card mb-4">
+
+        <div class="card-header">
+
+            <h4 class="mb-0">
+
+                <i class="bi bi-stars me-2"></i>
+
+                Security Analysis
+
+            </h4>
+
+        </div>
+
+        <div class="card-body">
+
+            <p class="lead mb-0">
+
+                {{ analysis.summary }}
+
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==================================================
+         Security Statistics
+    =================================================== -->
+
+    <div class="card mb-4">
+
+        <div class="card-header">
+
+            <h4 class="mb-0">
+
+                <i class="bi bi-bar-chart me-2"></i>
+
+                Security Statistics
+
+            </h4>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="row text-center">
+
+                <!-- Total Assets -->
+
+                <div class="col-md-3 mb-3">
+
+                    <h3>
+                        {{ analysis.statistics.total_assets }}
+                    </h3>
+
+                    <p class="text-muted mb-0">
+                        Total Assets
+                    </p>
+
+                </div>
+
+
+                <!-- High Risk Assets -->
+
+                <div class="col-md-3 mb-3">
+
+                    <h3>
+                        {{ analysis.statistics.high_risk_assets }}
+                    </h3>
+
+                    <p class="text-muted mb-0">
+                        High Risk Assets
+                    </p>
+
+                </div>
+
+
+                <!-- Total Scans -->
+
+                <div class="col-md-3 mb-3">
+
+                    <h3>
+                        {{ analysis.statistics.total_scans }}
+                    </h3>
+
+                    <p class="text-muted mb-0">
+                        Total Scans
+                    </p>
+
+                </div>
+
+
+                <!-- Total Incidents -->
+
+                <div class="col-md-3 mb-3">
+
+                    <h3>
+                        {{ analysis.statistics.total_incidents }}
+                    </h3>
+
+                    <p class="text-muted mb-0">
+                        Total Incidents
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==================================================
+         Recommendations
+    =================================================== -->
+
+    <div class="card mb-4">
+
+        <div class="card-header">
+
+            <h4 class="mb-0">
+
+                <i class="bi bi-lightbulb me-2"></i>
+
+                AI Security Recommendations
+
+            </h4>
+
+        </div>
+
+        <div class="card-body">
+
+            {% if analysis.recommendations %}
+
+            <div class="list-group">
+
+                {% for recommendation in analysis.recommendations %}
+
+                <div class="list-group-item">
+
+                    <i class="bi bi-check-circle-fill text-success me-2"></i>
+
+                    {{ recommendation }}
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+            {% else %}
+
+            <div class="alert alert-success">
+
+                No immediate security recommendations.
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <!-- ==================================================
+         Incident Breakdown
+    =================================================== -->
+
+    <div class="card mb-4">
+
+        <div class="card-header">
+
+            <h4 class="mb-0">
+
+                <i class="bi bi-activity me-2"></i>
+
+                Incident Severity Breakdown
+
+            </h4>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="row text-center">
+
+                <!-- Critical -->
+
+                <div class="col-md-3">
+
+                    <h3 class="text-danger">
+                        {{ analysis.statistics.critical_incidents }}
+                    </h3>
+
+                    <p>
+                        Critical
+                    </p>
+
+                </div>
+
+
+                <!-- High -->
+
+                <div class="col-md-3">
+
+                    <h3 class="text-warning">
+                        {{ analysis.statistics.high_incidents }}
+                    </h3>
+
+                    <p>
+                        High
+                    </p>
+
+                </div>
+
+
+                <!-- Medium -->
+
+                <div class="col-md-3">
+
+                    <h3 class="text-info">
+                        {{ analysis.statistics.medium_incidents }}
+                    </h3>
+
+                    <p>
+                        Medium
+                    </p>
+
+                </div>
+
+
+                <!-- Low -->
+
+                <div class="col-md-3">
+
+                    <h3 class="text-success">
+                        {{ analysis.statistics.low_incidents }}
+                    </h3>
+
+                    <p>
+                        Low
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    {% else %}
+
+    <!-- ==================================================
+         Viewer Read-Only Notice
+    =================================================== -->
+
+    <div class="alert alert-info shadow-sm mb-4">
+
+        <i class="bi bi-eye me-2"></i>
+
+        <strong>Read-only access:</strong>
+
+        You can access the AI Security Assistant page,
+        but only Admins and Analysts can generate security analysis.
+
+    </div>
+
+    {% endif %}
+
+
+    <!-- ==================================================
+         Interactive Security Chat
+    =================================================== -->
+
+    <div class="card mt-4 mb-4">
+
+        <div class="card-header">
+
+            <h4 class="mb-0">
+
+                <i class="bi bi-chat-dots me-2"></i>
+
+                Security Analyst Chat
+
+            </h4>
+
+        </div>
+
+        <div class="card-body">
+
+            <p class="text-muted">
+
+                Ask questions about your current ECDP security environment.
+
+            </p>
+
+
+            <!-- ==================================================
+                 Chat Messages
+            =================================================== -->
+
+            <div id="chatMessages" class="mb-3" style="
+                    height: 350px;
+                    overflow-y: auto;
+                    background: #0f172a;
+                    border-radius: 10px;
+                    padding: 15px;
+                ">
+
+                <div class="mb-3">
+
+                    <div class="d-inline-block p-3 rounded bg-primary text-white">
+
+                        <strong>
+                            AI Security Assistant
+                        </strong>
+
+                        <br>
+
+                        Hello! I can analyze your ECDP security data.
+
+                        <br><br>
+
+                        {% if current_user.role in ["Admin", "Analyst"] %}
+
+                        Try asking:
+
+                        <ul class="mb-0">
+
+                            <li>
+                                What are my highest security risks?
+                            </li>
+
+                            <li>
+                                Why is my security score low?
+                            </li>
+
+                            <li>
+                                How many open incidents do I have?
+                            </li>
+
+                            <li>
+                                What should I fix first?
+                            </li>
+
+                        </ul>
+
+                        {% else %}
+
+                        <span>
+                            You currently have read-only access
+                            to the Security Assistant.
+
+                        </span>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ==================================================
+                 Chat Input
+            =================================================== -->
+
+            {% if current_user.role in ["Admin", "Analyst"] %}
+
+            <form id="securityChatForm">
+
+                <div class="input-group">
+
+                    <input type="text" id="securityQuestion" class="form-control"
+                        placeholder="Ask a security question..." autocomplete="off" maxlength="500" required>
+
+                    <button type="submit" class="btn btn-primary" id="sendChatButton">
+
+                        <i class="bi bi-send me-1"></i>
+
+                        Ask
+
+                    </button>
+
+                </div>
+
+            </form>
+
+            {% else %}
+
+            <div class="alert alert-info mb-0">
+
+                <i class="bi bi-eye me-2"></i>
+
+                <strong>Read-only access:</strong>
+
+                Only Admins and Analysts can use the
+                Security Analyst Chat.
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ==================================================
+     Security Chat JavaScript
+=================================================== -->
+
+{% if current_user.role in ["Admin", "Analyst"] %}
+
+<script>
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        function () {
+
+            const chatForm =
+                document.getElementById(
+                    "securityChatForm"
+                );
+
+            const questionInput =
+                document.getElementById(
+                    "securityQuestion"
+                );
+
+            const chatMessages =
+                document.getElementById(
+                    "chatMessages"
+                );
+
+            const sendButton =
+                document.getElementById(
+                    "sendChatButton"
+                );
+
+
+            // ==================================================
+            // Safety Check
+            // ==================================================
+
+            if (
+                !chatForm ||
+                !questionInput ||
+                !chatMessages ||
+                !sendButton
+            ) {
+
+                return;
+
+            }
+
+
+            // ==================================================
+            // Submit Security Question
+            // ==================================================
+
+            chatForm.addEventListener(
+                "submit",
+                async function (event) {
+
+                    event.preventDefault();
+
+
+                    const question =
+                        questionInput.value.trim();
+
+
+                    if (!question) {
+
+                        return;
+
+                    }
+
+
+                    // ==================================================
+                    // Maximum Length
+                    // ==================================================
+
+                    if (question.length > 500) {
+
+                        const errorMessage =
+                            document.createElement("div");
+
+                        errorMessage.className =
+                            "mb-3";
+
+                        errorMessage.innerHTML = `
+
+                        <div class="alert alert-danger">
+
+                            Security questions must be
+                            500 characters or fewer.
+
+                        </div>
+
+                    `;
+
+                        chatMessages.appendChild(
+                            errorMessage
+                        );
+
+                        return;
+
+                    }
+
+
+                    // ==================================================
+                    // Display User Message
+                    // ==================================================
+
+                    const userMessage =
+                        document.createElement("div");
+
+                    userMessage.className =
+                        "text-end mb-3";
+
+
+                    userMessage.innerHTML = `
+
+                    <div
+                        class="d-inline-block
+                               p-3
+                               rounded
+                               bg-secondary
+                               text-white"
+                        style="max-width: 80%;"
+                    >
+
+                        <strong>
+                            You
+                        </strong>
+
+                        <br>
+
+                        ${escapeHtml(question)}
+
+                    </div>
+
+                `;
+
+
+                    chatMessages.appendChild(
+                        userMessage
+                    );
+
+
+                    // ==================================================
+                    // Clear Input
+                    // ==================================================
+
+                    questionInput.value = "";
+
+                    sendButton.disabled = true;
+
+
+                    sendButton.innerHTML = `
+
+                    <span
+                        class="spinner-border
+                               spinner-border-sm
+                               me-1"
+                    ></span>
+
+                    Analyzing...
+
+                `;
+
+
+                    // ==================================================
+                    // Send Request
+                    // ==================================================
+
+                    try {
+
+                        const response = await fetch(
+                            "{{ url_for('security_chat.security_chat') }}",
+                            {
+                                method: "POST",
+
+                                headers: {
+                                    "Content-Type": "application/json"
+                                },
+
+                                body: JSON.stringify({
+                                    question: question
+                                })
+                            }
+                        );
+
+
+                        const data =
+                            await response.json();
+
+
+                        // ==================================================
+                        // Display AI Response
+                        // ==================================================
+
+                        const aiMessage =
+                            document.createElement("div");
+
+                        aiMessage.className =
+                            "mb-3";
+
+
+                        if (data.success) {
+
+                            aiMessage.innerHTML = `
+
+                            <div
+                                class="d-inline-block
+                                       p-3
+                                       rounded
+                                       bg-primary
+                                       text-white"
+                                style="max-width: 80%;"
+                            >
+
+                                <strong>
+
+                                    <i class="bi bi-robot me-1"></i>
+
+                                    AI Security Assistant
+
+                                </strong>
+
+                                <br><br>
+
+                                ${formatResponse(
+                                data.response
+                            )}
+
+                            </div>
+
+                        `;
+
+                        } else {
+
+                            aiMessage.innerHTML = `
+
+                            <div class="alert alert-danger">
+
+                                ${escapeHtml(
+                                data.message ||
+                                "Unable to process the request."
+                            )}
+
+                            </div>
+
+                        `;
+
+                        }
+
+
+                        chatMessages.appendChild(
+                            aiMessage
+                        );
+
+
+                    } catch (error) {
+
+                        const errorMessage =
+                            document.createElement("div");
+
+                        errorMessage.className =
+                            "mb-3";
+
+
+                        errorMessage.innerHTML = `
+
+                        <div class="alert alert-danger">
+
+                            Unable to connect to the
+                            security assistant.
+
+                        </div>
+
+                    `;
+
+
+                        chatMessages.appendChild(
+                            errorMessage
+                        );
+
+
+                        console.error(
+                            error
+                        );
+
+                    }
+
+
+                    // ==================================================
+                    // Reset Button
+                    // ==================================================
+
+                    sendButton.disabled = false;
+
+
+                    sendButton.innerHTML = `
+
+                    <i class="bi bi-send me-1"></i>
+
+                    Ask
+
+                `;
+
+
+                    // ==================================================
+                    // Scroll to Bottom
+                    // ==================================================
+
+                    chatMessages.scrollTop =
+                        chatMessages.scrollHeight;
+
+                }
+            );
+
+
+            // ==================================================
+            // Escape HTML
+            // ==================================================
+
+            function escapeHtml(text) {
+
+                const div =
+                    document.createElement("div");
+
+
+                div.textContent =
+                    text;
+
+
+                return div.innerHTML;
+
+            }
+
+
+            // ==================================================
+            // Format AI Response
+            // ==================================================
+
+            function formatResponse(text) {
+
+                return escapeHtml(text)
+
+                    .replace(
+                        /\n/g,
+                        "<br>"
+                    )
+
+                    .replace(
+                        /\*\*(.*?)\*\*/g,
+                        "<strong>$1</strong>"
+                    );
+
+            }
+
+        });
+
+</script>
+
+{% endif %}
+
+{% endblock %}

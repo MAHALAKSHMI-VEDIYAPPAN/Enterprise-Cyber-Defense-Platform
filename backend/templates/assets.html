@@ -2,103 +2,69 @@
 
 {% block content %}
 
-<div class="container mt-4">
+<!-- ==================================================
+     Asset Management
+=================================================== -->
 
-    <h2 class="mb-4">Asset Management</h2>
+<div class="container-fluid">
 
-    <!-- Search -->
-    <form method="GET" action="{{ url_for('assets.assets') }}" class="mb-4">
 
-        <div class="input-group">
+    <!-- ==================================================
+         Page Header
+    =================================================== -->
 
-            <input type="text" name="search" class="form-control" placeholder="Search Asset..."
-                value="{{ search if search else '' }}">
+    <div class="d-flex justify-content-between align-items-center mb-4">
 
-            <button class="btn btn-primary">
-                Search
-            </button>
+        <div>
 
-        </div>
+            <h2 class="mb-1">
+                Asset Management
+            </h2>
 
-    </form>
-
-    <!-- Add Asset -->
-
-    <div class="card shadow mb-5">
-
-        <div class="card-header bg-primary text-white">
-
-            <h4>Add New Asset</h4>
+            <p class="text-muted mb-0">
+                Manage and monitor enterprise assets.
+            </p>
 
         </div>
+
+        <!-- Current User Role -->
+
+        <span class="badge bg-secondary">
+            Role: {{ current_user.role }}
+        </span>
+
+    </div>
+
+
+    <!-- ==================================================
+         Search
+    =================================================== -->
+
+    <div class="card shadow-sm mb-4">
 
         <div class="card-body">
 
-            <form method="POST">
+            <form method="GET" action="{{ url_for('assets.assets') }}">
 
-                {{ form.hidden_tag() }}
+                <div class="input-group">
 
-                <div class="row">
+                    <input type="text" name="search" class="form-control" placeholder="Search Asset..."
+                        value="{{ search if search else '' }}">
 
-                    <div class="col-md-6 mb-3">
+                    <button class="btn btn-primary" type="submit">
+                        <i class="bi bi-search"></i>
+                        Search
+                    </button>
 
-                        {{ form.asset_name.label(class="form-label") }}
+                    {% if search %}
 
-                        {{ form.asset_name(class="form-control") }}
+                    <a href="{{ url_for('assets.assets') }}" class="btn btn-secondary">
+                        Clear
+                    </a>
 
-                    </div>
-
-                    <div class="col-md-6 mb-3">
-
-                        {{ form.ip_address.label(class="form-label") }}
-
-                        {{ form.ip_address(class="form-control") }}
-
-                    </div>
+                    {% endif %}
 
                 </div>
-
-                <div class="row">
-
-                    <div class="col-md-6 mb-3">
-
-                        {{ form.operating_system.label(class="form-label") }}
-
-                        {{ form.operating_system(class="form-control") }}
-
-                    </div>
-
-                    <div class="col-md-6 mb-3">
-
-                        {{ form.owner.label(class="form-label") }}
-
-                        {{ form.owner(class="form-control") }}
-
-                    </div>
-
-                </div>
-
-                <div class="row">
-
-                    <div class="col-md-6 mb-3">
-
-                        {{ form.asset_type.label(class="form-label") }}
-
-                        {{ form.asset_type(class="form-control") }}
-
-                    </div>
-
-                    <div class="col-md-6 mb-3">
-
-                        {{ form.risk_level.label(class="form-label") }}
-
-                        {{ form.risk_level(class="form-select") }}
-
-                    </div>
-
-                </div>
-
-                {{ form.submit(class="btn btn-success") }}
 
             </form>
 
@@ -106,136 +72,526 @@
 
     </div>
 
-    <!-- Asset Table -->
 
-    <div class="card shadow">
+    <!-- ==================================================
+         Add Asset
+    =================================================== -->
 
-        <div class="card-header bg-dark text-white">
+    {% if current_user.role in ["Admin", "Analyst"] %}
 
-            <h4>Asset Inventory</h4>
+    <div class="card shadow-sm mb-5">
+
+        <div class="card-header bg-primary text-white">
+
+            <h4 class="mb-0">
+                <i class="bi bi-plus-circle me-2"></i>
+                Add New Asset
+            </h4>
 
         </div>
 
+
         <div class="card-body">
 
-            <table class="table table-hover table-striped">
+            <form method="POST">
 
-                <thead class="table-dark">
+                {{ form.hidden_tag() }}
 
-                    <tr>
 
-                        <th>ID</th>
+                <!-- ======================================
+                     Asset Name + IP
+                ======================================= -->
 
-                        <th>Name</th>
+                <div class="row">
 
-                        <th>IP Address</th>
+                    <!-- Asset Name -->
 
-                        <th>OS</th>
+                    <div class="col-md-6 mb-3">
 
-                        <th>Owner</th>
+                        {{ form.asset_name.label(
+                        class="form-label"
+                        ) }}
 
-                        <th>Type</th>
+                        {{ form.asset_name(
+                        class="form-control",
+                        placeholder="Enter asset name"
+                        ) }}
 
-                        <th>Status</th>
+                        {% for error in form.asset_name.errors %}
 
-                        <th>Risk</th>
+                        <small class="text-danger">
+                            {{ error }}
+                        </small>
 
-                        <th>Action</th>
+                        {% endfor %}
 
-                    </tr>
+                    </div>
 
-                </thead>
 
-                <tbody>
+                    <!-- IP Address -->
 
-                    {% for asset in assets %}
+                    <div class="col-md-6 mb-3">
 
-                    <tr>
+                        {{ form.ip_address.label(
+                        class="form-label"
+                        ) }}
 
-                        <td>{{ asset.id }}</td>
+                        {{ form.ip_address(
+                        class="form-control",
+                        placeholder="e.g. 192.168.1.10"
+                        ) }}
 
-                        <td>{{ asset.asset_name }}</td>
+                        {% for error in form.ip_address.errors %}
 
-                        <td>{{ asset.ip_address }}</td>
+                        <small class="text-danger">
+                            {{ error }}
+                        </small>
 
-                        <td>{{ asset.operating_system }}</td>
+                        {% endfor %}
 
-                        <td>{{ asset.owner }}</td>
+                    </div>
 
-                        <td>{{ asset.asset_type }}</td>
+                </div>
 
-                        <td>
 
-                            {% if asset.status == "Active" %}
+                <!-- ======================================
+                     Operating System + Owner
+                ======================================= -->
 
-                            <span class="badge bg-success">
-                                Active
-                            </span>
+                <div class="row">
 
-                            {% else %}
+                    <!-- Operating System -->
 
-                            <span class="badge bg-secondary">
-                                Inactive
-                            </span>
+                    <div class="col-md-6 mb-3">
 
-                            {% endif %}
+                        {{ form.operating_system.label(
+                        class="form-label"
+                        ) }}
 
-                        </td>
+                        {{ form.operating_system(
+                        class="form-control",
+                        placeholder="e.g. Windows Server 2022"
+                        ) }}
 
-                        <td>
+                        {% for error in form.operating_system.errors %}
 
-                            {% if asset.risk_level == "Critical" %}
+                        <small class="text-danger">
+                            {{ error }}
+                        </small>
 
-                            <span class="badge bg-dark">
-                                Critical
-                            </span>
+                        {% endfor %}
 
-                            {% elif asset.risk_level == "High" %}
+                    </div>
 
-                            <span class="badge bg-danger">
-                                High
-                            </span>
 
-                            {% elif asset.risk_level == "Medium" %}
+                    <!-- Owner -->
 
-                            <span class="badge bg-warning text-dark">
-                                Medium
-                            </span>
+                    <div class="col-md-6 mb-3">
 
-                            {% else %}
+                        {{ form.owner.label(
+                        class="form-label"
+                        ) }}
 
-                            <span class="badge bg-success">
-                                Low
-                            </span>
+                        {{ form.owner(
+                        class="form-control",
+                        placeholder="e.g. IT Department"
+                        ) }}
 
-                            {% endif %}
+                        {% for error in form.owner.errors %}
 
-                        </td>
+                        <small class="text-danger">
+                            {{ error }}
+                        </small>
 
-                        <td>
+                        {% endfor %}
 
-                            <a href="{{ url_for('assets.edit_asset', id=asset.id) }}" class="btn btn-warning btn-sm">
+                    </div>
 
-                                Edit
+                </div>
 
-                            </a>
 
-                            <a href="{{ url_for('assets.delete_asset', id=asset.id) }}" class="btn btn-danger btn-sm"
-                                onclick="return confirm('Delete this asset?');">
+                <!-- ======================================
+                     Asset Type + Risk Level
+                ======================================= -->
 
-                                Delete
+                <div class="row">
 
-                            </a>
+                    <!-- Asset Type -->
 
-                        </td>
+                    <div class="col-md-6 mb-3">
 
-                    </tr>
+                        {{ form.asset_type.label(
+                        class="form-label"
+                        ) }}
 
-                    {% endfor %}
+                        {{ form.asset_type(
+                        class="form-select"
+                        ) }}
 
-                </tbody>
+                        {% for error in form.asset_type.errors %}
 
-            </table>
+                        <small class="text-danger">
+                            {{ error }}
+                        </small>
+
+                        {% endfor %}
+
+                    </div>
+
+
+                    <!-- Risk Level -->
+
+                    <div class="col-md-6 mb-3">
+
+                        {{ form.risk_level.label(
+                        class="form-label"
+                        ) }}
+
+                        {{ form.risk_level(
+                        class="form-select"
+                        ) }}
+
+                        {% for error in form.risk_level.errors %}
+
+                        <small class="text-danger">
+                            {{ error }}
+                        </small>
+
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+
+
+                <!-- ======================================
+                     Submit
+                ======================================= -->
+
+                {{ form.submit(
+                class="btn btn-success"
+                ) }}
+
+            </form>
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+
+    <!-- ==================================================
+         Asset Inventory
+    =================================================== -->
+
+    <div class="card shadow-sm">
+
+        <div class="card-header bg-dark text-white">
+
+            <div class="d-flex justify-content-between align-items-center">
+
+                <h4 class="mb-0">
+                    <i class="bi bi-hdd-stack me-2"></i>
+                    Asset Inventory
+                </h4>
+
+                <span class="badge bg-light text-dark">
+                    {{ assets|length }} Asset(s)
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="card-body">
+
+
+            {% if assets %}
+
+            <div class="table-responsive">
+
+                <table class="table table-hover table-striped align-middle">
+
+                    <thead class="table-dark">
+
+                        <tr>
+
+                            <th>ID</th>
+
+                            <th>Name</th>
+
+                            <th>IP Address</th>
+
+                            <th>OS</th>
+
+                            <th>Owner</th>
+
+                            <th>Type</th>
+
+                            <th>Status</th>
+
+                            <th>Risk</th>
+
+                            <th>Action</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for asset in assets %}
+
+                        <tr>
+
+                            <!-- ID -->
+
+                            <td>
+                                {{ asset.id }}
+                            </td>
+
+
+                            <!-- Name -->
+
+                            <td>
+
+                                <strong>
+                                    {{ asset.asset_name }}
+                                </strong>
+
+                            </td>
+
+
+                            <!-- IP -->
+
+                            <td>
+
+                                <code>
+                                    {{ asset.ip_address }}
+                                </code>
+
+                            </td>
+
+
+                            <!-- Operating System -->
+
+                            <td>
+                                {{ asset.operating_system }}
+                            </td>
+
+
+                            <!-- Owner -->
+
+                            <td>
+                                {{ asset.owner }}
+                            </td>
+
+
+                            <!-- Type -->
+
+                            <td>
+                                {{ asset.asset_type }}
+                            </td>
+
+
+                            <!-- Status -->
+
+                            <td>
+
+                                {% if asset.status == "Active" %}
+
+                                <span class="badge bg-success">
+
+                                    <i class="bi bi-check-circle me-1"></i>
+
+                                    Active
+
+                                </span>
+
+                                {% else %}
+
+                                <span class="badge bg-secondary">
+
+                                    <i class="bi bi-dash-circle me-1"></i>
+
+                                    Inactive
+
+                                </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <!-- Risk -->
+
+                            <td>
+
+                                {% if asset.risk_level == "Critical" %}
+
+                                <span class="badge bg-dark">
+                                    Critical
+                                </span>
+
+                                {% elif asset.risk_level == "High" %}
+
+                                <span class="badge bg-danger">
+                                    High
+                                </span>
+
+                                {% elif asset.risk_level == "Medium" %}
+
+                                <span class="badge bg-warning text-dark">
+                                    Medium
+                                </span>
+
+                                {% else %}
+
+                                <span class="badge bg-success">
+                                    Low
+                                </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <!-- ==================================================
+                                 Actions
+                            =================================================== -->
+
+                            <td>
+
+                                <div class="d-flex gap-1">
+
+
+                                    <!-- ==========================================
+                                         Edit
+                                    =========================================== -->
+
+                                    {% if current_user.role in ["Admin", "Analyst"] %}
+
+                                    <a href="{{ url_for(
+                                            'assets.edit_asset',
+                                            id=asset.id
+                                        ) }}" class="btn btn-warning btn-sm" title="Edit Asset">
+
+                                        <i class="bi bi-pencil-square"></i>
+
+                                        Edit
+
+                                    </a>
+
+                                    {% endif %}
+
+
+                                    <!-- ==========================================
+                                         Delete - ADMIN ONLY
+                                    =========================================== -->
+
+                                    {% if current_user.role == "Admin" %}
+
+                                    <form method="POST" action="{{ url_for(
+                                            'assets.delete_asset',
+                                            id=asset.id
+                                        ) }}" class="d-inline" onsubmit="return confirm(
+                                            'Are you sure you want to delete this asset?'
+                                        );">
+
+                                        {{ form.hidden_tag() }}
+
+                                        <button type="submit" class="btn btn-danger btn-sm" title="Delete Asset">
+
+                                            <i class="bi bi-trash"></i>
+
+                                            Delete
+
+                                        </button>
+
+                                    </form>
+
+                                    {% endif %}
+
+
+                                    <!-- ==========================================
+                                         Viewer
+                                    =========================================== -->
+
+                                    {% if current_user.role == "Viewer" %}
+
+                                    <span class="text-muted small">
+
+                                        <i class="bi bi-eye me-1"></i>
+
+                                        Read-only
+
+                                    </span>
+
+                                    {% endif %}
+
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            {% else %}
+
+            <!-- ==================================================
+                 No Assets
+            =================================================== -->
+
+            <div class="text-center p-5">
+
+                <i class="bi bi-hdd-stack display-4 text-muted"></i>
+
+                <h5 class="mt-3">
+                    No assets found
+                </h5>
+
+
+                <p class="text-muted mb-0">
+
+                    {% if search %}
+
+                    No assets matched:
+
+                    <strong>
+                        {{ search }}
+                    </strong>
+
+                    {% else %}
+
+                    {% if current_user.role in ["Admin", "Analyst"] %}
+
+                    Add your first asset using the form above.
+
+                    {% else %}
+
+                    No assets are currently available.
+
+                    {% endif %}
+
+                    {% endif %}
+
+                </p>
+
+            </div>
+
+            {% endif %}
 
         </div>
 
