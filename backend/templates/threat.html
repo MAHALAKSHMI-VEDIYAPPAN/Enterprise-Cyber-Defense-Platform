@@ -1,8 +1,13 @@
 {% extends "base.html" %}
 
-{% block title %}Threat Intelligence - ECDP{% endblock %}
+
+{% block title %}
+Threat Intelligence - ECDP
+{% endblock %}
+
 
 {% block content %}
+
 
 <!-- ==========================================================
      Page Header
@@ -11,16 +16,23 @@
 <div class="mb-4">
 
     <h2 class="fw-bold mb-1">
+
         <i class="bi bi-globe2 me-2"></i>
+
         Threat Intelligence
+
     </h2>
 
     <p class="text-muted mb-0">
+
         Investigate IP reputation, threat indicators, network
-        intelligence, and security engine detections using VirusTotal.
+        intelligence, and security engine detections using the
+        latest available VirusTotal intelligence.
+
     </p>
 
 </div>
+
 
 
 <!-- ==========================================================
@@ -43,13 +55,18 @@
 
     </div>
 
+
     <div class="card-body">
 
         <form method="POST">
 
             {{ form.hidden_tag() }}
 
+
             <div class="row g-3">
+
+
+                <!-- IP Address -->
 
                 <div class="col-lg-10">
 
@@ -57,15 +74,22 @@
                         IP Address
                     </label>
 
+
                     <input type="text" id="ip" name="ip" class="form-control" value="{{ ip_address }}"
                         placeholder="Example: 8.8.8.8" required>
 
+
                     <small class="text-muted">
-                        Enter an IP address for authorized security analysis.
+
+                        Enter an IP address for authorized
+                        security analysis.
+
                     </small>
 
                 </div>
 
+
+                <!-- Analyze -->
 
                 <div class="col-lg-2 d-flex align-items-end">
 
@@ -79,6 +103,7 @@
 
                 </div>
 
+
             </div>
 
         </form>
@@ -87,7 +112,9 @@
 
 </div>
 
+
 {% else %}
+
 
 <!-- ==========================================================
      Viewer Read-Only Notice
@@ -104,7 +131,10 @@
 
 </div>
 
+
 {% endif %}
+
+
 
 <!-- ==========================================================
      Analysis Result
@@ -112,7 +142,9 @@
 
 {% if result %}
 
+
 {% if result.success %}
+
 
 
 <!-- ==========================================================
@@ -134,28 +166,48 @@
                     Risk Level
                 </p>
 
+
                 {% if result.risk_level == "Critical" %}
 
                 <h3 class="fw-bold text-danger mb-0">
+
+                    <i class="bi bi-exclamation-octagon-fill me-1"></i>
+
                     Critical
+
                 </h3>
+
 
                 {% elif result.risk_level == "High" %}
 
                 <h3 class="fw-bold text-danger mb-0">
+
+                    <i class="bi bi-exclamation-triangle-fill me-1"></i>
+
                     High
+
                 </h3>
+
 
                 {% elif result.risk_level == "Medium" %}
 
                 <h3 class="fw-bold text-warning mb-0">
+
+                    <i class="bi bi-exclamation-circle-fill me-1"></i>
+
                     Medium
+
                 </h3>
+
 
                 {% else %}
 
                 <h3 class="fw-bold text-success mb-0">
+
+                    <i class="bi bi-check-circle-fill me-1"></i>
+
                     Low
+
                 </h3>
 
                 {% endif %}
@@ -165,6 +217,7 @@
         </div>
 
     </div>
+
 
 
     <!-- ECDP Risk Score -->
@@ -179,6 +232,7 @@
                     ECDP Risk Score
                 </p>
 
+
                 <h3 class="fw-bold mb-0">
 
                     {{ result.risk_score }}
@@ -189,15 +243,42 @@
 
                 </h3>
 
-                <small class="text-muted">
-                    Application-level risk score
+
+                {% if result.risk_score >= 80 %}
+
+                <small class="text-danger fw-bold">
+                    Critical threat level
                 </small>
+
+
+                {% elif result.risk_score >= 60 %}
+
+                <small class="text-danger fw-bold">
+                    High threat level
+                </small>
+
+
+                {% elif result.risk_score >= 35 %}
+
+                <small class="text-warning fw-bold">
+                    Medium threat level
+                </small>
+
+
+                {% else %}
+
+                <small class="text-success fw-bold">
+                    Low threat level
+                </small>
+
+                {% endif %}
 
             </div>
 
         </div>
 
     </div>
+
 
 
     <!-- Detection Rate -->
@@ -209,8 +290,9 @@
             <div class="card-body">
 
                 <p class="text-muted mb-1">
-                    Detection Rate
+                    Threat Detection Rate
                 </p>
+
 
                 <h3 class="fw-bold mb-0">
 
@@ -218,8 +300,11 @@
 
                 </h3>
 
+
                 <small class="text-muted">
-                    Malicious + suspicious detections
+
+                    Malicious + suspicious engine detections
+
                 </small>
 
             </div>
@@ -229,7 +314,8 @@
     </div>
 
 
-    <!-- IP Address -->
+
+    <!-- IP -->
 
     <div class="col-md-3">
 
@@ -240,6 +326,7 @@
                 <p class="text-muted mb-1">
                     Analyzed IP
                 </p>
+
 
                 <h5 class="fw-bold mb-0">
 
@@ -256,8 +343,160 @@
 </div>
 
 
+
 <!-- ==========================================================
-     2. Threat Assessment
+     2. Intelligence Status
+========================================================== -->
+
+<div class="card shadow border-0 mb-4">
+
+    <div class="card-header">
+
+        <h5 class="mb-0 fw-bold">
+
+            <i class="bi bi-arrow-repeat me-2"></i>
+
+            Intelligence Status
+
+        </h5>
+
+    </div>
+
+
+    <div class="card-body">
+
+        <div class="row g-4">
+
+
+            <!-- Analysis Source -->
+
+            <div class="col-md-4">
+
+                <p class="text-muted mb-1">
+                    Analysis Source
+                </p>
+
+
+                {% if result.refresh_completed %}
+
+                <span class="badge bg-success">
+
+                    <i class="bi bi-check-circle me-1"></i>
+
+                    Fresh Analysis Completed
+
+                </span>
+
+
+                {% elif result.refresh_attempted %}
+
+                <span class="badge bg-warning text-dark">
+
+                    <i class="bi bi-clock me-1"></i>
+
+                    Latest Available Intelligence
+
+                </span>
+
+
+                {% else %}
+
+                <span class="badge bg-info">
+
+                    <i class="bi bi-database me-1"></i>
+
+                    Latest Available Report
+
+                </span>
+
+                {% endif %}
+
+            </div>
+
+
+
+            <!-- Last Analysis -->
+
+            <div class="col-md-4">
+
+                <p class="text-muted mb-1">
+                    Last VirusTotal Analysis
+                </p>
+
+
+                <h6 class="fw-bold">
+
+                    {% if result.last_analysis_date %}
+
+                    {{ result.last_analysis_date }}
+
+                    {% else %}
+
+                    Not available
+
+                    {% endif %}
+
+                </h6>
+
+            </div>
+
+
+
+            <!-- Assessment Type -->
+
+            <div class="col-md-4">
+
+                <p class="text-muted mb-1">
+                    Assessment Type
+                </p>
+
+
+                <h6 class="fw-bold">
+                    ECDP Application-Level Assessment
+                </h6>
+
+
+                <small class="text-muted">
+
+                    Based on available VirusTotal intelligence.
+
+                </small>
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- Fresh Analysis Processing Notice -->
+
+        {% if result.refresh_attempted and not result.refresh_completed %}
+
+        <div class="alert alert-warning mt-4 mb-0">
+
+            <i class="bi bi-exclamation-triangle me-2"></i>
+
+            <strong>
+                Fresh analysis is still processing.
+            </strong>
+
+            ECDP is displaying the latest available VirusTotal
+            intelligence while the new analysis completes.
+
+        </div>
+
+        {% endif %}
+
+
+    </div>
+
+</div>
+
+
+
+<!-- ==========================================================
+     3. Threat Assessment
 ========================================================== -->
 
 <div class="card shadow border-0 mb-4">
@@ -274,7 +513,11 @@
 
     </div>
 
+
     <div class="card-body">
+
+
+        <!-- Risk Explanation -->
 
         {% if result.risk_level == "Critical" %}
 
@@ -282,13 +525,18 @@
 
             <i class="bi bi-exclamation-octagon-fill me-2"></i>
 
-            <strong>Critical Threat</strong>
+            <strong>
+                Critical Threat
+            </strong>
 
             <div class="mt-2">
+
                 {{ result.assessment }}
+
             </div>
 
         </div>
+
 
         {% elif result.risk_level == "High" %}
 
@@ -296,13 +544,18 @@
 
             <i class="bi bi-exclamation-triangle-fill me-2"></i>
 
-            <strong>High Risk</strong>
+            <strong>
+                High Risk
+            </strong>
 
             <div class="mt-2">
+
                 {{ result.assessment }}
+
             </div>
 
         </div>
+
 
         {% elif result.risk_level == "Medium" %}
 
@@ -310,13 +563,18 @@
 
             <i class="bi bi-exclamation-circle-fill me-2"></i>
 
-            <strong>Medium Risk</strong>
+            <strong>
+                Medium Risk
+            </strong>
 
             <div class="mt-2">
+
                 {{ result.assessment }}
+
             </div>
 
         </div>
+
 
         {% else %}
 
@@ -324,23 +582,137 @@
 
             <i class="bi bi-check-circle-fill me-2"></i>
 
-            <strong>Low Risk</strong>
+            <strong>
+                Low Risk
+            </strong>
 
             <div class="mt-2">
+
                 {{ result.assessment }}
+
             </div>
 
         </div>
 
         {% endif %}
 
+
+
+        <!-- ==================================================
+             Why Did ECDP Assign This Risk?
+        =================================================== -->
+
+        <div class="mt-4">
+
+            <h6 class="fw-bold mb-3">
+
+                <i class="bi bi-info-circle me-2"></i>
+
+                Why did ECDP assign this risk?
+
+            </h6>
+
+
+            <div class="row g-3">
+
+
+                <!-- Malicious -->
+
+                <div class="col-md-3">
+
+                    <div class="border rounded p-3 h-100">
+
+                        <small class="text-muted">
+                            Malicious Engines
+                        </small>
+
+                        <h4 class="fw-bold text-danger mb-0">
+
+                            {{ result.malicious }}
+
+                        </h4>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Suspicious -->
+
+                <div class="col-md-3">
+
+                    <div class="border rounded p-3 h-100">
+
+                        <small class="text-muted">
+                            Suspicious Engines
+                        </small>
+
+                        <h4 class="fw-bold text-warning mb-0">
+
+                            {{ result.suspicious }}
+
+                        </h4>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Community Malicious -->
+
+                <div class="col-md-3">
+
+                    <div class="border rounded p-3 h-100">
+
+                        <small class="text-muted">
+                            Malicious Community Votes
+                        </small>
+
+                        <h4 class="fw-bold text-danger mb-0">
+
+                            {{ result.community_votes.malicious }}
+
+                        </h4>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Reputation -->
+
+                <div class="col-md-3">
+
+                    <div class="border rounded p-3 h-100">
+
+                        <small class="text-muted">
+                            VirusTotal Reputation
+                        </small>
+
+                        <h4 class="fw-bold mb-0">
+
+                            {{ result.reputation }}
+
+                        </h4>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
     </div>
 
 </div>
 
 
+
 <!-- ==========================================================
-     3. VirusTotal Detection Statistics
+     4. VirusTotal Detection Statistics
 ========================================================== -->
 
 <div class="card shadow border-0 mb-4">
@@ -357,11 +729,13 @@
 
     </div>
 
+
     <div class="card-body">
 
         <div class="table-responsive">
 
             <table class="table table-hover align-middle mb-0">
+
 
                 <thead>
 
@@ -383,6 +757,7 @@
 
                 </thead>
 
+
                 <tbody>
 
 
@@ -393,16 +768,20 @@
                         <td>
 
                             <span class="badge bg-danger">
+
                                 Malicious
+
                             </span>
 
                         </td>
 
-                        <td class="fw-bold">
+
+                        <td class="fw-bold text-danger">
 
                             {{ result.malicious }}
 
                         </td>
+
 
                         <td>
 
@@ -414,6 +793,7 @@
                     </tr>
 
 
+
                     <!-- Suspicious -->
 
                     <tr>
@@ -421,16 +801,20 @@
                         <td>
 
                             <span class="badge bg-warning text-dark">
+
                                 Suspicious
+
                             </span>
 
                         </td>
 
-                        <td class="fw-bold">
+
+                        <td class="fw-bold text-warning">
 
                             {{ result.suspicious }}
 
                         </td>
+
 
                         <td>
 
@@ -442,6 +826,7 @@
                     </tr>
 
 
+
                     <!-- Harmless -->
 
                     <tr>
@@ -449,16 +834,20 @@
                         <td>
 
                             <span class="badge bg-success">
+
                                 Harmless
+
                             </span>
 
                         </td>
 
-                        <td class="fw-bold">
+
+                        <td class="fw-bold text-success">
 
                             {{ result.harmless }}
 
                         </td>
+
 
                         <td>
 
@@ -470,6 +859,7 @@
                     </tr>
 
 
+
                     <!-- Undetected -->
 
                     <tr>
@@ -477,16 +867,20 @@
                         <td>
 
                             <span class="badge bg-secondary">
+
                                 Undetected
+
                             </span>
 
                         </td>
+
 
                         <td class="fw-bold">
 
                             {{ result.undetected }}
 
                         </td>
+
 
                         <td>
 
@@ -498,6 +892,7 @@
                     </tr>
 
 
+
                     <!-- Timeout -->
 
                     <tr>
@@ -505,16 +900,20 @@
                         <td>
 
                             <span class="badge bg-dark">
+
                                 Timeout
+
                             </span>
 
                         </td>
+
 
                         <td class="fw-bold">
 
                             {{ result.timeout }}
 
                         </td>
+
 
                         <td>
 
@@ -526,19 +925,26 @@
                     </tr>
 
 
+
                     <!-- Total -->
 
                     <tr class="table-light">
 
                         <td>
-                            <strong>Total Engines</strong>
+
+                            <strong>
+                                Total Engines
+                            </strong>
+
                         </td>
+
 
                         <td class="fw-bold">
 
                             {{ result.total }}
 
                         </td>
+
 
                         <td>
 
@@ -547,6 +953,7 @@
                         </td>
 
                     </tr>
+
 
                 </tbody>
 
@@ -559,8 +966,9 @@
 </div>
 
 
+
 <!-- ==========================================================
-     4. IP Infrastructure Intelligence
+     5. IP Infrastructure Intelligence
 ========================================================== -->
 
 <div class="card shadow border-0 mb-4">
@@ -576,6 +984,7 @@
         </h5>
 
     </div>
+
 
     <div class="card-body">
 
@@ -684,7 +1093,7 @@
             </div>
 
 
-            <!-- VirusTotal Reputation -->
+            <!-- Reputation -->
 
             <div class="col-md-6">
 
@@ -700,6 +1109,7 @@
 
             </div>
 
+
         </div>
 
     </div>
@@ -707,8 +1117,9 @@
 </div>
 
 
+
 <!-- ==========================================================
-     5. Community Reputation
+     6. Community Reputation
 ========================================================== -->
 
 <div class="card shadow border-0 mb-4">
@@ -725,20 +1136,24 @@
 
     </div>
 
+
     <div class="card-body">
 
         <div class="row g-4">
 
 
-            <!-- Community Malicious -->
+            <!-- Malicious Votes -->
 
             <div class="col-md-6">
 
                 <div class="border rounded p-3">
 
                     <p class="text-muted mb-1">
+
                         Community Malicious Votes
+
                     </p>
+
 
                     <h3 class="fw-bold text-danger mb-0">
 
@@ -751,15 +1166,18 @@
             </div>
 
 
-            <!-- Community Harmless -->
+            <!-- Harmless Votes -->
 
             <div class="col-md-6">
 
                 <div class="border rounded p-3">
 
                     <p class="text-muted mb-1">
+
                         Community Harmless Votes
+
                     </p>
+
 
                     <h3 class="fw-bold text-success mb-0">
 
@@ -771,6 +1189,7 @@
 
             </div>
 
+
         </div>
 
     </div>
@@ -778,8 +1197,9 @@
 </div>
 
 
+
 <!-- ==========================================================
-     6. Threat Intelligence Tags
+     7. Threat Intelligence Tags
 ========================================================== -->
 
 <div class="card shadow border-0 mb-4">
@@ -796,9 +1216,12 @@
 
     </div>
 
+
     <div class="card-body">
 
+
         {% if result.tags %}
+
 
         {% for tag in result.tags %}
 
@@ -810,6 +1233,7 @@
 
         {% endfor %}
 
+
         {% else %}
 
         <span class="text-muted">
@@ -820,13 +1244,15 @@
 
         {% endif %}
 
+
     </div>
 
 </div>
 
 
+
 <!-- ==========================================================
-     7. Analysis Information
+     8. Analysis Information
 ========================================================== -->
 
 <div class="card shadow border-0 mb-4">
@@ -842,6 +1268,7 @@
         </h5>
 
     </div>
+
 
     <div class="card-body">
 
@@ -906,16 +1333,22 @@
                     WHOIS Information
                 </p>
 
+
                 {% if result.whois_available %}
 
                 <span class="badge bg-success">
+
                     Available
+
                 </span>
+
 
                 {% else %}
 
                 <span class="badge bg-secondary">
+
                     Not Available
+
                 </span>
 
                 {% endif %}
@@ -939,6 +1372,7 @@
 
             </div>
 
+
         </div>
 
     </div>
@@ -946,8 +1380,9 @@
 </div>
 
 
+
 <!-- ==========================================================
-     8. SOC Recommendation
+     9. SOC Recommendation
 ========================================================== -->
 
 <div class="card shadow border-0 mb-4">
@@ -964,15 +1399,22 @@
 
     </div>
 
+
     <div class="card-body">
+
 
         {% if result.risk_level == "Critical" %}
 
         <div class="alert alert-danger mb-0">
 
             <strong>
+
+                <i class="bi bi-exclamation-octagon-fill me-2"></i>
+
                 Immediate Action Required
+
             </strong>
+
 
             <p class="mb-0 mt-2">
 
@@ -985,13 +1427,19 @@
 
         </div>
 
+
         {% elif result.risk_level == "High" %}
 
         <div class="alert alert-danger mb-0">
 
             <strong>
+
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+
                 High Priority Investigation
+
             </strong>
+
 
             <p class="mb-0 mt-2">
 
@@ -1004,13 +1452,19 @@
 
         </div>
 
+
         {% elif result.risk_level == "Medium" %}
 
         <div class="alert alert-warning mb-0">
 
             <strong>
+
+                <i class="bi bi-exclamation-circle-fill me-2"></i>
+
                 Investigation Recommended
+
             </strong>
+
 
             <p class="mb-0 mt-2">
 
@@ -1022,19 +1476,26 @@
 
         </div>
 
+
         {% else %}
 
         <div class="alert alert-success mb-0">
 
             <strong>
+
+                <i class="bi bi-check-circle-fill me-2"></i>
+
                 Continue Monitoring
+
             </strong>
+
 
             <p class="mb-0 mt-2">
 
-                No significant malicious activity was detected.
-                Continue regular monitoring and reassess the IP
-                if new security indicators appear.
+                No significant malicious activity was detected
+                by the available VirusTotal intelligence.
+                Continue regular monitoring and reassess the
+                IP if new security indicators appear.
 
             </p>
 
@@ -1042,12 +1503,15 @@
 
         {% endif %}
 
+
     </div>
 
 </div>
 
 
+
 {% else %}
+
 
 <!-- ==========================================================
      Error Result
@@ -1061,6 +1525,7 @@
         Threat Analysis Failed
     </strong>
 
+
     <div class="mt-1">
 
         {{ result.message }}
@@ -1069,8 +1534,10 @@
 
 </div>
 
+
 {% endif %}
 
 {% endif %}
+
 
 {% endblock %}

@@ -1,47 +1,38 @@
 import ipaddress
+import time
+from datetime import datetime, timezone
+
 import requests
 
 from flask import current_app
 
 
 # ==========================================================
-# VirusTotal IP Threat Intelligence
+# VirusTotal Configuration
 # ==========================================================
 
-def check_ip_reputation(ip_address):
-    """
-    Analyze an IPv4/IPv6 address using the VirusTotal API.
+VT_BASE_URL = "https://www.virustotal.com/api/v3"
 
-    Returns a structured threat intelligence result containing:
 
-        - success
-        - ip
-        - malicious
-        - suspicious
-        - harmless
-        - undetected
-        - timeout
-        - total
-        - detection_rate
-        - risk_level
-        - risk_score
-        - reputation
-        - country
-        - continent
-        - asn
-        - as_owner
-        - network
-        - regional_internet_registry
-        - tags
-        - community_votes
-        - message
-    """
+# ==========================================================
+# Validate IP Address
+# ==========================================================
 
-    # ======================================================
-    # Validate IP Address
-    # ======================================================
+def validate_ip(ip_address):
+
+    if not isinstance(ip_address, str):
+        return (
+            False,
+            "Target must be a valid IP address."
+        )
 
     ip_address = ip_address.strip()
+
+    if not ip_address:
+        return (
+            False,
+            "IP address cannot be empty."
+        )
 
     try:
 
@@ -49,24 +40,691 @@ def check_ip_reputation(ip_address):
             ip_address
         )
 
-        ip_address = str(validated_ip)
+        return (
+            True,
+            str(validated_ip)
+        )
 
     except ValueError:
 
-        return {
-            "success": False,
-            "message": "Please enter a valid IPv4 or IPv6 address."
-        }
+        return (
+            False,
+            "Please enter a valid IPv4 or IPv6 address."
+        )
 
 
-    # ======================================================
-    # Get VirusTotal API Key
-    # ======================================================
+# ==========================================================
+# Get VirusTotal API Key
+# ==========================================================
 
-    api_key = current_app.config.get(
+def get_api_key():
+
+    return current_app.config.get(
         "VIRUSTOTAL_API_KEY"
     )
 
+
+# ==========================================================
+# Get IP Report
+# ==========================================================
+
+def get_ip_report(
+    ip_address,
+    api_key
+):
+
+    url = (
+        f"{VT_BASE_URL}/ip_addresses/"
+        f"{ip_address}"
+    )
+
+    headers = {
+        "x-apikey": api_key,
+        "Accept": "application/json"
+    }
+
+    response = requests.get(
+        url,
+        headers=headers,
+        timeout=20
+    )
+
+    return response
+
+
+# ==========================================================
+# Request Fresh IP Analysis
+# ==========================================================
+
+def request_ip_reanalysis(
+    ip_address,
+    api_key
+):
+
+    url = (
+        f"{VT_BASE_URL}/ip_addresses/"
+        f"{ip_address}/analyse"
+    )
+
+    headers = {
+        "x-apikey": api_key,
+        "Accept": "application/json"
+    }
+
+    response = requests.post(
+        url,
+        headers=headers,
+        timeout=20
+    )
+
+    return response
+
+
+# ==========================================================
+# Get Analysis Result
+# ==========================================================
+
+def get_analysis(
+    analysis_id,
+    api_key
+):
+
+    url = (
+        f"{VT_BASE_URL}/analyses/"
+        f"{analysis_id}"
+    )
+
+    headers = {
+        "x-apikey": api_key,
+        "Accept": "application/json"
+    }
+
+    response = requests.get(
+        url,
+        headers=headers,
+        timeout=20
+    )
+
+    return response
+
+
+# ==========================================================
+# Format Unix Timestamp
+# ==========================================================
+
+def format_timestamp(timestamp):
+
+    if not timestamp:
+        return "Unknown"
+
+    try:
+
+        timestamp = int(timestamp)
+
+        readable_time = datetime.fromtimestamp(
+            timestamp,
+            tz=timezone.utc
+        )
+
+        return readable_time.strftime(
+            "%d %b %Y, %H:%M UTC"
+        )
+
+    except (
+        ValueError,
+        TypeError,
+        OverflowError
+    ):
+
+        return "Unknown"
+
+
+# ==========================================================
+# Refresh VirusTotal Analysis
+# ==========================================================
+
+def refresh_ip_intelligence(
+    ip_address,
+    api_key
+):
+
+    try:
+
+        response = request_ip_reanalysis(
+            ip_address,
+            api_key
+        )
+
+        if response.status_code not in [
+            200,
+            201
+        ]:
+
+            return {
+                "success": False,
+                "message": (
+                    "VirusTotal could not start "
+                    "a fresh IP analysis."
+                )
+            }
+
+        data = response.json()
+
+        analysis_id = (
+            data
+            .get("data", {})
+            .get("id")
+        )
+
+        if not analysis_id:
+
+            return {
+                "success": False,
+                "message": (
+                    "VirusTotal did not return "
+                    "an analysis ID."
+                )
+            }
+
+        # --------------------------------------------------
+        # Poll Analysis
+        # --------------------------------------------------
+
+        for _ in range(6):
+
+            time.sleep(2)
+
+            analysis_response = get_analysis(
+                analysis_id,
+                api_key
+            )
+
+            if analysis_response.status_code != 200:
+                continue
+
+            analysis_data = (
+                analysis_response
+                .json()
+                .get("data", {})
+                .get("attributes", {})
+            )
+
+            status = analysis_data.get(
+                "status"
+            )
+
+            if status == "completed":
+
+                return {
+                    "success": True,
+                    "analysis_id": analysis_id
+                }
+
+        return {
+            "success": False,
+            "message": (
+                "VirusTotal analysis is still "
+                "processing. Using the latest "
+                "available intelligence."
+            )
+        }
+
+    except requests.exceptions.RequestException:
+
+        return {
+            "success": False,
+            "message": (
+                "Unable to refresh VirusTotal "
+                "analysis."
+            )
+        }
+
+
+# ==========================================================
+# Calculate ECDP Risk
+# ==========================================================
+
+def calculate_risk(
+    malicious,
+    suspicious,
+    total,
+    reputation,
+    community_malicious,
+    community_harmless,
+    tags
+):
+
+    # ======================================================
+    # Detection Component
+    # ======================================================
+
+    detection_score = 0
+
+    if total > 0:
+
+        detection_score = (
+            (
+                malicious * 100
+            )
+            +
+            (
+                suspicious * 60
+            )
+        ) / total
+
+    # ======================================================
+    # Community Component
+    # ======================================================
+
+    community_score = 0
+
+    total_votes = (
+        community_malicious
+        +
+        community_harmless
+    )
+
+    if total_votes > 0:
+
+        malicious_vote_ratio = (
+            community_malicious
+            / total_votes
+        )
+
+        community_score = (
+            malicious_vote_ratio * 100
+        )
+
+    # ======================================================
+    # Reputation Component
+    # ======================================================
+
+    reputation_score = 0
+
+    if reputation < 0:
+
+        reputation_score = min(
+            abs(reputation),
+            100
+        )
+
+    # ======================================================
+    # Threat Tag Component
+    # ======================================================
+
+    tag_score = 0
+
+    suspicious_tags = {
+        "malware",
+        "malicious",
+        "phishing",
+        "botnet",
+        "c2",
+        "command-and-control",
+        "tor",
+        "scanner",
+        "proxy",
+        "spam",
+        "abuse",
+        "ransomware",
+        "exploit",
+        "bruteforce"
+    }
+
+    normalized_tags = {
+        str(tag).lower().strip()
+        for tag in tags
+    }
+
+    matching_tags = (
+        normalized_tags
+        & suspicious_tags
+    )
+
+    if matching_tags:
+
+        tag_score = min(
+            len(matching_tags) * 15,
+            60
+        )
+
+    # ======================================================
+    # Final Weighted Score
+    # ======================================================
+
+    risk_score = round(
+
+        (
+            detection_score * 0.60
+        )
+        +
+        (
+            community_score * 0.25
+        )
+        +
+        (
+            reputation_score * 0.10
+        )
+        +
+        (
+            tag_score * 0.05
+        )
+
+    )
+
+    # ======================================================
+    # Risk Classification
+    # ======================================================
+
+    # ------------------------------------------------------
+    # Critical
+    # ------------------------------------------------------
+
+    if malicious >= 5:
+
+        risk_level = "Critical"
+
+    # ------------------------------------------------------
+    # High
+    # ------------------------------------------------------
+
+    elif malicious >= 2:
+
+        risk_level = "High"
+
+    elif malicious == 1:
+
+        risk_level = "High"
+
+    elif suspicious >= 5:
+
+        risk_level = "High"
+
+    # ------------------------------------------------------
+    # Community High-Risk Indicator
+    # ------------------------------------------------------
+
+    elif (
+        community_malicious >= 25
+        and total_votes > 0
+        and (
+            community_malicious / total_votes
+        ) >= 0.30
+    ):
+
+        risk_level = "High"
+
+    # ------------------------------------------------------
+    # Medium
+    # ------------------------------------------------------
+
+    elif suspicious >= 2:
+
+        risk_level = "Medium"
+
+    elif suspicious == 1:
+
+        risk_level = "Medium"
+
+    elif (
+        community_malicious >= 10
+        and total_votes > 0
+        and (
+            community_malicious / total_votes
+        ) >= 0.20
+    ):
+
+        risk_level = "Medium"
+
+    elif reputation <= -10:
+
+        risk_level = "Medium"
+
+    elif tag_score >= 30:
+
+        risk_level = "Medium"
+
+    # ------------------------------------------------------
+    # Low
+    # ------------------------------------------------------
+
+    else:
+
+        risk_level = "Low"
+
+    # ======================================================
+    # Make Score Consistent With Classification
+    # ======================================================
+
+    if risk_level == "Critical":
+
+        risk_score = max(
+            risk_score,
+            80
+        )
+
+    elif risk_level == "High":
+
+        risk_score = max(
+            risk_score,
+            60
+        )
+
+    elif risk_level == "Medium":
+
+        risk_score = max(
+            risk_score,
+            35
+        )
+
+    else:
+
+        risk_score = min(
+            risk_score,
+            34
+        )
+
+    return (
+        risk_level,
+        min(
+            max(
+                risk_score,
+                0
+            ),
+            100
+        )
+    )
+
+
+# ==========================================================
+# Threat Assessment Message
+# ==========================================================
+
+def build_assessment(
+    risk_level,
+    malicious,
+    suspicious,
+    reputation,
+    community_malicious,
+    community_harmless,
+    tags
+):
+
+    reasons = []
+
+    # ======================================================
+    # Critical
+    # ======================================================
+
+    if risk_level == "Critical":
+
+        if malicious > 0:
+
+            reasons.append(
+                f"{malicious} malicious security engine detections"
+            )
+
+        if suspicious > 0:
+
+            reasons.append(
+                f"{suspicious} suspicious security engine detections"
+            )
+
+        if community_malicious > 0:
+
+            reasons.append(
+                f"{community_malicious} malicious community votes"
+            )
+
+        return (
+            "Critical threat indicators were detected. "
+            + ", ".join(reasons)
+            + ". Immediate investigation and containment "
+              "are recommended."
+        )
+
+    # ======================================================
+    # High
+    # ======================================================
+
+    if risk_level == "High":
+
+        if malicious > 0:
+
+            reasons.append(
+                f"{malicious} malicious detection(s)"
+            )
+
+        if suspicious > 0:
+
+            reasons.append(
+                f"{suspicious} suspicious detection(s)"
+            )
+
+        if community_malicious > 0:
+
+            reasons.append(
+                f"{community_malicious} malicious community vote(s)"
+            )
+
+        if reputation < 0:
+
+            reasons.append(
+                "negative reputation"
+            )
+
+        if tags:
+
+            matching_tags = {
+                str(tag).lower().strip()
+                for tag in tags
+            }
+
+            if matching_tags:
+
+                reasons.append(
+                    "threat intelligence tags"
+                )
+
+        reason_text = ", ".join(
+            reasons
+        )
+
+        return (
+            "High-risk indicators detected"
+            + (
+                f": {reason_text}."
+                if reason_text
+                else "."
+            )
+            + " Further investigation is recommended."
+        )
+
+    # ======================================================
+    # Medium
+    # ======================================================
+
+    if risk_level == "Medium":
+
+        if suspicious > 0:
+
+            reasons.append(
+                f"{suspicious} suspicious detection(s)"
+            )
+
+        if community_malicious > 0:
+
+            reasons.append(
+                f"{community_malicious} malicious community vote(s)"
+            )
+
+        if reputation < 0:
+
+            reasons.append(
+                "negative community reputation"
+            )
+
+        if tags:
+
+            reasons.append(
+                "threat-related intelligence tags"
+            )
+
+        reason_text = ", ".join(
+            reasons
+        )
+
+        return (
+            "Moderate threat indicators detected"
+            + (
+                f": {reason_text}."
+                if reason_text
+                else "."
+            )
+            + " Additional investigation is recommended."
+        )
+
+    # ======================================================
+    # Low
+    # ======================================================
+
+    return (
+        "No significant malicious activity was "
+        "identified by the available VirusTotal "
+        "intelligence."
+    )
+
+
+# ==========================================================
+# Main Threat Intelligence Function
+# ==========================================================
+
+def check_ip_reputation(
+    ip_address
+):
+
+    # ======================================================
+    # Validate IP
+    # ======================================================
+
+    valid, normalized_ip = validate_ip(
+        ip_address
+    )
+
+    if not valid:
+
+        return {
+            "success": False,
+            "message": normalized_ip
+        }
+
+    ip_address = normalized_ip
+
+    # ======================================================
+    # API Key
+    # ======================================================
+
+    api_key = get_api_key()
 
     if not api_key:
 
@@ -77,57 +735,38 @@ def check_ip_reputation(ip_address):
             )
         }
 
-
     # ======================================================
-    # VirusTotal IP API
+    # Get Existing Intelligence
     # ======================================================
-
-    url = (
-        "https://www.virustotal.com/api/v3/"
-        f"ip_addresses/{ip_address}"
-    )
-
-
-    headers = {
-        "x-apikey": api_key,
-        "Accept": "application/json"
-    }
-
 
     try:
 
-        response = requests.get(
-            url,
-            headers=headers,
-            timeout=15
+        response = get_ip_report(
+            ip_address,
+            api_key
         )
 
-
-        # ==================================================
-        # HTTP Response Handling
-        # ==================================================
+        # --------------------------------------------------
+        # HTTP Errors
+        # --------------------------------------------------
 
         if response.status_code == 400:
 
             return {
                 "success": False,
                 "message": (
-                    "VirusTotal rejected the IP address "
-                    "request."
+                    "VirusTotal rejected the IP address."
                 )
             }
-
 
         if response.status_code == 401:
 
             return {
                 "success": False,
                 "message": (
-                    "VirusTotal API authentication failed. "
-                    "Check your API key."
+                    "VirusTotal API authentication failed."
                 )
             }
-
 
         if response.status_code == 403:
 
@@ -137,7 +776,6 @@ def check_ip_reputation(ip_address):
                     "VirusTotal API access was denied."
                 )
             }
-
 
         if response.status_code == 404:
 
@@ -149,35 +787,25 @@ def check_ip_reputation(ip_address):
                 )
             }
 
-
         if response.status_code == 429:
 
             return {
                 "success": False,
                 "message": (
-                    "VirusTotal API rate limit reached. "
-                    "Please try again later."
+                    "VirusTotal API rate limit reached."
                 )
             }
-
 
         if response.status_code != 200:
 
             return {
                 "success": False,
                 "message": (
-                    "Unable to retrieve threat intelligence "
-                    "from VirusTotal."
+                    "Unable to retrieve threat intelligence."
                 )
             }
 
-
-        # ==================================================
-        # Parse JSON Response
-        # ==================================================
-
         data = response.json()
-
 
         attributes = (
             data
@@ -185,6 +813,47 @@ def check_ip_reputation(ip_address):
             .get("attributes", {})
         )
 
+        # ==================================================
+        # Optional Fresh Analysis
+        # ==================================================
+
+        refresh_enabled = current_app.config.get(
+            "VIRUSTOTAL_REFRESH_ANALYSIS",
+            False
+        )
+
+        refresh_status = None
+
+        if refresh_enabled:
+
+            refresh_status = refresh_ip_intelligence(
+                ip_address,
+                api_key
+            )
+
+            # ------------------------------------------------
+            # Retrieve Updated Report
+            # ------------------------------------------------
+
+            if refresh_status.get("success"):
+
+                refreshed_response = get_ip_report(
+                    ip_address,
+                    api_key
+                )
+
+                if refreshed_response.status_code == 200:
+
+                    refreshed_data = (
+                        refreshed_response
+                        .json()
+                    )
+
+                    attributes = (
+                        refreshed_data
+                        .get("data", {})
+                        .get("attributes", {})
+                    )
 
         # ==================================================
         # Analysis Statistics
@@ -195,7 +864,6 @@ def check_ip_reputation(ip_address):
             {}
         )
 
-
         malicious = int(
             stats.get(
                 "malicious",
@@ -203,7 +871,6 @@ def check_ip_reputation(ip_address):
             )
             or 0
         )
-
 
         suspicious = int(
             stats.get(
@@ -213,7 +880,6 @@ def check_ip_reputation(ip_address):
             or 0
         )
 
-
         harmless = int(
             stats.get(
                 "harmless",
@@ -221,7 +887,6 @@ def check_ip_reputation(ip_address):
             )
             or 0
         )
-
 
         undetected = int(
             stats.get(
@@ -231,7 +896,6 @@ def check_ip_reputation(ip_address):
             or 0
         )
 
-
         timeout = int(
             stats.get(
                 "timeout",
@@ -239,11 +903,6 @@ def check_ip_reputation(ip_address):
             )
             or 0
         )
-
-
-        # ==================================================
-        # Total Analysis Engines
-        # ==================================================
 
         total = (
             malicious
@@ -253,7 +912,6 @@ def check_ip_reputation(ip_address):
             + timeout
         )
 
-
         # ==================================================
         # Detection Rate
         # ==================================================
@@ -262,7 +920,6 @@ def check_ip_reputation(ip_address):
             malicious
             + suspicious
         )
-
 
         if total > 0:
 
@@ -278,74 +935,8 @@ def check_ip_reputation(ip_address):
 
             detection_rate = 0.0
 
-
         # ==================================================
-        # Threat Risk Score
-        # ==================================================
-        #
-        # This is an ECDP application-level score.
-        # It is NOT a VirusTotal official score.
-        #
-        # Maximum = 100
-        #
-        # Malicious detections have the highest weight.
-        # Suspicious detections have a lower weight.
-        # ==================================================
-
-        risk_score = 0
-
-
-        if total > 0:
-
-            risk_score = round(
-                (
-                    (
-                        malicious * 100
-                    )
-                    + (
-                        suspicious * 50
-                    )
-                )
-                / total
-            )
-
-
-        risk_score = max(
-            0,
-            min(
-                100,
-                risk_score
-            )
-        )
-
-
-        # ==================================================
-        # Risk Classification
-        # ==================================================
-
-        if malicious >= 5:
-
-            risk_level = "Critical"
-
-        elif malicious > 0:
-
-            risk_level = "High"
-
-        elif suspicious >= 3:
-
-            risk_level = "Medium"
-
-        elif suspicious > 0:
-
-            risk_level = "Low"
-
-        else:
-
-            risk_level = "Low"
-
-
-        # ==================================================
-        # IP Metadata
+        # Metadata
         # ==================================================
 
         country = attributes.get(
@@ -353,30 +944,25 @@ def check_ip_reputation(ip_address):
             "Unknown"
         )
 
-
         continent = attributes.get(
             "continent",
             "Unknown"
         )
-
 
         asn = attributes.get(
             "asn",
             "Unknown"
         )
 
-
         as_owner = attributes.get(
             "as_owner",
             "Unknown"
         )
 
-
         network = attributes.get(
             "network",
             "Unknown"
         )
-
 
         regional_internet_registry = (
             attributes.get(
@@ -385,12 +971,13 @@ def check_ip_reputation(ip_address):
             )
         )
 
-
-        reputation = attributes.get(
-            "reputation",
-            0
+        reputation = int(
+            attributes.get(
+                "reputation",
+                0
+            )
+            or 0
         )
-
 
         # ==================================================
         # Community Votes
@@ -401,7 +988,6 @@ def check_ip_reputation(ip_address):
             {}
         )
 
-
         community_harmless = int(
             total_votes.get(
                 "harmless",
@@ -410,7 +996,6 @@ def check_ip_reputation(ip_address):
             or 0
         )
 
-
         community_malicious = int(
             total_votes.get(
                 "malicious",
@@ -418,7 +1003,6 @@ def check_ip_reputation(ip_address):
             )
             or 0
         )
-
 
         # ==================================================
         # Tags
@@ -429,32 +1013,40 @@ def check_ip_reputation(ip_address):
             []
         )
 
-
-        if not isinstance(tags, list):
+        if not isinstance(
+            tags,
+            list
+        ):
 
             tags = []
 
-
         # ==================================================
-        # Last Analysis Date
+        # Dates
         # ==================================================
 
-        last_analysis_date = attributes.get(
-            "last_analysis_date"
+        last_analysis_date = (
+            attributes.get(
+                "last_analysis_date"
+            )
         )
 
-
-        # ==================================================
-        # Last Modification Date
-        # ==================================================
-
-        last_modification_date = attributes.get(
-            "last_modification_date"
+        last_modification_date = (
+            attributes.get(
+                "last_modification_date"
+            )
         )
 
+        # Human-readable versions
+        last_analysis_readable = format_timestamp(
+            last_analysis_date
+        )
+
+        last_modification_readable = format_timestamp(
+            last_modification_date
+        )
 
         # ==================================================
-        # WHOIS Information
+        # WHOIS
         # ==================================================
 
         whois = attributes.get(
@@ -462,50 +1054,60 @@ def check_ip_reputation(ip_address):
             ""
         )
 
-
-        # Keep WHOIS optional so we don't expose
-        # unnecessary large data in the dashboard.
-
         whois_available = bool(
             whois
         )
 
+        # ==================================================
+        # ECDP Risk
+        # ==================================================
+
+        risk_level, risk_score = calculate_risk(
+
+            malicious,
+            suspicious,
+            total,
+            reputation,
+            community_malicious,
+            community_harmless,
+            tags
+
+        )
 
         # ==================================================
-        # Threat Assessment Message
+        # Assessment
         # ==================================================
 
-        if risk_level == "Critical":
+        assessment = build_assessment(
 
-            assessment = (
-                "Critical threat indicators detected. "
-                "Immediate investigation and containment "
-                "are recommended."
-            )
+            risk_level,
+            malicious,
+            suspicious,
+            reputation,
+            community_malicious,
+            community_harmless,
+            tags
 
-        elif risk_level == "High":
+        )
 
-            assessment = (
-                "Malicious activity has been detected. "
-                "The IP address should be investigated "
-                "and blocked if confirmed malicious."
-            )
+        # ==================================================
+        # Intelligence Status
+        # ==================================================
 
-        elif risk_level == "Medium":
+        if (
+            refresh_status
+            and refresh_status.get("success")
+        ):
 
-            assessment = (
-                "Suspicious activity has been detected. "
-                "Additional investigation is recommended."
+            intelligence_status = (
+                "Fresh VirusTotal Analysis"
             )
 
         else:
 
-            assessment = (
-                "No significant malicious activity was "
-                "detected by the available VirusTotal "
-                "analysis engines."
+            intelligence_status = (
+                "Latest Available VirusTotal Report"
             )
-
 
         # ==================================================
         # Final Result
@@ -515,16 +1117,7 @@ def check_ip_reputation(ip_address):
 
             "success": True,
 
-            # ----------------------------------------------
-            # IP
-            # ----------------------------------------------
-
             "ip": ip_address,
-
-
-            # ----------------------------------------------
-            # Detection Statistics
-            # ----------------------------------------------
 
             "malicious": malicious,
 
@@ -538,26 +1131,13 @@ def check_ip_reputation(ip_address):
 
             "total": total,
 
-
-            # ----------------------------------------------
-            # Detection Rate
-            # ----------------------------------------------
-
             "detection_rate": detection_rate,
-
-
-            # ----------------------------------------------
-            # ECDP Risk
-            # ----------------------------------------------
 
             "risk_level": risk_level,
 
             "risk_score": risk_score,
 
-
-            # ----------------------------------------------
-            # IP Intelligence
-            # ----------------------------------------------
+            "reputation": reputation,
 
             "country": country,
 
@@ -573,62 +1153,53 @@ def check_ip_reputation(ip_address):
                 regional_internet_registry
             ),
 
-
-            # ----------------------------------------------
-            # Reputation
-            # ----------------------------------------------
-
-            "reputation": reputation,
-
-
-            # ----------------------------------------------
-            # Community Votes
-            # ----------------------------------------------
-
             "community_votes": {
 
                 "harmless": community_harmless,
 
                 "malicious": community_malicious
+
             },
-
-
-            # ----------------------------------------------
-            # Tags
-            # ----------------------------------------------
 
             "tags": tags,
 
-
-            # ----------------------------------------------
-            # Analysis Information
-            # ----------------------------------------------
-
             "last_analysis_date": (
                 last_analysis_date
+            ),
+
+            "last_analysis_readable": (
+                last_analysis_readable
             ),
 
             "last_modification_date": (
                 last_modification_date
             ),
 
-
-            # ----------------------------------------------
-            # WHOIS
-            # ----------------------------------------------
+            "last_modification_readable": (
+                last_modification_readable
+            ),
 
             "whois_available": (
                 whois_available
             ),
 
+            "refresh_attempted": (
+                refresh_enabled
+            ),
 
-            # ----------------------------------------------
-            # Analyst Assessment
-            # ----------------------------------------------
+            "refresh_completed": (
+                bool(
+                    refresh_status
+                    and refresh_status.get("success")
+                )
+            ),
+
+            "intelligence_status": (
+                intelligence_status
+            ),
 
             "assessment": assessment
         }
-
 
     # ======================================================
     # Timeout
@@ -639,11 +1210,9 @@ def check_ip_reputation(ip_address):
         return {
             "success": False,
             "message": (
-                "VirusTotal request timed out. "
-                "Please try again."
+                "VirusTotal request timed out."
             )
         }
-
 
     # ======================================================
     # Connection Error
@@ -654,11 +1223,9 @@ def check_ip_reputation(ip_address):
         return {
             "success": False,
             "message": (
-                "Unable to connect to VirusTotal. "
-                "Check your internet connection."
+                "Unable to connect to VirusTotal."
             )
         }
-
 
     # ======================================================
     # JSON Error
@@ -673,21 +1240,18 @@ def check_ip_reputation(ip_address):
             )
         }
 
-
     # ======================================================
     # Request Error
     # ======================================================
 
-    except requests.exceptions.RequestException:
+    except requests.exceptions.RequestException as error:
 
         return {
             "success": False,
             "message": (
-                "A network error occurred while contacting "
-                "VirusTotal."
+                f"VirusTotal request error: {str(error)}"
             )
         }
-
 
     # ======================================================
     # Unexpected Error
@@ -695,10 +1259,10 @@ def check_ip_reputation(ip_address):
 
     except Exception:
 
-     return {
-        "success": False,
-        "message": (
-            "An unexpected error occurred during "
-            "threat analysis."
-        )
-    }
+        return {
+            "success": False,
+            "message": (
+                "An unexpected error occurred during "
+                "threat analysis."
+            )
+        }

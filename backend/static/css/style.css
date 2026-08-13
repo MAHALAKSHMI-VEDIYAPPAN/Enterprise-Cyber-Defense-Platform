@@ -3,6 +3,52 @@
    Hacker / SOC Dark Interface
    ========================================================== */
 
+/* ==========================================================
+   ECDP NAVBAR BRANDING
+   ========================================================== */
+
+.navbar-branding {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.brand-code {
+    color: #00f5d4;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.brand-divider {
+    width: 1px;
+    height: 30px;
+    background: rgba(0, 245, 212, 0.25);
+}
+
+.brand-title {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.brand-title h2 {
+    margin: 0;
+    color: #eafff8;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+}
+
+.brand-title small {
+    margin-top: 2px;
+    color: #78958c;
+    font-size: 10px;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+}
+
 /* ===========================
    Global
    =========================== */
@@ -262,12 +308,6 @@ p,
     margin: 0;
     font-size: 20px;
     letter-spacing: 1px;
-}
-
-.navbar-custom h2::before {
-    content: "ECDP:// ";
-    color: #00ffae;
-    font-size: 13px;
 }
 
 .user-info {

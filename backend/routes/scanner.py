@@ -3,7 +3,8 @@ from flask import (
     render_template,
     redirect,
     url_for,
-    flash
+    flash,
+    request
 )
 
 from flask_login import (
@@ -19,8 +20,6 @@ from models.asset import Asset
 from forms.scan_form import ScanForm
 
 from services.scanner_service import run_scan
-
-from utils.decorators import role_required
 
 from utils.audit_logger import log_action
 
@@ -57,7 +56,6 @@ def scanner():
         Asset.asset_name.asc()
     ).all()
 
-
     form.asset_id.choices = [
         (
             asset.id,
@@ -68,20 +66,15 @@ def scanner():
 
 
     # ======================================================
-    # Handle Asset Selection
+    # Handle Initial Page Load
     # ======================================================
 
-    if form.asset_id.data:
+    if request.method == "GET":
 
-        selected_asset = Asset.query.get(
-            form.asset_id.data
-        )
-
-
-        if selected_asset:
+        if assets:
 
             form.target.data = (
-                selected_asset.ip_address
+                assets[0].ip_address
             )
 
 
@@ -132,18 +125,18 @@ def scanner():
 
 
         # --------------------------------------------------
-        # Use Asset IP as Target
+        # Get Target From Form
         # --------------------------------------------------
 
         target = (
-            selected_asset.ip_address.strip()
-        )
+            form.target.data or ""
+        ).strip()
 
 
         if not target:
 
             flash(
-                "The selected asset does not have a valid IP address.",
+                "Please provide a valid scan target.",
                 "danger"
             )
 
@@ -160,8 +153,10 @@ def scanner():
             "SCAN_STARTED",
             (
                 f"Vulnerability scan started for "
-                f"asset {selected_asset.asset_name} "
-                f"({target})."
+                f"asset {selected_asset.asset_name}. "
+                f"Selected asset IP: "
+                f"{selected_asset.ip_address}. "
+                f"Scan target: {target}."
             )
         )
 
@@ -176,7 +171,7 @@ def scanner():
                 target
             )
 
-        except Exception as error:
+        except Exception:
 
             # ----------------------------------------------
             # Audit - Scan Failed
@@ -191,12 +186,10 @@ def scanner():
                 )
             )
 
-
             flash(
                 f"Scan failed for {target}.",
                 "danger"
             )
-
 
             return redirect(
                 url_for("scanner.scanner")
@@ -230,7 +223,6 @@ def scanner():
 
         )
 
-
         db.session.add(
             scan
         )
@@ -249,7 +241,7 @@ def scanner():
 
 
         # ==================================================
-        # Completed
+        # Scan Completed
         # ==================================================
 
         if scan_status == "Completed":
@@ -258,8 +250,8 @@ def scanner():
                 "SCAN_COMPLETED",
                 (
                     f"Vulnerability scan completed for "
-                    f"asset {selected_asset.asset_name} "
-                    f"({target}). "
+                    f"asset {selected_asset.asset_name}. "
+                    f"Target: {target}. "
                     f"Open ports: "
                     f"{result.get('open_ports', '')}. "
                     f"Services: "
@@ -267,11 +259,9 @@ def scanner():
                 )
             )
 
-
             flash(
                 f"Scan completed successfully for "
-                f"{selected_asset.asset_name} "
-                f"({target}).",
+                f"{target}.",
                 "success"
             )
 
@@ -286,11 +276,11 @@ def scanner():
                 "HOST_DOWN",
                 (
                     f"Scan target appears unavailable: "
-                    f"{selected_asset.asset_name} "
-                    f"({target})."
+                    f"{target}. "
+                    f"Associated asset: "
+                    f"{selected_asset.asset_name}."
                 )
             )
-
 
             flash(
                 f"The target {target} could not "
@@ -309,12 +299,11 @@ def scanner():
                 "SCAN_FAILED",
                 (
                     f"Vulnerability scan failed for "
-                    f"asset {selected_asset.asset_name} "
-                    f"({target}). "
-                    f"Status: {scan_status}"
+                    f"asset {selected_asset.asset_name}. "
+                    f"Target: {target}. "
+                    f"Status: {scan_status}."
                 )
             )
-
 
             flash(
                 f"Scan failed for {target}.",

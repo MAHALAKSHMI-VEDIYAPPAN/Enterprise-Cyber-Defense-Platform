@@ -1,18 +1,25 @@
 from flask_wtf import FlaskForm
-
 from wtforms import (
-    StringField,
     SelectField,
+    StringField,
     SubmitField
 )
-
 from wtforms.validators import (
     DataRequired,
-    IPAddress
+    IPAddress,
+    Optional
 )
 
 
+# ==========================================================
+# Vulnerability Scan Form
+# ==========================================================
+
 class ScanForm(FlaskForm):
+
+    # ------------------------------------------------------
+    # Asset Selection
+    # ------------------------------------------------------
 
     asset_id = SelectField(
         "Select Asset",
@@ -24,17 +31,25 @@ class ScanForm(FlaskForm):
         ]
     )
 
+    # ------------------------------------------------------
+    # Target IP
+    # ------------------------------------------------------
+
     target = StringField(
         "Target IP Address",
         validators=[
             DataRequired(
-                message="Please enter a target IP address."
+                message="Target IP address is required."
             ),
             IPAddress(
-                ipv4=True
+                message="Enter a valid IP address."
             )
         ]
     )
+
+    # ------------------------------------------------------
+    # Submit
+    # ------------------------------------------------------
 
     submit = SubmitField(
         "Start Scan"

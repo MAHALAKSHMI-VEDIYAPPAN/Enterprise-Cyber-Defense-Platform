@@ -1,31 +1,44 @@
 {% extends "base.html" %}
 
-{% block title %}Vulnerability Scanner - ECDP{% endblock %}
+
+{% block title %}
+Vulnerability Scanner - ECDP
+{% endblock %}
+
 
 {% block content %}
 
-<!-- ==================================================
-     Page Header
-=================================================== -->
+<!-- ==========================================================
+     Vulnerability Scanner Header
+========================================================== -->
 
-<div class="mb-4">
+<div class="d-flex justify-content-between align-items-start mb-4">
 
-    <h2 class="fw-bold mb-1">
-        <i class="bi bi-shield-check me-2"></i>
-        Vulnerability Scanner
-    </h2>
+    <div>
 
-    <p class="text-muted mb-0">
-        Perform network reconnaissance and service discovery
-        using Nmap.
-    </p>
+        <h1 class="fw-bold mb-1">
+
+            <i class="bi bi-shield-check me-2"></i>
+
+            Vulnerability Scanner
+
+        </h1>
+
+        <p class="text-muted mb-0">
+
+            Perform authorized network reconnaissance and
+            service discovery using Nmap.
+
+        </p>
+
+    </div>
 
 </div>
 
 
-<!-- ==================================================
-     New Scan
-=================================================== -->
+<!-- ==========================================================
+     New Security Scan
+========================================================== -->
 
 {% if current_user.role in ["Admin", "Analyst"] %}
 
@@ -34,11 +47,15 @@
     <div class="card-header">
 
         <h5 class="mb-0 fw-bold">
+
             <i class="bi bi-radar me-2"></i>
+
             New Security Scan
+
         </h5>
 
     </div>
+
 
     <div class="card-body">
 
@@ -46,9 +63,13 @@
 
             {{ form.hidden_tag() }}
 
+
             <div class="row g-3">
 
-                <!-- Select Asset -->
+
+                <!-- ==================================================
+                     Select Asset
+                =================================================== -->
 
                 <div class="col-lg-5">
 
@@ -57,9 +78,9 @@
                     ) }}
 
                     {{ form.asset_id(
-                    class="form-select",
-                    id="assetSelect"
+                    class="form-select"
                     ) }}
+
 
                     {% if form.asset_id.errors %}
 
@@ -68,8 +89,11 @@
                         {% for error in form.asset_id.errors %}
 
                         <small>
+
                             <i class="bi bi-exclamation-circle me-1"></i>
+
                             {{ error }}
+
                         </small>
 
                         {% endfor %}
@@ -79,7 +103,10 @@
                     {% else %}
 
                     <small class="text-muted">
-                        Select an authorized enterprise asset to scan.
+
+                        Select an authorized enterprise asset
+                        to associate with this scan.
+
                     </small>
 
                     {% endif %}
@@ -87,7 +114,9 @@
                 </div>
 
 
-                <!-- Target IP -->
+                <!-- ==================================================
+                     Target IP
+                =================================================== -->
 
                 <div class="col-lg-5">
 
@@ -97,9 +126,9 @@
 
                     {{ form.target(
                     class="form-control",
-                    id="targetIP",
-                    placeholder="Target IP Address"
+                    placeholder="Enter authorized target IP"
                     ) }}
+
 
                     {% if form.target.errors %}
 
@@ -108,8 +137,11 @@
                         {% for error in form.target.errors %}
 
                         <small>
+
                             <i class="bi bi-exclamation-circle me-1"></i>
+
                             {{ error }}
+
                         </small>
 
                         {% endfor %}
@@ -119,8 +151,10 @@
                     {% else %}
 
                     <small class="text-muted">
-                        The IP address is automatically loaded from
-                        the selected asset.
+
+                        Enter the IP address of the authorized
+                        system you want to scan.
+
                     </small>
 
                     {% endif %}
@@ -128,7 +162,9 @@
                 </div>
 
 
-                <!-- Start Scan -->
+                <!-- ==================================================
+                     Start Scan
+                =================================================== -->
 
                 <div class="col-lg-2 d-flex align-items-end">
 
@@ -146,11 +182,13 @@
 
 </div>
 
+
 {% else %}
 
-<!-- ==================================================
-     Viewer Information
-=================================================== -->
+
+<!-- ==========================================================
+     Read Only
+========================================================== -->
 
 <div class="alert alert-info shadow-sm mb-4">
 
@@ -163,40 +201,41 @@
 
 </div>
 
+
 {% endif %}
 
 
-<!-- ==================================================
-     Scanner Statistics
-=================================================== -->
 
-<div class="row g-4 mb-4">
+<!-- ==========================================================
+     Scan Statistics
+========================================================== -->
+
+<div class="row g-3 mb-4">
+
 
     <!-- Total Scans -->
 
     <div class="col-md-4">
 
-        <div class="card border-0 shadow h-100">
+        <div class="card shadow border-0 h-100">
 
-            <div class="card-body">
+            <div class="card-body d-flex justify-content-between align-items-center">
 
-                <div class="d-flex justify-content-between align-items-center">
+                <div>
 
-                    <div>
+                    <small class="text-muted">
+                        TOTAL SCANS
+                    </small>
 
-                        <p class="text-muted mb-1">
-                            Total Scans
-                        </p>
+                    <h2 class="fw-bold mb-0">
 
-                        <h3 class="fw-bold mb-0">
-                            {{ scans|length }}
-                        </h3>
+                        {{ scans|length }}
 
-                    </div>
-
-                    <i class="bi bi-search fs-1 text-primary"></i>
+                    </h2>
 
                 </div>
+
+                <i class="bi bi-search fs-1 text-primary"></i>
 
             </div>
 
@@ -209,34 +248,30 @@
 
     <div class="col-md-4">
 
-        <div class="card border-0 shadow h-100">
+        <div class="card shadow border-0 h-100">
 
-            <div class="card-body">
+            <div class="card-body d-flex justify-content-between align-items-center">
 
-                <div class="d-flex justify-content-between align-items-center">
+                <div>
 
-                    <div>
+                    <small class="text-muted">
+                        COMPLETED SCANS
+                    </small>
 
-                        <p class="text-muted mb-1">
-                            Completed Scans
-                        </p>
+                    <h2 class="fw-bold mb-0">
 
-                        <h3 class="fw-bold mb-0">
+                        {{
+                        scans
+                        |selectattr("status", "equalto", "Completed")
+                        |list
+                        |length
+                        }}
 
-                            {{
-                            scans
-                            | selectattr("status", "equalto", "Completed")
-                            | list
-                            | length
-                            }}
-
-                        </h3>
-
-                    </div>
-
-                    <i class="bi bi-check-circle fs-1 text-success"></i>
+                    </h2>
 
                 </div>
+
+                <i class="bi bi-check-circle fs-1 text-success"></i>
 
             </div>
 
@@ -245,31 +280,35 @@
     </div>
 
 
-    <!-- Unique Targets -->
+    <!-- Targets Scanned -->
 
     <div class="col-md-4">
 
-        <div class="card border-0 shadow h-100">
+        <div class="card shadow border-0 h-100">
 
-            <div class="card-body">
+            <div class="card-body d-flex justify-content-between align-items-center">
 
-                <div class="d-flex justify-content-between align-items-center">
+                <div>
 
-                    <div>
+                    <small class="text-muted">
+                        TARGETS SCANNED
+                    </small>
 
-                        <p class="text-muted mb-1">
-                            Targets Scanned
-                        </p>
+                    <h2 class="fw-bold mb-0">
 
-                        <h3 class="fw-bold mb-0">
-                            {{ scans|map(attribute="target")|unique|list|length }}
-                        </h3>
+                        {{
+                        scans
+                        |map(attribute="target")
+                        |unique
+                        |list
+                        |length
+                        }}
 
-                    </div>
-
-                    <i class="bi bi-bullseye fs-1 text-warning"></i>
+                    </h2>
 
                 </div>
+
+                <i class="bi bi-bullseye fs-1 text-warning"></i>
 
             </div>
 
@@ -280,9 +319,10 @@
 </div>
 
 
-<!-- ==================================================
+
+<!-- ==========================================================
      Scan History
-=================================================== -->
+========================================================== -->
 
 <div class="card shadow border-0">
 
@@ -305,7 +345,7 @@
 
         <div class="table-responsive">
 
-            <table class="table table-hover mb-0">
+            <table class="table table-hover align-middle mb-0">
 
                 <thead>
 
@@ -313,17 +353,17 @@
 
                         <th>ID</th>
 
-                        <th>Asset</th>
+                        <th>ASSET</th>
 
-                        <th>Target</th>
+                        <th>TARGET</th>
 
-                        <th>Open Ports</th>
+                        <th>OPEN PORTS</th>
 
-                        <th>Services</th>
+                        <th>SERVICES</th>
 
-                        <th>Status</th>
+                        <th>STATUS</th>
 
-                        <th>Scan Date</th>
+                        <th>SCAN DATE</th>
 
                     </tr>
 
@@ -339,7 +379,11 @@
                         <!-- ID -->
 
                         <td>
-                            {{ scan.id }}
+
+                            <strong>
+                                {{ scan.id }}
+                            </strong>
+
                         </td>
 
 
@@ -356,13 +400,15 @@
                             <br>
 
                             <small class="text-muted">
+
                                 {{ scan.asset.ip_address }}
+
                             </small>
 
                             {% else %}
 
                             <span class="text-muted">
-                                Legacy Scan
+                                Unknown Asset
                             </span>
 
                             {% endif %}
@@ -385,20 +431,16 @@
 
                         <td>
 
-                            {% if scan.open_ports and scan.open_ports != "None" %}
-
-                            {% for port in scan.open_ports.split(", ") %}
-
-                            <span class="badge bg-primary me-1 mb-1">
-                                {{ port }}
-                            </span>
-
-                            {% endfor %}
-
-                            {% else %}
+                            {% if scan.open_ports == "None" %}
 
                             <span class="text-muted">
                                 None
+                            </span>
+
+                            {% else %}
+
+                            <span>
+                                {{ scan.open_ports }}
                             </span>
 
                             {% endif %}
@@ -410,17 +452,11 @@
 
                         <td>
 
-                            {% if scan.services %}
+                            <div class="scan-services">
 
-                            <pre class="scanner-output mb-0">{{ scan.services }}</pre>
+                                {{ scan.services }}
 
-                            {% else %}
-
-                            <span class="text-muted">
-                                None
-                            </span>
-
-                            {% endif %}
+                            </div>
 
                         </td>
 
@@ -439,15 +475,17 @@
 
                             </span>
 
+
                             {% elif scan.status == "Host Down" %}
 
                             <span class="badge bg-warning text-dark">
 
-                                <i class="bi bi-exclamation-circle me-1"></i>
+                                <i class="bi bi-exclamation-triangle me-1"></i>
 
                                 Host Down
 
                             </span>
+
 
                             {% else %}
 
@@ -455,7 +493,7 @@
 
                                 <i class="bi bi-x-circle me-1"></i>
 
-                                Error
+                                {{ scan.status }}
 
                             </span>
 
@@ -476,7 +514,9 @@
 
                             {% else %}
 
-                            N/A
+                            <span class="text-muted">
+                                —
+                            </span>
 
                             {% endif %}
 
@@ -492,33 +532,31 @@
 
         </div>
 
+
         {% else %}
 
-        <!-- No Scan Data -->
+
+        <!-- No Scans -->
 
         <div class="text-center p-5">
 
-            <i class="bi bi-radar fs-1 text-muted"></i>
+            <i class="bi bi-shield-x fs-1 text-muted"></i>
 
             <h5 class="mt-3">
-                No scans recorded
+
+                No Vulnerability Scans Yet
+
             </h5>
 
             <p class="text-muted mb-0">
 
-                {% if current_user.role in ["Admin", "Analyst"] %}
-
-                Start your first authorized Nmap scan above.
-
-                {% else %}
-
-                No vulnerability scans have been recorded.
-
-                {% endif %}
+                Run an authorized security scan to
+                generate scan history.
 
             </p>
 
         </div>
+
 
         {% endif %}
 
@@ -526,92 +564,5 @@
 
 </div>
 
-
-<!-- ==================================================
-     Automatically Update IP
-=================================================== -->
-
-{% if current_user.role in ["Admin", "Analyst"] %}
-
-<script>
-
-    document.addEventListener(
-        "DOMContentLoaded",
-        function () {
-
-            const assetSelect =
-                document.getElementById(
-                    "assetSelect"
-                );
-
-            const targetIP =
-                document.getElementById(
-                    "targetIP"
-                );
-
-
-            if (!assetSelect || !targetIP) {
-                return;
-            }
-
-
-            function updateTargetIP() {
-
-                const selectedOption =
-                    assetSelect.options[
-                    assetSelect.selectedIndex
-                    ];
-
-
-                if (!selectedOption) {
-
-                    targetIP.value = "";
-
-                    return;
-                }
-
-
-                const selectedText =
-                    selectedOption.text;
-
-
-                /*
-                 * Dropdown format:
-                 *
-                 * Server-01 - 192.168.1.10
-                 */
-
-                const parts =
-                    selectedText.split(" - ");
-
-
-                if (parts.length >= 2) {
-
-                    targetIP.value =
-                        parts[parts.length - 1].trim();
-
-                } else {
-
-                    targetIP.value = "";
-
-                }
-
-            }
-
-
-            assetSelect.addEventListener(
-                "change",
-                updateTargetIP
-            );
-
-
-            updateTargetIP();
-
-        }
-    );
-
-</script>
-
-{% endif %}
 
 {% endblock %}

@@ -1,54 +1,136 @@
-<!-- =====================================================
-     PLATFORM HEADER
-====================================================== -->
+{% extends "base.html" %}
 
-<div class="platform-header">
 
-    <div class="platform-brand">
+{% block title %}
+Dashboard - ECDP
+{% endblock %}
 
-        <div class="platform-logo">
-            <i class="bi bi-shield-shaded"></i>
-        </div>
 
-        <div>
+{% block content %}
 
-            <h1>
-                ECDP
-            </h1>
+<!-- ==========================================================
+     Dashboard Header
+========================================================== -->
 
-            <span>
-                ENTERPRISE CYBER DEFENSE PLATFORM
-            </span>
+<div class="mb-4">
+
+    <h1 class="fw-bold mb-1">
+        <i class="bi bi-shield-lock me-2"></i>
+        Enterprise Cyber Defense Platform
+    </h1>
+
+    <p class="text-muted mb-0">
+        An integrated security management platform designed to
+        monitor, detect, analyze, and respond to cyber threats.
+    </p>
+
+</div>
+
+
+<!-- ==========================================================
+     Welcome + Platform Status
+========================================================== -->
+
+<div class="row g-4 mb-4">
+
+    <!-- Welcome -->
+
+    <div class="col-lg-8">
+
+        <div class="card shadow border-0 h-100">
+
+            <div class="card-body">
+
+                <h4 class="fw-bold mb-3">
+
+                    <i class="bi bi-shield-check me-2"></i>
+
+                    Welcome to ECDP
+
+                </h4>
+
+                <p class="text-muted">
+
+                    The Enterprise Cyber Defense Platform (ECDP)
+                    is a centralized cybersecurity platform that
+                    brings asset management, vulnerability assessment,
+                    threat intelligence, CVE analysis, and incident
+                    response together within a unified security
+                    environment.
+
+                </p>
+
+                <p class="text-muted mb-0">
+
+                    It is designed to support practical Security
+                    Operations Center (SOC) workflows and provide
+                    security analysts with a centralized platform
+                    for security monitoring and analysis.
+
+                </p>
+
+            </div>
 
         </div>
 
     </div>
 
 
-    <div class="platform-meta">
+    <!-- Platform Status -->
 
-        <div class="platform-status">
+    <div class="col-lg-4">
 
-            <span class="status-indicator"></span>
+        <div class="card shadow border-0 h-100">
 
-            <div>
-                <small>SYSTEM STATUS</small>
-                <strong>OPERATIONAL</strong>
-            </div>
+            <div class="card-body">
 
-        </div>
+                <h5 class="fw-bold mb-4">
+
+                    <i class="bi bi-activity me-2"></i>
+
+                    Platform Status
+
+                </h5>
 
 
-        <div class="platform-user">
+                <div class="d-flex align-items-center mb-3">
 
-            <i class="bi bi-person-circle"></i>
+                    <span class="badge bg-success me-2">
+                        Active
+                    </span>
 
-            <div>
-                <small>LOGGED IN AS</small>
+                    <span>
+                        Platform Online
+                    </span>
 
-                <strong>
-                    {{ current_user.username }}
-                </strong>
+                </div>
+
+
+                <div class="d-flex align-items-center mb-3">
+
+                    <span class="badge bg-primary me-2">
+                        SOC
+                    </span>
+
+                    <span>
+                        Security Operations
+                    </span>
+
+                </div>
+
+
+                <div class="d-flex align-items-center">
+
+                    <span class="badge bg-warning text-dark me-2">
+                        Monitoring
+                    </span>
+
+                    <span>
+                        Security Modules
+                    </span>
+
+                </div>
+
             </div>
 
         </div>
@@ -58,27 +140,291 @@
 </div>
 
 
-<!-- =====================================================
-     PAGE HEADER
-====================================================== -->
+<!-- ==========================================================
+     Security Modules
+========================================================== -->
 
-<div class="page-header">
+<div class="card shadow border-0">
 
-    <div>
+    <div class="card-header">
 
-        <span class="page-kicker">
-            SECURITY OPERATIONS CENTER
-        </span>
+        <h5 class="mb-0 fw-bold">
 
-        <h2>
-            Security Overview
-        </h2>
+            <i class="bi bi-grid-3x3-gap me-2"></i>
 
-        <p>
-            Monitor your enterprise security environment,
-            vulnerabilities, incidents and overall security posture.
-        </p>
+            Security Modules
+
+        </h5>
+
+    </div>
+
+
+    <div class="card-body">
+
+        <div class="row g-3">
+
+
+            <!-- ==================================================
+                 Security Dashboard
+            =================================================== -->
+
+            <div class="col-lg-3 col-md-6">
+
+                <a href="{{ url_for('dashboard') }}" class="text-decoration-none">
+
+                    <div class="card h-100 border">
+
+                        <div class="card-body">
+
+                            <i class="bi bi-speedometer2 fs-2 text-primary"></i>
+
+                            <h6 class="fw-bold mt-3">
+                                Security Dashboard
+                            </h6>
+
+                            <p class="text-muted small mb-0">
+                                Centralized overview of security
+                                operations and activities.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+
+            <!-- ==================================================
+                 Asset Inventory
+            =================================================== -->
+
+            <div class="col-lg-3 col-md-6">
+
+                <a href="{{ url_for('assets.assets') }}" class="text-decoration-none">
+
+                    <div class="card h-100 border">
+
+                        <div class="card-body">
+
+                            <i class="bi bi-pc-display fs-2 text-primary"></i>
+
+                            <h6 class="fw-bold mt-3">
+                                Asset Inventory
+                            </h6>
+
+                            <p class="text-muted small mb-0">
+                                Manage enterprise assets, systems,
+                                and infrastructure.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+
+            <!-- ==================================================
+                 Vulnerability Scanner
+            =================================================== -->
+
+            <div class="col-lg-3 col-md-6">
+
+                <a href="{{ url_for('scanner.scanner') }}" class="text-decoration-none">
+
+                    <div class="card h-100 border">
+
+                        <div class="card-body">
+
+                            <i class="bi bi-search fs-2 text-primary"></i>
+
+                            <h6 class="fw-bold mt-3">
+                                Vulnerability Scanner
+                            </h6>
+
+                            <p class="text-muted small mb-0">
+                                Perform authorized network scanning
+                                and vulnerability assessment using Nmap.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+
+            <!-- ==================================================
+                 Threat Intelligence
+            =================================================== -->
+
+            <div class="col-lg-3 col-md-6">
+
+                <a href="{{ url_for('threat.threat') }}" class="text-decoration-none">
+
+                    <div class="card h-100 border">
+
+                        <div class="card-body">
+
+                            <i class="bi bi-globe2 fs-2 text-primary"></i>
+
+                            <h6 class="fw-bold mt-3">
+                                Threat Intelligence
+                            </h6>
+
+                            <p class="text-muted small mb-0">
+                                Analyze suspicious IPs, URLs,
+                                and file hashes.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+
+            <!-- ==================================================
+                 CVE Intelligence
+            =================================================== -->
+
+            <div class="col-lg-3 col-md-6">
+
+                <a href="{{ url_for('cve.cve') }}" class="text-decoration-none">
+
+                    <div class="card h-100 border">
+
+                        <div class="card-body">
+
+                            <i class="bi bi-bug fs-2 text-danger"></i>
+
+                            <h6 class="fw-bold mt-3">
+                                CVE Intelligence
+                            </h6>
+
+                            <p class="text-muted small mb-0">
+                                Search and analyze known vulnerabilities
+                                using CVE intelligence.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+
+            <!-- ==================================================
+                 Incident Response
+            =================================================== -->
+
+            <div class="col-lg-3 col-md-6">
+
+                <a href="{{ url_for('incidents.incidents') }}" class="text-decoration-none">
+
+                    <div class="card h-100 border">
+
+                        <div class="card-body">
+
+                            <i class="bi bi-exclamation-triangle fs-2 text-warning"></i>
+
+                            <h6 class="fw-bold mt-3">
+                                Incident Response
+                            </h6>
+
+                            <p class="text-muted small mb-0">
+                                Track, manage, investigate, and resolve
+                                cybersecurity incidents.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+
+            <!-- ==================================================
+                 Reports
+            =================================================== -->
+
+            <div class="col-lg-3 col-md-6">
+
+                <a href="{{ url_for('reports.reports') }}" class="text-decoration-none">
+
+                    <div class="card h-100 border">
+
+                        <div class="card-body">
+
+                            <i class="bi bi-file-earmark-bar-graph fs-2 text-success"></i>
+
+                            <h6 class="fw-bold mt-3">
+                                Reports
+                            </h6>
+
+                            <p class="text-muted small mb-0">
+                                Generate and review security analysis
+                                and incident reports.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+
+            <!-- ==================================================
+                 AI Security Assistant
+            =================================================== -->
+
+            <div class="col-lg-3 col-md-6">
+
+                <a href="{{ url_for('ai_security.ai_assistant') }}" class="text-decoration-none">
+
+                    <div class="card h-100 border">
+
+                        <div class="card-body">
+
+                            <i class="bi bi-robot fs-2 text-info"></i>
+
+                            <h6 class="fw-bold mt-3">
+                                AI Security Assistant
+                            </h6>
+
+                            <p class="text-muted small mb-0">
+                                Analyze security data and assist
+                                with SOC investigations.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+
+        </div>
 
     </div>
 
 </div>
+
+
+{% endblock %}
