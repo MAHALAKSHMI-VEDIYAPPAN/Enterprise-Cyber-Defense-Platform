@@ -6,7 +6,7 @@
 
     <!-- ==================================================
          Page Header
-    =================================================== -->
+    ================================================== -->
 
     <div class="mb-4">
 
@@ -20,8 +20,8 @@
 
         <p class="text-muted">
 
-            AI-powered analysis of your Enterprise Cyber Defense Platform
-            security environment.
+            AI-powered cybersecurity assistant for your
+            Enterprise Cyber Defense Platform.
 
         </p>
 
@@ -30,13 +30,13 @@
 
     <!-- ==================================================
          Security Analysis
-    =================================================== -->
+    ================================================== -->
 
     {% if current_user.role in ["Admin", "Analyst"] and analysis %}
 
     <!-- ==================================================
          Security Overview
-    =================================================== -->
+    ================================================== -->
 
     <div class="row mb-4">
 
@@ -164,8 +164,8 @@
 
 
     <!-- ==================================================
-         AI Analysis
-    =================================================== -->
+         AI Security Analysis
+    ================================================== -->
 
     <div class="card mb-4">
 
@@ -196,7 +196,7 @@
 
     <!-- ==================================================
          Security Statistics
-    =================================================== -->
+    ================================================== -->
 
     <div class="card mb-4">
 
@@ -284,7 +284,7 @@
 
     <!-- ==================================================
          Recommendations
-    =================================================== -->
+    ================================================== -->
 
     <div class="card mb-4">
 
@@ -337,7 +337,7 @@
 
     <!-- ==================================================
          Incident Breakdown
-    =================================================== -->
+    ================================================== -->
 
     <div class="card mb-4">
 
@@ -362,7 +362,9 @@
                 <div class="col-md-3">
 
                     <h3 class="text-danger">
+
                         {{ analysis.statistics.critical_incidents }}
+
                     </h3>
 
                     <p>
@@ -377,7 +379,9 @@
                 <div class="col-md-3">
 
                     <h3 class="text-warning">
+
                         {{ analysis.statistics.high_incidents }}
+
                     </h3>
 
                     <p>
@@ -392,7 +396,9 @@
                 <div class="col-md-3">
 
                     <h3 class="text-info">
+
                         {{ analysis.statistics.medium_incidents }}
+
                     </h3>
 
                     <p>
@@ -407,7 +413,9 @@
                 <div class="col-md-3">
 
                     <h3 class="text-success">
+
                         {{ analysis.statistics.low_incidents }}
+
                     </h3>
 
                     <p>
@@ -427,7 +435,7 @@
 
     <!-- ==================================================
          Viewer Read-Only Notice
-    =================================================== -->
+    ================================================== -->
 
     <div class="alert alert-info shadow-sm mb-4">
 
@@ -445,7 +453,7 @@
 
     <!-- ==================================================
          Interactive Security Chat
-    =================================================== -->
+    ================================================== -->
 
     <div class="card mt-4 mb-4">
 
@@ -465,40 +473,53 @@
 
             <p class="text-muted">
 
-                Ask questions about your current ECDP security environment.
+                Ask questions about cybersecurity or your
+                current ECDP security environment.
 
             </p>
 
 
             <!-- ==================================================
                  Chat Messages
-            =================================================== -->
+            ================================================== -->
 
-            <div id="chatMessages" class="mb-3" style="
+            <div
+                id="chatMessages"
+                class="mb-3"
+                style="
                     height: 350px;
                     overflow-y: auto;
                     background: #0f172a;
                     border-radius: 10px;
                     padding: 15px;
-                ">
+                "
+            >
+
+                <!-- AI Welcome Message -->
 
                 <div class="mb-3">
 
                     <div class="d-inline-block p-3 rounded bg-primary text-white">
 
                         <strong>
+
+                            <i class="bi bi-robot me-1"></i>
+
                             AI Security Assistant
+
                         </strong>
 
                         <br>
 
-                        Hello! I can analyze your ECDP security data.
+                        Hello! I can help with both
+                        cybersecurity questions and your
+                        ECDP security environment.
 
                         <br><br>
 
                         {% if current_user.role in ["Admin", "Analyst"] %}
 
-                        Try asking:
+                        <strong>Try asking:</strong>
 
                         <ul class="mb-0">
 
@@ -518,11 +539,24 @@
                                 What should I fix first?
                             </li>
 
+                            <li>
+                                How can I prevent SQL injection?
+                            </li>
+
+                            <li>
+                                What is the difference between threat and risk?
+                            </li>
+
+                            <li>
+                                Explain XSS attacks.
+                            </li>
+
                         </ul>
 
                         {% else %}
 
                         <span>
+
                             You currently have read-only access
                             to the Security Assistant.
 
@@ -539,7 +573,7 @@
 
             <!-- ==================================================
                  Chat Input
-            =================================================== -->
+            ================================================== -->
 
             {% if current_user.role in ["Admin", "Analyst"] %}
 
@@ -547,10 +581,21 @@
 
                 <div class="input-group">
 
-                    <input type="text" id="securityQuestion" class="form-control"
-                        placeholder="Ask a security question..." autocomplete="off" maxlength="500" required>
+                    <input
+                        type="text"
+                        id="securityQuestion"
+                        class="form-control"
+                        placeholder="Ask any cybersecurity question..."
+                        autocomplete="off"
+                        maxlength="500"
+                        required
+                    >
 
-                    <button type="submit" class="btn btn-primary" id="sendChatButton">
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                        id="sendChatButton"
+                    >
 
                         <i class="bi bi-send me-1"></i>
 
@@ -584,121 +629,103 @@
 </div>
 
 
-<!-- ==================================================
+<!-- ==========================================================
      Security Chat JavaScript
-=================================================== -->
+========================================================== -->
 
 {% if current_user.role in ["Admin", "Analyst"] %}
 
 <script>
 
-    document.addEventListener(
-        "DOMContentLoaded",
-        function () {
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
 
-            const chatForm =
-                document.getElementById(
-                    "securityChatForm"
-                );
+        const chatForm =
+            document.getElementById(
+                "securityChatForm"
+            );
 
-            const questionInput =
-                document.getElementById(
-                    "securityQuestion"
-                );
+        const questionInput =
+            document.getElementById(
+                "securityQuestion"
+            );
 
-            const chatMessages =
-                document.getElementById(
-                    "chatMessages"
-                );
+        const chatMessages =
+            document.getElementById(
+                "chatMessages"
+            );
 
-            const sendButton =
-                document.getElementById(
-                    "sendChatButton"
-                );
-
-
-            // ==================================================
-            // Safety Check
-            // ==================================================
-
-            if (
-                !chatForm ||
-                !questionInput ||
-                !chatMessages ||
-                !sendButton
-            ) {
-
-                return;
-
-            }
+        const sendButton =
+            document.getElementById(
+                "sendChatButton"
+            );
 
 
-            // ==================================================
-            // Submit Security Question
-            // ==================================================
+        // ==================================================
+        // Safety Check
+        // ==================================================
 
-            chatForm.addEventListener(
-                "submit",
-                async function (event) {
+        if (
+            !chatForm ||
+            !questionInput ||
+            !chatMessages ||
+            !sendButton
+        ) {
 
-                    event.preventDefault();
+            return;
 
-
-                    const question =
-                        questionInput.value.trim();
-
-
-                    if (!question) {
-
-                        return;
-
-                    }
+        }
 
 
-                    // ==================================================
-                    // Maximum Length
-                    // ==================================================
+        // ==================================================
+        // Submit Security Question
+        // ==================================================
 
-                    if (question.length > 500) {
+        chatForm.addEventListener(
+            "submit",
+            async function (event) {
 
-                        const errorMessage =
-                            document.createElement("div");
-
-                        errorMessage.className =
-                            "mb-3";
-
-                        errorMessage.innerHTML = `
-
-                        <div class="alert alert-danger">
-
-                            Security questions must be
-                            500 characters or fewer.
-
-                        </div>
-
-                    `;
-
-                        chatMessages.appendChild(
-                            errorMessage
-                        );
-
-                        return;
-
-                    }
+                event.preventDefault();
 
 
-                    // ==================================================
-                    // Display User Message
-                    // ==================================================
-
-                    const userMessage =
-                        document.createElement("div");
-
-                    userMessage.className =
-                        "text-end mb-3";
+                const question =
+                    questionInput.value.trim();
 
 
-                    userMessage.innerHTML = `
+                if (!question) {
+
+                    return;
+
+                }
+
+
+                // ==================================================
+                // Maximum Length
+                // ==================================================
+
+                if (question.length > 500) {
+
+                    showError(
+                        "Security questions must be 500 characters or fewer."
+                    );
+
+                    return;
+
+                }
+
+
+                // ==================================================
+                // Display User Message
+                // ==================================================
+
+                const userMessage =
+                    document.createElement("div");
+
+                userMessage.className =
+                    "text-end mb-3";
+
+                userMessage.innerHTML = `
 
                     <div
                         class="d-inline-block
@@ -721,22 +748,20 @@
 
                 `;
 
-
-                    chatMessages.appendChild(
-                        userMessage
-                    );
-
-
-                    // ==================================================
-                    // Clear Input
-                    // ==================================================
-
-                    questionInput.value = "";
-
-                    sendButton.disabled = true;
+                chatMessages.appendChild(
+                    userMessage
+                );
 
 
-                    sendButton.innerHTML = `
+                // ==================================================
+                // Clear Input
+                // ==================================================
+
+                questionInput.value = "";
+
+                sendButton.disabled = true;
+
+                sendButton.innerHTML = `
 
                     <span
                         class="spinner-border
@@ -749,46 +774,78 @@
                 `;
 
 
-                    // ==================================================
-                    // Send Request
-                    // ==================================================
+                // ==================================================
+                // Scroll
+                // ==================================================
 
-                    try {
+                chatMessages.scrollTop =
+                    chatMessages.scrollHeight;
 
-                        const response = await fetch(
-                            "{{ url_for('security_chat.security_chat') }}",
-                            {
-                                method: "POST",
 
-                                headers: {
-                                    "Content-Type": "application/json"
-                                },
+                // ==================================================
+                // Send Request to AI Assistant Route
+                // ==================================================
 
-                                body: JSON.stringify({
+                try {
+
+                    const response = await fetch(
+
+                        "{{ url_for('ai_security.ai_assistant') }}",
+
+                        {
+
+                            method: "POST",
+
+                            headers: {
+
+                                "Content-Type":
+                                    "application/x-www-form-urlencoded",
+
+                                "Accept":
+                                    "application/json",
+
+                                "X-Requested-With":
+                                    "XMLHttpRequest"
+
+                            },
+
+                            body:
+                                new URLSearchParams({
+
                                     question: question
+
                                 })
-                            }
-                        );
+
+                        }
+
+                    );
 
 
-                        const data =
-                            await response.json();
+                    // ==================================================
+                    // Parse Response
+                    // ==================================================
+
+                    const data =
+                        await response.json();
 
 
-                        // ==================================================
-                        // Display AI Response
-                        // ==================================================
+                    // ==================================================
+                    // Display AI Response
+                    // ==================================================
 
-                        const aiMessage =
-                            document.createElement("div");
+                    const aiMessage =
+                        document.createElement("div");
 
-                        aiMessage.className =
-                            "mb-3";
+                    aiMessage.className =
+                        "mb-3";
 
 
-                        if (data.success) {
+                    if (
+                        response.ok &&
+                        data.success
+                    ) {
 
-                            aiMessage.innerHTML = `
+                        aiMessage.innerHTML = `
 
                             <div
                                 class="d-inline-block
@@ -801,7 +858,9 @@
 
                                 <strong>
 
-                                    <i class="bi bi-robot me-1"></i>
+                                    <i
+                                        class="bi bi-robot me-1"
+                                    ></i>
 
                                     AI Security Assistant
 
@@ -810,77 +869,67 @@
                                 <br><br>
 
                                 ${formatResponse(
-                                data.response
-                            )}
+                                    data.answer || ""
+                                )}
 
                             </div>
 
                         `;
 
-                        } else {
+                    }
 
-                            aiMessage.innerHTML = `
+                    else {
 
-                            <div class="alert alert-danger">
+                        aiMessage.innerHTML = `
 
-                                ${escapeHtml(
-                                data.message ||
-                                "Unable to process the request."
-                            )}
+                            <div
+                                class="alert alert-danger"
+                            >
+
+                                ${
+                                    escapeHtml(
+                                        data.message ||
+                                        data.answer ||
+                                        "Unable to process the request."
+                                    )
+                                }
 
                             </div>
 
                         `;
-
-                        }
-
-
-                        chatMessages.appendChild(
-                            aiMessage
-                        );
-
-
-                    } catch (error) {
-
-                        const errorMessage =
-                            document.createElement("div");
-
-                        errorMessage.className =
-                            "mb-3";
-
-
-                        errorMessage.innerHTML = `
-
-                        <div class="alert alert-danger">
-
-                            Unable to connect to the
-                            security assistant.
-
-                        </div>
-
-                    `;
-
-
-                        chatMessages.appendChild(
-                            errorMessage
-                        );
-
-
-                        console.error(
-                            error
-                        );
 
                     }
 
 
-                    // ==================================================
-                    // Reset Button
-                    // ==================================================
-
-                    sendButton.disabled = false;
+                    chatMessages.appendChild(
+                        aiMessage
+                    );
 
 
-                    sendButton.innerHTML = `
+                }
+
+                catch (error) {
+
+                    console.error(
+                        "AI Assistant Error:",
+                        error
+                    );
+
+
+                    showError(
+                        "Unable to connect to the security assistant."
+                    );
+
+                }
+
+
+                // ==================================================
+                // Reset Button
+                // ==================================================
+
+                sendButton.disabled = false;
+
+                sendButton.innerHTML = `
 
                     <i class="bi bi-send me-1"></i>
 
@@ -889,57 +938,107 @@
                 `;
 
 
-                    // ==================================================
-                    // Scroll to Bottom
-                    // ==================================================
+                // ==================================================
+                // Scroll to Bottom
+                // ==================================================
 
-                    chatMessages.scrollTop =
-                        chatMessages.scrollHeight;
+                chatMessages.scrollTop =
+                    chatMessages.scrollHeight;
 
-                }
+            }
+
+        );
+
+
+        // ==================================================
+        // Escape HTML
+        // ==================================================
+
+        function escapeHtml(text) {
+
+            const div =
+                document.createElement("div");
+
+            div.textContent =
+                text;
+
+            return div.innerHTML;
+
+        }
+
+
+        // ==================================================
+        // Format AI Response
+        // ==================================================
+
+        function formatResponse(text) {
+
+            return escapeHtml(
+                text || ""
+            )
+
+            .replace(
+                /\*\*(.*?)\*\*/g,
+                "<strong>$1</strong>"
+            )
+
+            .replace(
+                /^### (.*?)$/gm,
+                "<strong>$1</strong>"
+            )
+
+            .replace(
+                /^## (.*?)$/gm,
+                "<strong>$1</strong>"
+            )
+
+            .replace(
+                /^# (.*?)$/gm,
+                "<strong>$1</strong>"
+            )
+
+            .replace(
+                /\n/g,
+                "<br>"
             );
 
-
-            // ==================================================
-            // Escape HTML
-            // ==================================================
-
-            function escapeHtml(text) {
-
-                const div =
-                    document.createElement("div");
+        }
 
 
-                div.textContent =
-                    text;
+        // ==================================================
+        // Display Error
+        // ==================================================
 
+        function showError(message) {
 
-                return div.innerHTML;
+            const errorMessage =
+                document.createElement("div");
 
-            }
+            errorMessage.className =
+                "mb-3";
 
+            errorMessage.innerHTML = `
 
-            // ==================================================
-            // Format AI Response
-            // ==================================================
+                <div class="alert alert-danger">
 
-            function formatResponse(text) {
+                    ${escapeHtml(message)}
 
-                return escapeHtml(text)
+                </div>
 
-                    .replace(
-                        /\n/g,
-                        "<br>"
-                    )
+            `;
 
-                    .replace(
-                        /\*\*(.*?)\*\*/g,
-                        "<strong>$1</strong>"
-                    );
+            chatMessages.appendChild(
+                errorMessage
+            );
 
-            }
+            chatMessages.scrollTop =
+                chatMessages.scrollHeight;
 
-        });
+        }
+
+    }
+
+);
 
 </script>
 
