@@ -1049,7 +1049,7 @@ Dashboard - ECDP
                         Current vulnerability findings by severity
                     </small>
                 </div>
-                <span class="badge bg-light text-dark">
+                <span class="badge security-badge">
                     {{ total_vulnerabilities }} Findings
                 </span>
             </div>
@@ -1191,6 +1191,336 @@ Dashboard - ECDP
 
 </div>
 
+
+<!-- ==========================================================
+     SECURITY RISK TRENDS
+========================================================== -->
+
+<div class="card shadow border-0 mb-4">
+
+    <div class="card-header d-flex justify-content-between align-items-center">
+
+        <div>
+            <h5 class="mb-0 fw-bold">
+                <i class="bi bi-graph-up-arrow me-2"></i>
+                Security Risk Trends
+            </h5>
+
+            <small class="text-muted">
+                Seven-day security activity based on scans, vulnerabilities,
+                incidents and remediation records
+            </small>
+        </div>
+
+        <span class="badge security-badge">
+            Last 7 Days
+        </span>
+
+    </div>
+
+    <div class="card-body">
+
+        <div class="risk-trend-chart-wrapper">
+            <svg id="riskTrendChart" class="risk-trend-chart" viewBox="0 0 1000 360" role="img"
+                aria-label="Seven day security risk activity chart">
+            </svg>
+        </div>
+
+        <div class="d-flex flex-wrap gap-4 justify-content-center mt-3">
+
+            <span class="small text-info">
+                <span class="risk-legend-dot"></span>
+                Scans
+            </span>
+
+            <span class="small text-danger">
+                <span class="risk-legend-dot"></span>
+                Vulnerabilities
+            </span>
+
+            <span class="small text-warning">
+                <span class="risk-legend-dot"></span>
+                Incidents
+            </span>
+
+            <span class="small text-success">
+                <span class="risk-legend-dot"></span>
+                Remediations
+            </span>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+    (function () {
+
+        const labels = {{ trend_labels| tojson
+    }};
+    const scans = {{ scan_trend| tojson }};
+    const vulnerabilities = {{ vulnerability_trend| tojson }};
+    const incidents = {{ incident_trend| tojson }};
+    const remediations = {{ remediation_trend| tojson }};
+
+    const svg = document.getElementById("riskTrendChart");
+
+    if (!svg || !labels.length) {
+        return;
+    }
+
+    const width = 1000;
+    const height = 360;
+
+    const padding = {
+        top: 30,
+        right: 30,
+        bottom: 55,
+        left: 55
+    };
+
+    const chartWidth =
+        width - padding.left - padding.right;
+
+    const chartHeight =
+        height - padding.top - padding.bottom;
+
+    const series = [
+        {
+            name: "Scans",
+            values: scans,
+            stroke: "#0dcaf0"
+        },
+        {
+            name: "Vulnerabilities",
+            values: vulnerabilities,
+            stroke: "#dc3545"
+        },
+        {
+            name: "Incidents",
+            values: incidents,
+            stroke: "#ffc107"
+        },
+        {
+            name: "Remediations",
+            values: remediations,
+            stroke: "#198754"
+        }
+    ];
+
+    const allValues = series.flatMap(
+        item => item.values.map(Number)
+    );
+
+    const maxValue = Math.max(
+        1,
+        ...allValues
+    );
+
+    const gridSteps = 5;
+
+    function xPosition(index) {
+
+        if (labels.length === 1) {
+            return padding.left + chartWidth / 2;
+        }
+
+        return (
+            padding.left +
+            (index / (labels.length - 1)) *
+            chartWidth
+        );
+    }
+
+    function yPosition(value) {
+
+        return (
+            padding.top +
+            chartHeight -
+            (Number(value) / maxValue) *
+            chartHeight
+        );
+    }
+
+    function createSvgElement(
+        tag,
+        attributes
+    ) {
+
+        const element =
+            document.createElementNS(
+                "http://www.w3.org/2000/svg",
+                tag
+            );
+
+        Object.entries(attributes).forEach(
+            ([key, value]) => {
+                element.setAttribute(
+                    key,
+                    value
+                );
+            }
+        );
+
+        return element;
+    }
+
+    // Clear chart.
+    svg.innerHTML = "";
+
+    // Grid and Y-axis labels.
+    for (
+        let step = 0;
+        step <= gridSteps;
+        step++
+    ) {
+
+        const value =
+            (maxValue / gridSteps) *
+            step;
+
+        const y =
+            yPosition(value);
+
+        svg.appendChild(
+            createSvgElement(
+                "line",
+                {
+                    x1: padding.left,
+                    y1: y,
+                    x2: width - padding.right,
+                    y2: y,
+                    class: "risk-chart-grid"
+                }
+            )
+        );
+
+        const label =
+            createSvgElement(
+                "text",
+                {
+                    x: padding.left - 10,
+                    y: y + 4,
+                    "text-anchor": "end",
+                    class: "risk-chart-axis-label"
+                }
+            );
+
+        label.textContent =
+            Math.round(value);
+
+        svg.appendChild(label);
+    }
+
+    // X-axis labels.
+    labels.forEach(
+        (labelText, index) => {
+
+            const x =
+                xPosition(index);
+
+            svg.appendChild(
+                createSvgElement(
+                    "line",
+                    {
+                        x1: x,
+                        y1: padding.top,
+                        x2: x,
+                        y2: height - padding.bottom,
+                        class: "risk-chart-vertical-grid"
+                    }
+                )
+            );
+
+            const label =
+                createSvgElement(
+                    "text",
+                    {
+                        x: x,
+                        y: height - 20,
+                        "text-anchor": "middle",
+                        class: "risk-chart-axis-label"
+                    }
+                );
+
+            label.textContent =
+                labelText;
+
+            svg.appendChild(label);
+        }
+    );
+
+    // Draw each series.
+    series.forEach(
+        seriesItem => {
+
+            const points =
+                seriesItem.values.map(
+                    (value, index) => ({
+                        x: xPosition(index),
+                        y: yPosition(value)
+                    })
+                );
+
+            const pathData =
+                points
+                    .map(
+                        (point, index) =>
+                            `${index === 0 ? "M" : "L"} ${point.x} ${point.y}`
+                    )
+                    .join(" ");
+
+            svg.appendChild(
+                createSvgElement(
+                    "path",
+                    {
+                        d: pathData,
+                        fill: "none",
+                        stroke: seriesItem.stroke,
+                        "stroke-width": "3",
+                        "stroke-linecap": "round",
+                        "stroke-linejoin": "round",
+                        class: "risk-chart-line"
+                    }
+                )
+            );
+
+            points.forEach(
+                (point, index) => {
+
+                    const circle =
+                        createSvgElement(
+                            "circle",
+                            {
+                                cx: point.x,
+                                cy: point.y,
+                                r: "4",
+                                fill: seriesItem.stroke,
+                                class: "risk-chart-point"
+                            }
+                        );
+
+                    const title =
+                        createSvgElement(
+                            "title",
+                            {}
+                        );
+
+                    title.textContent =
+                        `${seriesItem.name}: ${seriesItem.values[index]}`;
+
+                    circle.appendChild(title);
+
+                    svg.appendChild(circle);
+                }
+            );
+        }
+    );
+
+}) ();
+</script>
 
 <!-- ==========================================================
      SECURITY HEALTH + VULNERABILITY SUMMARY
@@ -2578,9 +2908,89 @@ Dashboard - ECDP
         overflow: hidden;
     }
 
+
+    /* ==========================================================
+       DARK THEME SECURITY BADGES
+    ========================================================== */
+
+    .security-badge {
+        display: inline-block;
+        background: rgba(0, 229, 204, 0.08) !important;
+        color: #00e5cc !important;
+        border: 1px solid rgba(0, 229, 204, 0.40) !important;
+        border-radius: 6px;
+        padding: 6px 10px;
+        font-weight: 600;
+        box-shadow: none !important;
+    }
+
+    .security-badge:hover {
+        background: rgba(0, 229, 204, 0.14) !important;
+        color: #ffffff !important;
+        border-color: #00e5cc !important;
+    }
+
+    /* Keep Bootstrap light badges consistent with the ECDP dark theme. */
+    .badge.bg-light {
+        background: rgba(0, 229, 204, 0.08) !important;
+        color: #00e5cc !important;
+        border: 1px solid rgba(0, 229, 204, 0.40) !important;
+    }
+
     .analytics-stat {
         transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
+
+    .risk-trend-chart-wrapper {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .risk-trend-chart {
+        width: 100%;
+        min-width: 650px;
+        height: 360px;
+        display: block;
+    }
+
+    .risk-chart-grid {
+        stroke: rgba(128, 128, 128, 0.18);
+        stroke-width: 1;
+    }
+
+    .risk-chart-vertical-grid {
+        stroke: rgba(128, 128, 128, 0.08);
+        stroke-width: 1;
+    }
+
+    .risk-chart-axis-label {
+        fill: currentColor;
+        opacity: 0.65;
+        font-size: 13px;
+    }
+
+    .risk-chart-line {
+        vector-effect: non-scaling-stroke;
+    }
+
+    .risk-chart-point {
+        vector-effect: non-scaling-stroke;
+    }
+
+    .risk-legend-dot {
+        display: inline-block;
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        margin-right: 5px;
+        background: currentColor;
+    }
+
+    .risk-trend-chart+* {
+        color: inherit;
+    }
+
+
 
     .analytics-stat:hover {
         transform: translateY(-2px);

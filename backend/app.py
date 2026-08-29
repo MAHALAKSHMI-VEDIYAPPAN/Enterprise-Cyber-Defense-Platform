@@ -1,5 +1,6 @@
 import os
 import json
+from datetime import datetime, timedelta
 
 from flask import (
     Flask,
@@ -546,6 +547,108 @@ def dashboard():
 
 
     # ======================================================
+    # Security Risk Trends - Last 7 Days
+    # ======================================================
+
+    today = datetime.utcnow().date()
+
+    trend_labels = []
+    scan_trend = []
+    vulnerability_trend = []
+    incident_trend = []
+    remediation_trend = []
+
+    # Cache incident/remediation records once to avoid
+    # repeated database queries for every day.
+    all_incidents = Incident.query.all()
+    all_remediations = Remediation.query.all()
+
+    for days_ago in range(6, -1, -1):
+
+        trend_date = today - timedelta(days=days_ago)
+
+        trend_labels.append(
+            trend_date.strftime("%d %b")
+        )
+
+        daily_scans = 0
+        daily_vulnerabilities = 0
+
+        for scan in all_scans:
+
+            if not scan.scan_date:
+                continue
+
+            scan_timestamp = scan.scan_date
+
+            try:
+                scan_date = scan_timestamp.date()
+            except AttributeError:
+                scan_date = scan_timestamp
+
+            if scan_date != trend_date:
+                continue
+
+            daily_scans += 1
+
+            try:
+                vulnerabilities = json.loads(
+                    scan.vulnerabilities or "[]"
+                )
+
+                if isinstance(vulnerabilities, list):
+                    daily_vulnerabilities += len(vulnerabilities)
+
+            except (
+                TypeError,
+                ValueError,
+                json.JSONDecodeError
+            ):
+                pass
+
+        scan_trend.append(daily_scans)
+        vulnerability_trend.append(daily_vulnerabilities)
+
+        daily_incidents = 0
+
+        for incident in all_incidents:
+
+            if not incident.created_at:
+                continue
+
+            incident_timestamp = incident.created_at
+
+            try:
+                incident_date = incident_timestamp.date()
+            except AttributeError:
+                incident_date = incident_timestamp
+
+            if incident_date == trend_date:
+                daily_incidents += 1
+
+        incident_trend.append(daily_incidents)
+
+        daily_remediations = 0
+
+        for remediation in all_remediations:
+
+            if not remediation.created_at:
+                continue
+
+            remediation_timestamp = remediation.created_at
+
+            try:
+                remediation_date = remediation_timestamp.date()
+            except AttributeError:
+                remediation_date = remediation_timestamp
+
+            if remediation_date == trend_date:
+                daily_remediations += 1
+
+        remediation_trend.append(daily_remediations)
+
+
+    # ======================================================
     # Recent Scans
     # ======================================================
 
@@ -758,6 +861,21 @@ def dashboard():
         # --------------------------------------------------
 
         security_score=security_score,
+
+
+        # --------------------------------------------------
+        # Security Risk Trends
+        # --------------------------------------------------
+
+        trend_labels=trend_labels,
+
+        scan_trend=scan_trend,
+
+        vulnerability_trend=vulnerability_trend,
+
+        incident_trend=incident_trend,
+
+        remediation_trend=remediation_trend,
 
 
         # --------------------------------------------------
