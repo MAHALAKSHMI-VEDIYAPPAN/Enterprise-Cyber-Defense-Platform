@@ -238,6 +238,35 @@ def home():
 
 
 # ==========================================================
+# Automated Security Recommendations
+# ==========================================================
+
+def generate_security_recommendations(total_assets, high_risk_assets, total_vulnerabilities, critical_vulnerabilities, high_vulnerabilities, total_incidents, open_incidents, critical_incidents, total_remediations, open_remediations, failed_scans):
+    recommendations = []
+
+    if critical_incidents > 0:
+        recommendations.append({"priority": "Critical", "title": "Investigate critical incidents", "reason": f"{critical_incidents} critical/high-severity incident(s) require attention.", "action": "Investigate affected incidents, contain associated threats, and document the resolution."})
+    if critical_vulnerabilities > 0:
+        recommendations.append({"priority": "Critical", "title": "Remediate critical vulnerabilities", "reason": f"{critical_vulnerabilities} critical vulnerability finding(s) were detected.", "action": "Apply the appropriate vendor security update or mitigation and perform a follow-up vulnerability scan."})
+    if high_risk_assets > 0:
+        recommendations.append({"priority": "High", "title": "Review high-risk assets", "reason": f"{high_risk_assets} of {total_assets} asset(s) are classified as High or Critical risk.", "action": "Review these assets and prioritize patching, hardening, exposure reduction, and follow-up scans."})
+    if high_vulnerabilities > 0:
+        recommendations.append({"priority": "High", "title": "Prioritize high-severity vulnerabilities", "reason": f"{high_vulnerabilities} high-severity vulnerability finding(s) were detected.", "action": "Prioritize remediation according to asset exposure, CVSS severity, and business impact."})
+    if open_incidents > 0:
+        recommendations.append({"priority": "High", "title": "Reduce open incident backlog", "reason": f"{open_incidents} incident(s) are currently open out of {total_incidents} total incident(s).", "action": "Assign owners, investigate outstanding incidents, and update their resolution status."})
+    if open_remediations > 0:
+        recommendations.append({"priority": "Medium", "title": "Complete pending remediations", "reason": f"{open_remediations} remediation task(s) are still open.", "action": "Review remediation owners and deadlines, complete the required fixes, and verify the results."})
+    if failed_scans > 0:
+        recommendations.append({"priority": "Medium", "title": "Investigate failed vulnerability scans", "reason": f"{failed_scans} scan(s) did not complete successfully.", "action": "Review scan errors, verify target availability and configuration, then rerun affected scans."})
+    if not recommendations:
+        recommendations.append({"priority": "Low", "title": "Maintain current security posture", "reason": "No major security conditions currently require automated escalation.", "action": "Continue routine monitoring, vulnerability scanning, incident review, and remediation verification."})
+
+    order = {"Critical": 1, "High": 2, "Medium": 3, "Low": 4}
+    recommendations.sort(key=lambda item: order.get(item["priority"], 99))
+    return recommendations
+
+
+# ==========================================================
 # Dashboard
 # ==========================================================
 
@@ -525,6 +554,25 @@ def dashboard():
     else:
 
         remediation_completion = 0
+
+
+    # ======================================================
+    # Automated Security Recommendations
+    # ======================================================
+
+    security_recommendations = generate_security_recommendations(
+        total_assets=total_assets,
+        high_risk_assets=high_risk_assets,
+        total_vulnerabilities=total_vulnerabilities,
+        critical_vulnerabilities=critical_vulnerabilities,
+        high_vulnerabilities=high_vulnerabilities,
+        total_incidents=total_incidents,
+        open_incidents=open_incidents,
+        critical_incidents=critical_incidents,
+        total_remediations=total_remediations,
+        open_remediations=open_remediations,
+        failed_scans=failed_scans
+    )
 
 
     # ======================================================
@@ -861,6 +909,13 @@ def dashboard():
         # --------------------------------------------------
 
         security_score=security_score,
+
+
+        # --------------------------------------------------
+        # Automated Security Recommendations
+        # --------------------------------------------------
+
+        security_recommendations=security_recommendations,
 
 
         # --------------------------------------------------
