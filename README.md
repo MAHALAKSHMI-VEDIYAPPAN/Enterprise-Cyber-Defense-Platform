@@ -1,71 +1,64 @@
 # 🛡️ Enterprise Cyber Defense Platform (ECDP)
 
-An enterprise-oriented cybersecurity platform developed using **Python**, **Flask**, and modern security technologies to centralize asset management, vulnerability assessment, threat intelligence, CVE analysis, and incident response within a unified security dashboard.
+An enterprise-oriented cybersecurity platform developed using Python, Flask,
+SQLAlchemy, and modern cybersecurity technologies to centralize asset
+management, vulnerability assessment, threat intelligence, CVE analysis,
+incident response, remediation, security reporting, and AI-assisted security
+analysis within a unified platform.
 
 ---
 
-## 📖 Table of Contents
+## 📌 Overview
 
-- [Overview](#-overview)
-- [Objectives](#-objectives)
-- [Key Features](#-key-features)
-- [Technology Stack](#-technology-stack)
-- [Security Integrations](#-security-integrations)
-- [System Architecture](#-system-architecture)
-- [Architecture Flow](#-architecture-flow)
-- [Architecture Documentation](#-architecture-documentation)
-- [Project Structure](#-project-structure)
-- [Installation](#-installation)
-- [Configuration](#-configuration)
-- [Running the Application](#-running-the-application)
-- [Application Modules](#-application-modules)
-- [Screenshots](#-screenshots)
-- [Security Considerations](#-security-considerations)
-- [Future Enhancements](#-future-enhancements)
-- [Learning Outcomes](#-learning-outcomes)
-- [Developer](#-developer)
-- [License](#-license)
+The **Enterprise Cyber Defense Platform (ECDP)** is a centralized
+cybersecurity web application designed to demonstrate practical
+Security Operations Center (SOC) workflows.
 
----
-
-# 📌 Overview
-
-The **Enterprise Cyber Defense Platform (ECDP)** is a centralized cybersecurity web application designed to support Security Operations Center (SOC) activities.
-
-The platform brings multiple cybersecurity capabilities together into a single interface, allowing security analysts to:
+ECDP brings multiple cybersecurity capabilities into a single platform,
+allowing security analysts to:
 
 - Manage enterprise assets
 - Perform network and vulnerability scanning
 - Analyze threat intelligence
-- Search and analyze CVE information
-- Track and manage security incidents
-- Monitor security-related information through a centralized dashboard
+- Search CVE information
+- Track security incidents
+- Manage remediation activities
+- Generate security reports
+- Review audit activity
+- Obtain AI-assisted security analysis
+- Monitor overall security posture through a centralized dashboard
 
-ECDP combines **web application development, cybersecurity tools, external security APIs, database management, and SOC workflows** into one practical cybersecurity platform.
+The platform combines web application development, cybersecurity tools,
+external security APIs, database management, security controls, and SOC
+workflows.
 
 ---
 
 # 🎯 Objectives
 
-The primary objectives of the Enterprise Cyber Defense Platform are:
+The primary objectives of ECDP are:
 
-- Provide a centralized security management interface
+- Provide a centralized cybersecurity management interface
 - Simplify enterprise asset management
 - Perform vulnerability assessment using Nmap
 - Analyze suspicious indicators using VirusTotal
 - Retrieve vulnerability information from the NVD
 - Provide structured incident management
+- Provide remediation tracking and verification
+- Generate security reports
+- Maintain security audit logs
+- Provide AI-assisted security analysis
 - Demonstrate practical SOC workflows
 - Integrate external cybersecurity APIs securely
-- Provide a scalable foundation for future security automation and AI capabilities
+- Provide a foundation for future security automation
 
 ---
 
 # 🚀 Key Features
 
-## 🔐 1. User Authentication
+## 🔐 1. User Authentication & Access Control
 
-The platform provides authentication and access control functionality.
+ECDP provides secure user authentication and role-based access control.
 
 ### Features
 
@@ -74,28 +67,53 @@ The platform provides authentication and access control functionality.
 - Session Management
 - Protected Routes
 - Logout
-- Flask-Login integration
+- Flask-Login Integration
+- Role-Based Access Control
+- Admin and Analyst permissions
+- Password validation
+- CSRF protection
 
 ---
 
 ## 📊 2. Security Dashboard
 
-The dashboard provides a centralized overview of security operations.
+The dashboard provides a centralized overview of the organization's
+security posture.
 
-### Features
+### Dashboard Metrics
 
-- Total Asset Statistics
-- Scan Statistics
-- Incident Overview
-- Security Overview
-- Centralized Security Monitoring
-- Security Module Navigation
+- Total Assets
+- Active Assets
+- High/Critical Risk Assets
+- Total Scans
+- Completed Scans
+- Failed Scans
+- Total Vulnerabilities
+- Unique CVEs
+- Critical Vulnerabilities
+- High Vulnerabilities
+- Medium Vulnerabilities
+- Low Vulnerabilities
+- Highest CVSS
+- Total Incidents
+- Open Incidents
+- Critical/High Incidents
+- Remediation Statistics
+- Remediation Completion
+- Overall Security Score
+
+### Recent Activity
+
+- Recent Scans
+- Recent Incidents
+- Recent Audit Logs
 
 ---
 
-## 💻 3. Asset Inventory
+# 💻 3. Asset Inventory
 
-The Asset Inventory module allows analysts to manage enterprise assets.
+The Asset Inventory module provides centralized enterprise asset
+management.
 
 ### Features
 
@@ -103,156 +121,55 @@ The Asset Inventory module allows analysts to manage enterprise assets.
 - View Assets
 - Edit Assets
 - Delete Assets
-- Asset Classification
+- Search Assets
 - IP Address Management
 - Operating System Information
-- Asset Status Tracking
+- Asset Owner
+- Asset Type
+- Asset Status
+- Risk Classification
+- Duplicate IP Protection
 
 ---
 
-## 🔍 4. Vulnerability Scanner
+# 🔍 4. Vulnerability Scanner
 
-The Vulnerability Scanner integrates **Nmap** for network reconnaissance and security assessment.
+The Vulnerability Scanner integrates **Nmap** for network security
+assessment.
 
 ### Features
 
-- Network Scanning
+- Target Scanning
 - Port Scanning
 - Service Detection
-- Target Scanning
+- Network Reconnaissance
 - Scan Result Processing
 - Scan History
-- Vulnerability Discovery
+- Open Port Detection
+- Service Identification
+- CVE Matching
+- CVSS Processing
+- Risk Classification
+- Asset Association
+- Automatic Asset Discovery
 
----
+### Scan Workflow
 
-## 🌍 5. Threat Intelligence
-
-The Threat Intelligence module integrates the **VirusTotal API**.
-
-### Supported Analysis
-
-- IP Address Reputation
-- URL Reputation
-- File Hash Analysis
-- Threat Detection
-- Security Indicator Analysis
-- Threat Intelligence Results
-
-The module helps analysts investigate potentially malicious indicators before taking further action.
-
----
-
-## 🐞 6. CVE Intelligence
-
-The CVE Intelligence module integrates the **NVD API** to retrieve vulnerability information.
-
-### Information Provided
-
-- CVE ID
-- Vulnerability Description
-- CVSS Score
-- Severity
-- Published Date
-- Vulnerability References
-- CVE Details
-
-This helps security analysts understand known vulnerabilities and their severity.
-
----
-
-## 🚨 7. Incident Response
-
-The Incident Response module provides structured incident tracking.
-
-### Features
-
-- Create Incidents
-- View Incidents
-- Edit Incidents
-- Incident Severity
-- Incident Status
-- Incident Assignment
-- Incident Description
-- Incident Tracking
-- Resolution Tracking
-
----
-
-# 🛠️ Technology Stack
-
-## Backend
-
-- Python
-- Flask
-- SQLAlchemy
-- Flask-Login
-- Flask-WTF
-
-## Frontend
-
-- HTML5
-- CSS3
-- Bootstrap 5
-- JavaScript
-- Chart.js
-
-## Database
-
-- SQLite
-- SQLAlchemy ORM
-
-## Cybersecurity Tools & APIs
-
-- Nmap
-- VirusTotal API
-- NVD API
-
-## Development Environment
-
-- Visual Studio Code
-- Git
-- GitHub
-- Python Virtual Environment
-
----
-
-# 🔗 Security Integrations
-
-| Tool / API | Purpose |
-|---|---|
-| **Nmap** | Network scanning, port detection, and service discovery |
-| **VirusTotal API** | Threat intelligence and reputation analysis |
-| **NVD API** | CVE and vulnerability intelligence |
-
----
-
-# 🏗️ System Architecture
-
-The Enterprise Cyber Defense Platform follows a modular architecture where the Flask web application acts as the central application layer.
-
-The high-level system architecture is:
-
-```mermaid
-flowchart TB
-
-    A["SOC / Security Analyst"] --> B["Flask Web Application<br/>ECDP"]
-
-    B --> C["Authentication<br/>Flask-Login"]
-    B --> D["Security Dashboard"]
-    B --> E["Asset Inventory"]
-
-    D --> F["Security Modules"]
-
-    F --> G["Vulnerability Scanner<br/>Nmap"]
-    F --> H["Threat Intelligence<br/>VirusTotal API"]
-    F --> I["CVE Intelligence<br/>NVD API"]
-
-    G --> J["Security Analysis"]
-    H --> J
-    I --> J
-
-    J --> K["Incident Response"]
-
-    K --> L["SQLAlchemy ORM"]
-    L --> M[("SQLite Database")]
+```text
+Authorized Target
+       ↓
+     Nmap
+       ↓
+Port & Service Detection
+       ↓
+Vulnerability Analysis
+       ↓
+CVE Matching
+       ↓
+CVSS Evaluation
+       ↓
+Risk Classification
+       ↓
+Database Storage
+       ↓
+Dashboard / Incident / Remediation

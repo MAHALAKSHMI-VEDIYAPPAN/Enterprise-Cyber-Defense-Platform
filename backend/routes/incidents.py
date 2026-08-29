@@ -15,11 +15,11 @@ from flask_login import (
 from extensions import db
 
 from models.incident import Incident
+from models.remediation import Remediation
 
 from forms.incident_form import IncidentForm
 
 from utils.decorators import role_required
-
 from utils.audit_logger import log_action
 
 
@@ -31,6 +31,212 @@ incidents_bp = Blueprint(
     "incidents",
     __name__
 )
+
+
+# ==========================================================
+# Generate Remediation ID
+# ==========================================================
+
+def generate_remediation_id():
+
+    last_remediation = Remediation.query.order_by(
+        Remediation.id.desc()
+    ).first()
+
+    if last_remediation:
+
+        next_number = (
+            last_remediation.id + 1
+        )
+
+    else:
+
+        next_number = 1
+
+    return f"REM-{next_number:04d}"
+
+
+# ==========================================================
+# Severity Normalization
+# ==========================================================
+
+def normalize_severity(severity):
+
+    severity = str(
+        severity or "Medium"
+    ).strip().capitalize()
+
+    if severity not in [
+        "Critical",
+        "High",
+        "Medium",
+        "Low"
+    ]:
+
+        severity = "Medium"
+
+    return severity
+
+
+# ==========================================================
+# Create Remediation From Incident
+# ==========================================================
+
+def create_incident_remediation(incident):
+
+    # ------------------------------------------------------
+    # Check for existing remediation
+    #
+    # Prevent duplicate remediation tasks.
+    # ------------------------------------------------------
+
+    existing = Remediation.query.filter_by(
+        incident_id=incident.id
+    ).first()
+
+    if existing:
+
+        print(
+            f"[REMEDIATION] Existing remediation "
+            f"{existing.remediation_id} found for "
+            f"{incident.incident_id}"
+        )
+
+        return existing
+
+
+    # ------------------------------------------------------
+    # Normalize severity
+    # ------------------------------------------------------
+
+    severity = normalize_severity(
+        incident.severity
+    )
+
+
+    # ------------------------------------------------------
+    # Build description
+    # ------------------------------------------------------
+
+    description = (
+        f"Remediation required for security incident "
+        f"{incident.incident_id}.\n\n"
+        f"Incident Title: {incident.title}\n"
+        f"Severity: {severity}\n"
+        f"Affected Asset: "
+        f"{incident.asset or 'Not specified'}\n\n"
+        f"Incident Description:\n"
+        f"{incident.description or 'No description provided.'}"
+    )
+
+
+    # ------------------------------------------------------
+    # Build recommendation
+    # ------------------------------------------------------
+
+    recommendation = (
+        f"Investigate and resolve incident "
+        f"{incident.incident_id}. "
+        f"Review the affected asset, identify the root "
+        f"cause, apply the required security controls or "
+        f"patches, validate that the threat has been "
+        f"removed, and perform a follow-up security check."
+    )
+
+
+    if severity in [
+        "Critical",
+        "High"
+    ]:
+
+        recommendation += (
+            " This is a high-priority security issue and "
+            "should be addressed as soon as possible."
+        )
+
+
+    # ------------------------------------------------------
+    # Create remediation
+    # ------------------------------------------------------
+
+    remediation = Remediation(
+
+        remediation_id=generate_remediation_id(),
+
+        title=(
+            f"Resolve {incident.incident_id}: "
+            f"{incident.title}"
+        ),
+
+        cve_id=None,
+
+        asset_id=None,
+
+        scan_id=None,
+
+        incident_id=incident.id,
+
+        severity=severity,
+
+        description=description,
+
+        recommendation=recommendation,
+
+        status="Open",
+
+        assigned_to=(
+            incident.assigned_to
+            if incident.assigned_to
+            else None
+        ),
+
+        notes=(
+            f"Automatically generated from "
+            f"{incident.incident_id}."
+        )
+
+    )
+
+
+    # ------------------------------------------------------
+    # Save remediation
+    # ------------------------------------------------------
+
+    db.session.add(
+        remediation
+    )
+
+    db.session.flush()
+
+
+    # ------------------------------------------------------
+    # Audit log
+    # ------------------------------------------------------
+
+    log_action(
+        "REMEDIATION_AUTO_CREATED",
+        (
+            f"Remediation automatically created "
+            f"from incident. "
+            f"Remediation: "
+            f"{remediation.remediation_id}. "
+            f"Incident: {incident.incident_id}. "
+            f"Severity: {severity}. "
+            f"Asset: "
+            f"{incident.asset or 'Not specified'}."
+        )
+    )
+
+
+    print(
+        f"[REMEDIATION] Created "
+        f"{remediation.remediation_id} "
+        f"for incident "
+        f"{incident.incident_id}"
+    )
+
+
+    return remediation
 
 
 # ==========================================================
@@ -68,7 +274,9 @@ def incidents():
             )
 
             return redirect(
-                url_for("incidents.incidents")
+                url_for(
+                    "incidents.incidents"
+                )
             )
 
 
@@ -99,7 +307,7 @@ def incidents():
         incident = Incident(
 
             incident_id=(
-                f"INC-{incident_number:04}"
+                f"INC-{incident_number:04d}"
             ),
 
             title=(
@@ -113,7 +321,9 @@ def incidents():
             ),
 
             severity=(
-                form.severity.data
+                normalize_severity(
+                    form.severity.data
+                )
             ),
 
             assigned_to=(
@@ -141,7 +351,59 @@ def incidents():
             incident
         )
 
-        db.session.commit()
+
+        try:
+
+            db.session.flush()
+
+
+            # ==================================================
+            # Automatic Incident Remediation
+            # ==================================================
+
+            remediation = (
+                create_incident_remediation(
+                    incident
+                )
+            )
+
+
+            # --------------------------------------------------
+            # Commit Incident + Remediation
+            # --------------------------------------------------
+
+            db.session.commit()
+
+
+        except Exception as error:
+
+            db.session.rollback()
+
+
+            log_action(
+                "INCIDENT_CREATE_FAILED",
+                (
+                    f"Failed to create incident or "
+                    f"automatic remediation. "
+                    f"Error: {str(error)}"
+                )
+            )
+
+
+            flash(
+                (
+                    "Unable to create the incident. "
+                    "Please check the server logs."
+                ),
+                "danger"
+            )
+
+
+            return redirect(
+                url_for(
+                    "incidents.incidents"
+                )
+            )
 
 
         # ==================================================
@@ -160,18 +422,26 @@ def incidents():
         )
 
 
-        # --------------------------------------------------
+        # ==================================================
         # Success Message
-        # --------------------------------------------------
+        # ==================================================
 
         flash(
-            "Incident created successfully!",
+            (
+                f"Incident {incident.incident_id} "
+                f"created successfully. "
+                f"Remediation "
+                f"{remediation.remediation_id} "
+                f"was created automatically."
+            ),
             "success"
         )
 
 
         return redirect(
-            url_for("incidents.incidents")
+            url_for(
+                "incidents.incidents"
+            )
         )
 
 
@@ -290,6 +560,28 @@ def incidents():
 
 
     # ======================================================
+    # Remediation Statistics
+    # ======================================================
+
+    total_remediations = Remediation.query.count()
+
+
+    open_remediations = Remediation.query.filter_by(
+        status="Open"
+    ).count()
+
+
+    critical_remediations = Remediation.query.filter_by(
+        severity="Critical"
+    ).count()
+
+
+    high_remediations = Remediation.query.filter_by(
+        severity="High"
+    ).count()
+
+
+    # ======================================================
     # Render Incident Dashboard
     # ======================================================
 
@@ -319,7 +611,15 @@ def incidents():
 
         medium_incidents=medium_incidents,
 
-        low_incidents=low_incidents
+        low_incidents=low_incidents,
+
+        total_remediations=total_remediations,
+
+        open_remediations=open_remediations,
+
+        critical_remediations=critical_remediations,
+
+        high_remediations=high_remediations
 
     )
 
@@ -353,6 +653,25 @@ def delete_incident(id):
 
 
     # ------------------------------------------------------
+    # Delete Related Remediations First
+    #
+    # This prevents foreign-key problems when deleting
+    # an incident that has remediation records.
+    # ------------------------------------------------------
+
+    related_remediations = Remediation.query.filter_by(
+        incident_id=incident.id
+    ).all()
+
+
+    for remediation in related_remediations:
+
+        db.session.delete(
+            remediation
+        )
+
+
+    # ------------------------------------------------------
     # Delete Incident
     # ------------------------------------------------------
 
@@ -360,7 +679,37 @@ def delete_incident(id):
         incident
     )
 
-    db.session.commit()
+
+    try:
+
+        db.session.commit()
+
+    except Exception as error:
+
+        db.session.rollback()
+
+
+        log_action(
+            "INCIDENT_DELETE_FAILED",
+            (
+                f"Failed to delete incident "
+                f"{incident_id}. "
+                f"Error: {str(error)}"
+            )
+        )
+
+
+        flash(
+            "Unable to delete incident.",
+            "danger"
+        )
+
+
+        return redirect(
+            url_for(
+                "incidents.incidents"
+            )
+        )
 
 
     # ======================================================
@@ -383,13 +732,15 @@ def delete_incident(id):
     # ------------------------------------------------------
 
     flash(
-        "Incident deleted successfully!",
+        "Incident and related remediation(s) deleted successfully!",
         "success"
     )
 
 
     return redirect(
-        url_for("incidents.incidents")
+        url_for(
+            "incidents.incidents"
+        )
     )
 
 
@@ -472,7 +823,9 @@ def edit_incident(id):
         # --------------------------------------------------
 
         incident.severity = (
-            form.severity.data
+            normalize_severity(
+                form.severity.data
+            )
         )
 
 
@@ -507,10 +860,75 @@ def edit_incident(id):
 
 
         # --------------------------------------------------
+        # Update Related Remediation
+        #
+        # Keep the automatically created remediation
+        # synchronized with important incident changes.
+        # --------------------------------------------------
+
+        related_remediations = Remediation.query.filter_by(
+            incident_id=incident.id
+        ).all()
+
+
+        for remediation in related_remediations:
+
+            remediation.severity = (
+                incident.severity
+            )
+
+            remediation.assigned_to = (
+                incident.assigned_to
+                if incident.assigned_to
+                else None
+            )
+
+            remediation.description = (
+                f"Remediation required for security incident "
+                f"{incident.incident_id}.\n\n"
+                f"Incident Title: {incident.title}\n"
+                f"Severity: {incident.severity}\n"
+                f"Affected Asset: "
+                f"{incident.asset or 'Not specified'}\n\n"
+                f"Incident Description:\n"
+                f"{incident.description or 'No description provided.'}"
+            )
+
+
+        # --------------------------------------------------
         # Save Changes
         # --------------------------------------------------
 
-        db.session.commit()
+        try:
+
+            db.session.commit()
+
+        except Exception as error:
+
+            db.session.rollback()
+
+
+            log_action(
+                "INCIDENT_UPDATE_FAILED",
+                (
+                    f"Failed to update incident "
+                    f"{incident.incident_id}. "
+                    f"Error: {str(error)}"
+                )
+            )
+
+
+            flash(
+                "Unable to update incident.",
+                "danger"
+            )
+
+
+            return redirect(
+                url_for(
+                    "incidents.incidents"
+                )
+            )
 
 
         # ==================================================
@@ -545,7 +963,9 @@ def edit_incident(id):
 
 
         return redirect(
-            url_for("incidents.incidents")
+            url_for(
+                "incidents.incidents"
+            )
         )
 
 

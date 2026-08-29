@@ -17,7 +17,10 @@
 
     <ul class="menu">
 
-        <!-- Dashboard -->
+        <!-- ==================================================
+             Dashboard
+             ================================================== -->
+
         <li>
             <a href="{{ url_for('dashboard') }}">
                 <i class="bi bi-speedometer2"></i>
@@ -25,7 +28,11 @@
             </a>
         </li>
 
-        <!-- Asset Inventory -->
+
+        <!-- ==================================================
+             Asset Inventory
+             ================================================== -->
+
         <li>
             <a href="{{ url_for('assets.assets') }}">
                 <i class="bi bi-pc-display"></i>
@@ -33,7 +40,11 @@
             </a>
         </li>
 
-        <!-- Vulnerability Scanner -->
+
+        <!-- ==================================================
+             Vulnerability Scanner
+             ================================================== -->
+
         <li>
             <a href="{{ url_for('scanner.scanner') }}">
                 <i class="bi bi-shield-check"></i>
@@ -41,7 +52,11 @@
             </a>
         </li>
 
-        <!-- Threat Intelligence -->
+
+        <!-- ==================================================
+             Threat Intelligence
+             ================================================== -->
+
         <li>
             <a href="{{ url_for('threat.threat') }}">
                 <i class="bi bi-globe"></i>
@@ -49,7 +64,11 @@
             </a>
         </li>
 
-        <!-- CVE Intelligence -->
+
+        <!-- ==================================================
+             CVE Intelligence
+             ================================================== -->
+
         <li>
             <a href="{{ url_for('cve.cve') }}">
                 <i class="bi bi-bug"></i>
@@ -57,7 +76,11 @@
             </a>
         </li>
 
-        <!-- Incident Response -->
+
+        <!-- ==================================================
+             Incident Response
+             ================================================== -->
+
         <li>
             <a href="{{ url_for('incidents.incidents') }}">
                 <i class="bi bi-exclamation-triangle"></i>
@@ -65,47 +88,92 @@
             </a>
         </li>
 
-        <!-- Future Modules -->
+
+        <!-- ==================================================
+             Future Modules
+             ================================================== -->
+
         <li class="menu-section">
             <span>Future Modules</span>
         </li>
 
-        <!-- Reports -->
+
+        <!-- ==================================================
+             Reports
+             ================================================== -->
+
         <li>
             <a href="{{ url_for('reports.reports') }}">
 
                 <i class="bi bi-file-earmark-bar-graph"></i>
 
-                Reports
+                <span>Reports</span>
 
             </a>
         </li>
 
-        <!-- AI Security Assistant -->
+
+        <!-- ==================================================
+             Remediation Center
+             ================================================== -->
+
+        <li>
+            <a href="{{ url_for('remediation.remediation') }}">
+
+                <i class="bi bi-wrench-adjustable"></i>
+
+                <span>Remediation</span>
+
+            </a>
+        </li>
+
+
+        <!-- ==================================================
+             AI Security Assistant
+             ================================================== -->
+
         <li>
             <a href="{{ url_for('ai_security.ai_assistant') }}">
+
                 <i class="bi bi-robot"></i>
-                AI Security Assistant
+
+                <span>AI Security Assistant</span>
+
             </a>
         </li>
 
-        <!-- Settings -->
+
+        <!-- ==================================================
+             Settings
+             ================================================== -->
+
         <li>
             <a href="#" class="disabled-menu" onclick="return false;">
+
                 <i class="bi bi-gear"></i>
+
                 <span>Settings</span>
+
                 <small>Coming Soon</small>
+
             </a>
         </li>
 
     </ul>
 
-    <!-- Logout -->
+
+    <!-- ======================================================
+         Logout
+         ====================================================== -->
+
     <div class="logout">
 
         <a href="{{ url_for('auth.logout') }}">
+
             <i class="bi bi-box-arrow-right"></i>
-            Logout
+
+            <span>Logout</span>
+
         </a>
 
     </div>

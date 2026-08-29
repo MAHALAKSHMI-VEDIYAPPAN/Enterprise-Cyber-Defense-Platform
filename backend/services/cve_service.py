@@ -701,6 +701,255 @@ def search_cves(keyword):
         return []
 
 
+
+
+# ==========================================================
+# Scanner CVE Correlation
+# ==========================================================
+
+def find_cves_for_software(
+    product,
+    version=""
+):
+    """
+    Find potential CVE matches for software detected by Nmap.
+
+    IMPORTANT:
+    A returned CVE is a potential match, not proof that the
+    scanned host is vulnerable. Affected-version ranges,
+    patches, backports and configuration must be verified.
+    """
+
+    product = (
+        product or ""
+    ).strip()
+
+    version = (
+        version or ""
+    ).strip()
+
+    if not product:
+        return []
+
+    # ------------------------------------------------------
+    # Build NVD keyword query
+    # ------------------------------------------------------
+
+    search_term = product
+
+    if version:
+        search_term = f"{product} {version}"
+
+    params = {
+        "keywordSearch": search_term,
+        "resultsPerPage": 20,
+        "startIndex": 0,
+        "noRejected": ""
+    }
+
+    try:
+
+        response = requests.get(
+            NVD_API_URL,
+            params=params,
+            headers=get_nvd_headers(),
+            timeout=REQUEST_TIMEOUT
+        )
+
+        if response.status_code == 429:
+
+            logger.warning(
+                "NVD API rate limit reached during "
+                "scanner CVE correlation."
+            )
+
+            return []
+
+        response.raise_for_status()
+
+        data = response.json()
+
+        vulnerabilities = data.get(
+            "vulnerabilities",
+            []
+        )
+
+        results = []
+        seen_cves = set()
+
+        for item in vulnerabilities:
+
+            cve = item.get(
+                "cve",
+                {}
+            )
+
+            record = build_cve_record(
+                cve,
+                include_history=False
+            )
+
+            cve_id = (
+                record.get(
+                    "id",
+                    ""
+                )
+                or ""
+            ).upper()
+
+            if not cve_id:
+                continue
+
+            if cve_id in seen_cves:
+                continue
+
+            seen_cves.add(
+                cve_id
+            )
+
+            # --------------------------------------------------
+            # Version-aware filtering
+            #
+            # NVD keyword search can return product-level
+            # matches. If Nmap detected a version, keep records
+            # that mention that version in the description/CPE.
+            # --------------------------------------------------
+
+            if version:
+
+                version_text = version.lower()
+
+                description = str(
+                    record.get(
+                        "description",
+                        ""
+                    )
+                ).lower()
+
+                products = " ".join(
+                    str(product_name)
+                    for product_name in record.get(
+                        "products",
+                        []
+                    )
+                ).lower()
+
+                searchable_text = (
+                    description
+                    + " "
+                    + products
+                )
+
+                if version_text not in searchable_text:
+                    continue
+
+            results.append(
+                record
+            )
+
+        # ------------------------------------------------------
+        # Highest risk first
+        # ------------------------------------------------------
+
+        severity_rank = {
+            "CRITICAL": 4,
+            "HIGH": 3,
+            "MEDIUM": 2,
+            "LOW": 1,
+            "UNKNOWN": 0
+        }
+
+        def numeric_score(item):
+
+            try:
+                return float(
+                    item.get(
+                        "score",
+                        0
+                    ) or 0
+                )
+
+            except (
+                TypeError,
+                ValueError
+            ):
+
+                return 0.0
+
+        results.sort(
+            key=lambda item: (
+                severity_rank.get(
+                    str(
+                        item.get(
+                            "severity",
+                            "UNKNOWN"
+                        )
+                    ).upper(),
+                    0
+                ),
+                numeric_score(
+                    item
+                ),
+                item.get(
+                    "published_raw",
+                    ""
+                )
+            ),
+            reverse=True
+        )
+
+        # Limit results for each detected product so that
+        # scanner results remain manageable.
+        return results[:10]
+
+    except requests.exceptions.Timeout:
+
+        logger.warning(
+            "NVD scanner CVE lookup timed out for "
+            "%s %s.",
+            product,
+            version
+        )
+
+        return []
+
+    except requests.exceptions.ConnectionError:
+
+        logger.warning(
+            "Unable to connect to NVD during scanner "
+            "CVE lookup."
+        )
+
+        return []
+
+    except requests.exceptions.RequestException as error:
+
+        logger.exception(
+            "NVD scanner CVE lookup failed: %s",
+            error
+        )
+
+        return []
+
+    except ValueError:
+
+        logger.warning(
+            "NVD returned invalid JSON during scanner "
+            "CVE correlation."
+        )
+
+        return []
+
+    except Exception as error:
+
+        logger.exception(
+            "Unexpected scanner CVE correlation error: %s",
+            error
+        )
+
+        return []
+
+
 # ==========================================================
 # Get Single CVE Details
 # ==========================================================

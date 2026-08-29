@@ -1,0 +1,334 @@
+{% extends "base.html" %}
+
+{% block title %}
+Create Remediation - ECDP
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+
+        <h1>
+            <i class="fas fa-wrench"></i>
+            Create Remediation
+        </h1>
+
+        <p>
+            Create a remediation task for a security finding.
+        </p>
+
+    </div>
+
+    <a href="{{ url_for('remediation.remediation') }}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i>
+        Back
+    </a>
+
+</div>
+
+
+<div class="form-panel">
+
+    <form method="POST" action="{{ url_for('remediation.create_remediation') }}">
+
+        <!-- TITLE -->
+
+        <div class="form-group">
+
+            <label>
+                Remediation Title
+            </label>
+
+            <input type="text" name="title" required placeholder="Example: Review exposed Apache service">
+
+        </div>
+
+
+        <!-- CVE -->
+
+        <div class="form-row">
+
+            <div class="form-group">
+
+                <label>
+                    CVE ID
+                </label>
+
+                <input type="text" name="cve_id" placeholder="Example: CVE-2026-12345">
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Severity
+                </label>
+
+                <select name="severity">
+
+                    <option value="Critical">
+                        Critical
+                    </option>
+
+                    <option value="High">
+                        High
+                    </option>
+
+                    <option value="Medium" selected>
+                        Medium
+                    </option>
+
+                    <option value="Low">
+                        Low
+                    </option>
+
+                </select>
+
+            </div>
+
+        </div>
+
+
+        <!-- ASSET -->
+
+        <div class="form-row">
+
+            <div class="form-group">
+
+                <label>
+                    Related Asset
+                </label>
+
+                <select name="asset_id">
+
+                    <option value="">
+                        No Asset
+                    </option>
+
+                    {% for asset in assets %}
+
+                    <option value="{{ asset.id }}">
+
+                        {{ asset.asset_name }}
+                        -
+                        {{ asset.ip_address }}
+
+                    </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+
+            <!-- SCAN -->
+
+            <div class="form-group">
+
+                <label>
+                    Related Scan
+                </label>
+
+                <select name="scan_id">
+
+                    <option value="">
+                        No Scan
+                    </option>
+
+                    {% for scan in scans %}
+
+                    <option value="{{ scan.id }}">
+
+                        Scan #{{ scan.id }}
+                        -
+                        {{ scan.target }}
+
+                    </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+        </div>
+
+
+        <!-- DESCRIPTION -->
+
+        <div class="form-group">
+
+            <label>
+                Finding Description
+            </label>
+
+            <textarea name="description" rows="5" placeholder="Describe the security finding..."></textarea>
+
+        </div>
+
+
+        <!-- RECOMMENDATION -->
+
+        <div class="form-group">
+
+            <label>
+                Recommended Remediation
+            </label>
+
+            <textarea name="recommendation" rows="5" placeholder="Describe the recommended fix..."></textarea>
+
+        </div>
+
+
+        <!-- ASSIGNED -->
+
+        <div class="form-group">
+
+            <label>
+                Assign To
+            </label>
+
+            <input type="text" name="assigned_to" placeholder="SOC Analyst / IT Administrator">
+
+        </div>
+
+
+        <!-- NOTES -->
+
+        <div class="form-group">
+
+            <label>
+                Initial Notes
+            </label>
+
+            <textarea name="notes" rows="4" placeholder="Additional remediation notes..."></textarea>
+
+        </div>
+
+
+        <!-- ACTIONS -->
+
+        <div class="form-actions">
+
+            <a href="{{ url_for('remediation.remediation') }}" class="btn btn-secondary">
+                Cancel
+            </a>
+
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i>
+                Create Remediation
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+<style>
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+    }
+
+    .page-header h1 {
+        color: #e8ffff;
+    }
+
+    .page-header p {
+        color: #789999;
+    }
+
+    .form-panel {
+        max-width: 950px;
+        background: rgba(2, 20, 20, .9);
+        border: 1px solid #063e3b;
+        border-radius: 6px;
+        padding: 28px;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        color: #9fc4c4;
+        font-size: 13px;
+        margin-bottom: 8px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        box-sizing: border-box;
+        background: #031616;
+        border: 1px solid #174242;
+        border-radius: 4px;
+        color: #dfffff;
+        padding: 12px;
+        font-family: inherit;
+    }
+
+    .form-group textarea {
+        resize: vertical;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: #00c98b;
+        box-shadow: 0 0 0 1px #00c98b;
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        border-top: 1px solid #123333;
+        padding-top: 20px;
+    }
+
+    .btn {
+        padding: 11px 18px;
+        border-radius: 4px;
+        border: 0;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .btn-primary {
+        background: #00c98b;
+        color: #001513;
+    }
+
+    .btn-secondary {
+        background: #123030;
+        color: #c4dddd;
+    }
+
+    @media(max-width: 700px) {
+
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+
+    }
+</style>
+
+{% endblock %}

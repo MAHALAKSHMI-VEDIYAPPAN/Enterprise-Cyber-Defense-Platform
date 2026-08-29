@@ -1,10 +1,8 @@
 {% extends "base.html" %}
 
-
 {% block title %}
 Vulnerability Scanner - ECDP
 {% endblock %}
-
 
 {% block content %}
 
@@ -36,11 +34,12 @@ Vulnerability Scanner - ECDP
 </div>
 
 
+{% if current_user.role in ["Admin", "Analyst"] %}
+
+
 <!-- ==========================================================
      New Security Scan
 ========================================================== -->
-
-{% if current_user.role in ["Admin", "Analyst"] %}
 
 <div class="card shadow border-0 mb-4">
 
@@ -64,11 +63,33 @@ Vulnerability Scanner - ECDP
             {{ form.hidden_tag() }}
 
 
+            <!-- ==================================================
+                 Scan Mode
+            =================================================== -->
+
+            <div class="mb-4">
+
+                <label class="form-label fw-bold">
+                    Scan Target
+                </label>
+
+                <div class="alert alert-info mb-0">
+
+                    <i class="bi bi-info-circle me-2"></i>
+
+                    You can scan an existing registered asset
+                    or enter a new authorized target IP directly.
+
+                </div>
+
+            </div>
+
+
             <div class="row g-3">
 
 
                 <!-- ==================================================
-                     Select Asset
+                     Select Existing Asset
                 =================================================== -->
 
                 <div class="col-lg-5">
@@ -77,9 +98,27 @@ Vulnerability Scanner - ECDP
                     class="form-label"
                     ) }}
 
-                    {{ form.asset_id(
-                    class="form-select"
-                    ) }}
+                    <select name="asset_id" id="assetSelect" class="form-select">
+
+                        <option value="">
+                            -- New Target / No Asset --
+                        </option>
+
+
+                        {% for asset in assets %}
+
+                        <option value="{{ asset.id }}" data-ip="{{ asset.ip_address }}" {% if
+                            form.asset_id.data==asset.id %} selected {% endif %}>
+
+                            {{ asset.asset_name }}
+                            -
+                            {{ asset.ip_address }}
+
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
 
 
                     {% if form.asset_id.errors %}
@@ -104,8 +143,11 @@ Vulnerability Scanner - ECDP
 
                     <small class="text-muted">
 
-                        Select an authorized enterprise asset
-                        to associate with this scan.
+                        <i class="bi bi-building me-1"></i>
+
+                        Select an existing asset, or choose
+                        <strong>New Target / No Asset</strong>
+                        to scan an authorized IP directly.
 
                     </small>
 
@@ -126,6 +168,7 @@ Vulnerability Scanner - ECDP
 
                     {{ form.target(
                     class="form-control",
+                    id="targetIP",
                     placeholder="Enter authorized target IP"
                     ) }}
 
@@ -150,10 +193,13 @@ Vulnerability Scanner - ECDP
 
                     {% else %}
 
-                    <small class="text-muted">
+                    <small id="targetHelp" class="text-muted">
 
-                        Enter the IP address of the authorized
-                        system you want to scan.
+                        <i class="bi bi-shield-check me-1"></i>
+
+                        Enter an authorized target IP.
+                        Selecting an existing asset will
+                        automatically populate its IP.
 
                     </small>
 
@@ -171,6 +217,27 @@ Vulnerability Scanner - ECDP
                     {{ form.submit(
                     class="btn btn-primary w-100"
                     ) }}
+
+                </div>
+
+
+            </div>
+
+
+            <!-- ==================================================
+                 Scan Mode Indicator
+            =================================================== -->
+
+            <div class="mt-3">
+
+                <div id="scanModeAlert" class="alert alert-secondary mb-0">
+
+                    <i class="bi bi-plus-circle me-2"></i>
+
+                    <strong>New Target Scan:</strong>
+
+                    Enter an authorized IP address directly.
+                    The scan does not require an existing asset.
 
                 </div>
 
@@ -213,7 +280,9 @@ Vulnerability Scanner - ECDP
 <div class="row g-3 mb-4">
 
 
-    <!-- Total Scans -->
+    <!-- ======================================================
+         Total Scans
+    ======================================================= -->
 
     <div class="col-md-4">
 
@@ -244,7 +313,10 @@ Vulnerability Scanner - ECDP
     </div>
 
 
-    <!-- Completed Scans -->
+
+    <!-- ======================================================
+         Completed Scans
+    ======================================================= -->
 
     <div class="col-md-4">
 
@@ -280,7 +352,10 @@ Vulnerability Scanner - ECDP
     </div>
 
 
-    <!-- Targets Scanned -->
+
+    <!-- ======================================================
+         Targets Scanned
+    ======================================================= -->
 
     <div class="col-md-4">
 
@@ -341,7 +416,9 @@ Vulnerability Scanner - ECDP
 
     <div class="card-body p-0">
 
+
         {% if scans %}
+
 
         <div class="table-responsive">
 
@@ -361,6 +438,12 @@ Vulnerability Scanner - ECDP
 
                         <th>SERVICES</th>
 
+                        <th>RISK</th>
+
+                        <th>CVSS</th>
+
+                        <th>CVEs</th>
+
                         <th>STATUS</th>
 
                         <th>SCAN DATE</th>
@@ -372,29 +455,41 @@ Vulnerability Scanner - ECDP
 
                 <tbody>
 
+
                     {% for scan in scans %}
+
 
                     <tr>
 
-                        <!-- ID -->
+
+                        <!-- ==================================================
+                             ID
+                        =================================================== -->
 
                         <td>
 
                             <strong>
+
                                 {{ scan.id }}
+
                             </strong>
 
                         </td>
 
 
-                        <!-- Asset -->
+
+                        <!-- ==================================================
+                             Asset
+                        =================================================== -->
 
                         <td>
 
                             {% if scan.asset %}
 
                             <strong>
+
                                 {{ scan.asset.asset_name }}
+
                             </strong>
 
                             <br>
@@ -408,7 +503,9 @@ Vulnerability Scanner - ECDP
                             {% else %}
 
                             <span class="text-muted">
-                                Unknown Asset
+
+                                New / Unregistered Target
+
                             </span>
 
                             {% endif %}
@@ -416,31 +513,43 @@ Vulnerability Scanner - ECDP
                         </td>
 
 
-                        <!-- Target -->
+
+                        <!-- ==================================================
+                             Target
+                        =================================================== -->
 
                         <td>
 
                             <strong>
+
                                 {{ scan.target }}
+
                             </strong>
 
                         </td>
 
 
-                        <!-- Open Ports -->
+
+                        <!-- ==================================================
+                             Open Ports
+                        =================================================== -->
 
                         <td>
 
                             {% if scan.open_ports == "None" %}
 
                             <span class="text-muted">
+
                                 None
+
                             </span>
 
                             {% else %}
 
                             <span>
+
                                 {{ scan.open_ports }}
+
                             </span>
 
                             {% endif %}
@@ -448,7 +557,10 @@ Vulnerability Scanner - ECDP
                         </td>
 
 
-                        <!-- Services -->
+
+                        <!-- ==================================================
+                             Services
+                        =================================================== -->
 
                         <td>
 
@@ -461,7 +573,126 @@ Vulnerability Scanner - ECDP
                         </td>
 
 
-                        <!-- Status -->
+
+                        <!-- ==================================================
+                             Risk Level
+                        =================================================== -->
+
+                        <td>
+
+                            {% set risk = (scan.risk_level or "UNKNOWN")|upper %}
+
+
+                            {% if risk == "CRITICAL" %}
+
+                            <span class="badge bg-danger">
+
+                                <i class="bi bi-exclamation-octagon me-1"></i>
+
+                                Critical
+
+                            </span>
+
+
+                            {% elif risk == "HIGH" %}
+
+                            <span class="badge bg-warning text-dark">
+
+                                <i class="bi bi-exclamation-triangle me-1"></i>
+
+                                High
+
+                            </span>
+
+
+                            {% elif risk == "MEDIUM" %}
+
+                            <span class="badge bg-info text-dark">
+
+                                <i class="bi bi-exclamation-circle me-1"></i>
+
+                                Medium
+
+                            </span>
+
+
+                            {% elif risk == "LOW" %}
+
+                            <span class="badge bg-success">
+
+                                <i class="bi bi-shield-check me-1"></i>
+
+                                Low
+
+                            </span>
+
+
+                            {% else %}
+
+                            <span class="badge bg-secondary">
+
+                                {{ risk }}
+
+                            </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+
+                        <!-- ==================================================
+                             Maximum CVSS
+                        =================================================== -->
+
+                        <td>
+
+                            {% if scan.max_cvss is not none %}
+
+                            <strong>
+
+                                {{ "%.1f"|format(scan.max_cvss|float) }}
+
+                            </strong>
+
+                            {% else %}
+
+                            <span class="text-muted">
+                                —
+                            </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+
+                        <!-- ==================================================
+                             Potential CVEs
+                        =================================================== -->
+
+                        <td>
+
+                            <div class="d-flex align-items-center gap-2"
+                                data-vulnerabilities="{{ scan.vulnerabilities or '[]' }}">
+
+                                <span class="badge bg-secondary cve-count">
+                                    0
+                                </span>
+
+                                <button type="button" class="btn btn-sm btn-outline-primary cve-view-btn" disabled>
+                                    View
+                                </button>
+
+                            </div>
+
+                        </td>
+
+
+
+                        <!-- ==================================================
+                             Status
+                        =================================================== -->
 
                         <td>
 
@@ -502,7 +733,10 @@ Vulnerability Scanner - ECDP
                         </td>
 
 
-                        <!-- Scan Date -->
+
+                        <!-- ==================================================
+                             Scan Date
+                        =================================================== -->
 
                         <td>
 
@@ -515,16 +749,21 @@ Vulnerability Scanner - ECDP
                             {% else %}
 
                             <span class="text-muted">
+
                                 —
+
                             </span>
 
                             {% endif %}
 
                         </td>
 
+
                     </tr>
 
+
                     {% endfor %}
+
 
                 </tbody>
 
@@ -536,7 +775,9 @@ Vulnerability Scanner - ECDP
         {% else %}
 
 
-        <!-- No Scans -->
+        <!-- ==========================================================
+             No Scans
+        =========================================================== -->
 
         <div class="text-center p-5">
 
@@ -560,9 +801,619 @@ Vulnerability Scanner - ECDP
 
         {% endif %}
 
+
     </div>
 
 </div>
+
+
+
+<!-- ==========================================================
+     Scan CVE Details Modal
+========================================================== -->
+
+<div class="modal fade" id="scanCveModal" tabindex="-1" aria-labelledby="scanCveModalLabel" aria-hidden="true">
+
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h5 class="modal-title fw-bold" id="scanCveModalLabel">
+
+                    <i class="bi bi-shield-exclamation me-2"></i>
+
+                    Potential CVE Matches
+
+                </h5>
+
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+            </div>
+
+
+            <div class="modal-body">
+
+                <div id="scanCveSummary" class="alert alert-info">
+
+                    Select a scan to view potential CVE matches.
+
+                </div>
+
+                <div id="scanCveList" class="list-group"></div>
+
+            </div>
+
+
+            <div class="modal-footer">
+
+                <small class="text-muted me-auto">
+
+                    CVE matches are potential matches based on
+                    detected software/version information.
+                    They are not confirmation of exploitation.
+
+                </small>
+
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    Close
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<script>
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        function () {
+
+
+            // ======================================================
+            // Asset → Target IP Synchronization
+            // ======================================================
+
+            const assetSelect =
+                document.getElementById(
+                    "assetSelect"
+                );
+
+
+            const targetIP =
+                document.getElementById(
+                    "targetIP"
+                );
+
+
+            const scanModeAlert =
+                document.getElementById(
+                    "scanModeAlert"
+                );
+
+
+            const targetHelp =
+                document.getElementById(
+                    "targetHelp"
+                );
+
+
+            if (
+                assetSelect &&
+                targetIP
+            ) {
+
+
+                function updateTargetIP() {
+
+
+                    const selectedOption =
+                        assetSelect.options[
+                        assetSelect.selectedIndex
+                        ];
+
+
+                    // --------------------------------------------------
+                    // No asset selected
+                    // --------------------------------------------------
+
+                    if (
+                        !selectedOption ||
+                        !selectedOption.value
+                    ) {
+
+                        targetIP.value = "";
+
+                        targetIP.readOnly = false;
+
+                        if (scanModeAlert) {
+
+                            scanModeAlert.className =
+                                "alert alert-secondary mb-0";
+
+                            scanModeAlert.innerHTML =
+                                "<i class='bi bi-plus-circle me-2'></i>" +
+                                "<strong>New Target Scan:</strong> " +
+                                "Enter an authorized IP address directly.";
+
+                        }
+
+                        if (targetHelp) {
+
+                            targetHelp.innerHTML =
+                                "<i class='bi bi-pencil-square me-1'></i>" +
+                                "Enter an authorized target IP address.";
+
+                        }
+
+                        return;
+                    }
+
+
+                    // --------------------------------------------------
+                    // Existing asset selected
+                    // --------------------------------------------------
+
+                    const ip =
+                        selectedOption.getAttribute(
+                            "data-ip"
+                        );
+
+
+                    targetIP.value =
+                        ip || "";
+
+
+                    targetIP.readOnly = false;
+
+
+                    if (scanModeAlert) {
+
+                        scanModeAlert.className =
+                            "alert alert-success mb-0";
+
+                        scanModeAlert.innerHTML =
+                            "<i class='bi bi-check-circle me-2'></i>" +
+                            "<strong>Registered Asset:</strong> " +
+                            "The selected asset will be associated with this scan.";
+
+                    }
+
+
+                    if (targetHelp) {
+
+                        targetHelp.innerHTML =
+                            "<i class='bi bi-pencil-square me-1'></i>" +
+                            "Target IP loaded from the selected asset. " +
+                            "You may edit it for another authorized target.";
+
+                    }
+
+                }
+
+
+                assetSelect.addEventListener(
+                    "change",
+                    updateTargetIP
+                );
+
+
+                updateTargetIP();
+
+            }
+
+
+            // ======================================================
+            // CVE / Vulnerability Display
+            // ======================================================
+
+            const containers =
+                document.querySelectorAll(
+                    "[data-vulnerabilities]"
+                );
+
+
+            const modal =
+                document.getElementById(
+                    "scanCveModal"
+                );
+
+
+            const summary =
+                document.getElementById(
+                    "scanCveSummary"
+                );
+
+
+            const list =
+                document.getElementById(
+                    "scanCveList"
+                );
+
+
+            function escapeHtml(value) {
+
+                const div =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                div.textContent =
+                    value === null ||
+                        value === undefined
+                        ? ""
+                        : String(value);
+
+
+                return div.innerHTML;
+
+            }
+
+
+            function parseVulnerabilities(raw) {
+
+                if (!raw) {
+
+                    return [];
+
+                }
+
+
+                try {
+
+                    const parsed =
+                        JSON.parse(
+                            raw
+                        );
+
+
+                    return Array.isArray(parsed)
+                        ? parsed
+                        : [];
+
+                } catch (error) {
+
+                    console.warn(
+                        "Could not parse scan vulnerabilities:",
+                        error
+                    );
+
+
+                    return [];
+
+                }
+
+            }
+
+
+            function severityClass(
+                severity
+            ) {
+
+                const value =
+                    String(
+                        severity || "UNKNOWN"
+                    ).toUpperCase();
+
+
+                if (
+                    value === "CRITICAL"
+                ) {
+
+                    return "bg-danger";
+
+                }
+
+
+                if (
+                    value === "HIGH"
+                ) {
+
+                    return "bg-warning text-dark";
+
+                }
+
+
+                if (
+                    value === "MEDIUM"
+                ) {
+
+                    return "bg-info text-dark";
+
+                }
+
+
+                if (
+                    value === "LOW"
+                ) {
+
+                    return "bg-success";
+
+                }
+
+
+                return "bg-secondary";
+
+            }
+
+
+            function showCves(
+                vulnerabilities
+            ) {
+
+                if (
+                    !summary ||
+                    !list
+                ) {
+
+                    return;
+
+                }
+
+
+                list.innerHTML = "";
+
+
+                if (
+                    !vulnerabilities ||
+                    vulnerabilities.length === 0
+                ) {
+
+                    summary.className =
+                        "alert alert-success";
+
+
+                    summary.innerHTML =
+                        "<i class='bi bi-shield-check me-2'></i>" +
+                        "<strong>No applicable CVE matches</strong> " +
+                        "were returned for the detected software/version.";
+
+
+                    return;
+
+                }
+
+
+                summary.className =
+                    "alert alert-warning";
+
+
+                summary.innerHTML =
+                    "<i class='bi bi-exclamation-triangle me-2'></i>" +
+                    "<strong>" +
+                    vulnerabilities.length +
+                    "</strong> applicable CVE match(es) identified.";
+
+
+                vulnerabilities.forEach(
+                    function (cve) {
+
+
+                        const cveId =
+                            cve.id ||
+                            "Unknown CVE";
+
+
+                        const severity =
+                            String(
+                                cve.severity ||
+                                "UNKNOWN"
+                            ).toUpperCase();
+
+
+                        const score =
+                            cve.score !== undefined &&
+                                cve.score !== null
+                                ? cve.score
+                                : "N/A";
+
+
+                        const description =
+                            cve.description ||
+                            "No description available.";
+
+
+                        const product =
+                            cve.detected_product ||
+                            "Unknown product";
+
+
+                        const version =
+                            cve.detected_version ||
+                            "";
+
+
+                        const port =
+                            cve.detected_port ||
+                            "N/A";
+
+
+                        const reference =
+                            cve.reference ||
+                            cve.nvd_url ||
+                            "";
+
+
+                        const item =
+                            document.createElement(
+                                "div"
+                            );
+
+
+                        item.className =
+                            "list-group-item";
+
+
+                        const nvdButton =
+                            reference
+                                ? `
+                                <a
+                                    href="${escapeHtml(reference)}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="btn btn-sm btn-outline-secondary mt-2"
+                                >
+                                    <i class="bi bi-box-arrow-up-right me-1"></i>
+                                    View NVD
+                                </a>
+                              `
+                                : "";
+
+
+                        item.innerHTML = `
+
+                        <div class="d-flex justify-content-between align-items-start gap-3">
+
+                            <div>
+
+                                <h6 class="fw-bold mb-1">
+                                    ${escapeHtml(cveId)}
+                                </h6>
+
+                                <small class="text-muted">
+
+                                    ${escapeHtml(product)}
+
+                                    ${escapeHtml(
+                            version
+                                ? " " + version
+                                : ""
+                        )}
+
+                                    · Port
+                                    ${escapeHtml(port)}
+
+                                </small>
+
+                            </div>
+
+
+                            <div class="text-end">
+
+                                <span class="badge ${severityClass(severity)}">
+
+                                    ${escapeHtml(severity)}
+
+                                </span>
+
+                                <div class="small mt-1">
+
+                                    CVSS:
+
+                                    <strong>
+                                        ${escapeHtml(score)}
+                                    </strong>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <p class="small mt-3 mb-2">
+
+                            ${escapeHtml(description)}
+
+                        </p>
+
+
+                        ${nvdButton}
+
+                    `;
+
+
+                        list.appendChild(
+                            item
+                        );
+
+                    }
+                );
+
+            }
+
+
+            containers.forEach(
+                function (container) {
+
+
+                    const vulnerabilities =
+                        parseVulnerabilities(
+                            container.getAttribute(
+                                "data-vulnerabilities"
+                            )
+                        );
+
+
+                    const count =
+                        container.querySelector(
+                            ".cve-count"
+                        );
+
+
+                    const button =
+                        container.querySelector(
+                            ".cve-view-btn"
+                        );
+
+
+                    if (count) {
+
+                        count.textContent =
+                            vulnerabilities.length;
+
+                    }
+
+
+                    if (
+                        button &&
+                        vulnerabilities.length > 0
+                    ) {
+
+                        button.disabled =
+                            false;
+
+
+                        button.setAttribute(
+                            "data-bs-toggle",
+                            "modal"
+                        );
+
+
+                        button.setAttribute(
+                            "data-bs-target",
+                            "#scanCveModal"
+                        );
+
+
+                        button.addEventListener(
+                            "click",
+                            function () {
+
+                                showCves(
+                                    vulnerabilities
+                                );
+
+                            }
+                        );
+
+                    }
+
+                }
+            );
+
+        }
+    );
+
+</script>
 
 
 {% endblock %}

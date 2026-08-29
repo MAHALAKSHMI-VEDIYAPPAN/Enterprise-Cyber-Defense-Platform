@@ -1,4 +1,5 @@
 import os
+import json
 
 from flask import (
     Flask,
@@ -28,6 +29,7 @@ from routes.cve import cve_bp
 from routes.reports import reports_bp
 from routes.ai_security import ai_security_bp
 from routes.security_chat import security_chat_bp
+from routes.remediation import remediation_bp
 
 # Audit Logs Blueprint
 from routes.audit import audit_bp
@@ -41,6 +43,7 @@ from models.asset import Asset
 from models.scan import Scan
 from models.incident import Incident
 from models.audit_log import AuditLog
+from models.remediation import Remediation
 
 
 # ==========================================================
@@ -208,6 +211,10 @@ app.register_blueprint(
     security_chat_bp
 )
 
+app.register_blueprint(
+    remediation_bp
+)
+
 # ==========================================================
 # Audit Logs Blueprint
 # ==========================================================
@@ -243,11 +250,9 @@ def dashboard():
 
     total_assets = Asset.query.count()
 
-
     active_assets = Asset.query.filter_by(
         status="Active"
     ).count()
-
 
     high_risk_assets = Asset.query.filter(
         Asset.risk_level.in_(
@@ -265,10 +270,165 @@ def dashboard():
 
     total_scans = Scan.query.count()
 
-
     completed_scans = Scan.query.filter_by(
         status="Completed"
     ).count()
+
+    failed_scans = Scan.query.filter(
+        Scan.status != "Completed"
+    ).count()
+
+
+    # ======================================================
+    # Vulnerability Statistics
+    # ======================================================
+
+    total_vulnerabilities = 0
+
+    critical_vulnerabilities = 0
+
+    high_vulnerabilities = 0
+
+    medium_vulnerabilities = 0
+
+    low_vulnerabilities = 0
+
+    highest_cvss = 0.0
+
+    unique_cves = set()
+
+
+    # ======================================================
+    # Process Scan Results
+    # ======================================================
+
+    all_scans = Scan.query.all()
+
+    for scan in all_scans:
+
+        # --------------------------------------------------
+        # Highest CVSS
+        # --------------------------------------------------
+
+        try:
+
+            scan_cvss = float(
+                scan.max_cvss or 0
+            )
+
+            if scan_cvss > highest_cvss:
+
+                highest_cvss = scan_cvss
+
+        except (
+            TypeError,
+            ValueError
+        ):
+
+            pass
+
+
+        # --------------------------------------------------
+        # Vulnerability JSON
+        # --------------------------------------------------
+
+        raw_vulnerabilities = (
+            scan.vulnerabilities
+            or "[]"
+        )
+
+        try:
+
+            vulnerabilities = json.loads(
+                raw_vulnerabilities
+            )
+
+        except (
+            TypeError,
+            ValueError,
+            json.JSONDecodeError
+        ):
+
+            vulnerabilities = []
+
+
+        if not isinstance(
+            vulnerabilities,
+            list
+        ):
+
+            vulnerabilities = []
+
+
+        # --------------------------------------------------
+        # Process Vulnerabilities
+        # --------------------------------------------------
+
+        for vulnerability in vulnerabilities:
+
+            if not isinstance(
+                vulnerability,
+                dict
+            ):
+
+                continue
+
+
+            total_vulnerabilities += 1
+
+
+            # ------------------------------------------------
+            # CVE
+            # ------------------------------------------------
+
+            cve_id = (
+                vulnerability.get("id")
+                or vulnerability.get("cve_id")
+            )
+
+            if cve_id:
+
+                unique_cves.add(
+                    str(cve_id).upper()
+                )
+
+
+            # ------------------------------------------------
+            # Severity
+            # ------------------------------------------------
+
+            severity = str(
+                vulnerability.get(
+                    "severity",
+                    ""
+                )
+            ).strip().upper()
+
+
+            if severity == "CRITICAL":
+
+                critical_vulnerabilities += 1
+
+            elif severity == "HIGH":
+
+                high_vulnerabilities += 1
+
+            elif severity == "MEDIUM":
+
+                medium_vulnerabilities += 1
+
+            elif severity == "LOW":
+
+                low_vulnerabilities += 1
+
+
+    # ======================================================
+    # Unique CVEs
+    # ======================================================
+
+    unique_cve_count = len(
+        unique_cves
+    )
 
 
     # ======================================================
@@ -277,11 +437,9 @@ def dashboard():
 
     total_incidents = Incident.query.count()
 
-
     open_incidents = Incident.query.filter_by(
         status="Open"
     ).count()
-
 
     critical_incidents = Incident.query.filter(
         Incident.severity.in_(
@@ -293,6 +451,79 @@ def dashboard():
     ).filter(
         Incident.status != "Closed"
     ).count()
+
+
+    # ======================================================
+    # Remediation Statistics
+    # ======================================================
+
+    total_remediations = Remediation.query.count()
+
+
+    open_remediations = Remediation.query.filter_by(
+        status="Open"
+    ).count()
+
+
+    in_progress_remediations = Remediation.query.filter_by(
+        status="In Progress"
+    ).count()
+
+
+    verified_remediations = Remediation.query.filter_by(
+        status="Verified"
+    ).count()
+
+
+    closed_remediations = Remediation.query.filter_by(
+        status="Closed"
+    ).count()
+
+
+    # ======================================================
+    # High / Critical Remediation Count
+    # ======================================================
+
+    high_priority_remediations = Remediation.query.filter(
+        Remediation.severity.in_(
+            [
+                "High",
+                "Critical"
+            ]
+        )
+    ).filter(
+        Remediation.status.notin_(
+            [
+                "Closed",
+                "Verified"
+            ]
+        )
+    ).count()
+
+
+    # ======================================================
+    # Remediation Completion
+    # ======================================================
+
+    completed_remediations = (
+        verified_remediations
+        + closed_remediations
+    )
+
+
+    if total_remediations > 0:
+
+        remediation_completion = round(
+            (
+                completed_remediations
+                / total_remediations
+            ) * 100,
+            1
+        )
+
+    else:
+
+        remediation_completion = 0
 
 
     # ======================================================
@@ -354,6 +585,96 @@ def dashboard():
 
 
     # ======================================================
+    # Dashboard Debug Information
+    # ======================================================
+
+    print(
+        "[DASHBOARD] Assets:",
+        total_assets
+    )
+
+    print(
+        "[DASHBOARD] Scans:",
+        total_scans
+    )
+
+    print(
+        "[DASHBOARD] Vulnerabilities:",
+        total_vulnerabilities
+    )
+
+    print(
+        "[DASHBOARD] Unique CVEs:",
+        unique_cve_count
+    )
+
+    print(
+        "[DASHBOARD] Critical:",
+        critical_vulnerabilities
+    )
+
+    print(
+        "[DASHBOARD] High:",
+        high_vulnerabilities
+    )
+
+    print(
+        "[DASHBOARD] Medium:",
+        medium_vulnerabilities
+    )
+
+    print(
+        "[DASHBOARD] Low:",
+        low_vulnerabilities
+    )
+
+    print(
+        "[DASHBOARD] Highest CVSS:",
+        highest_cvss
+    )
+
+    print(
+        "[DASHBOARD] Incidents:",
+        total_incidents
+    )
+
+    print(
+        "[DASHBOARD] Remediations:",
+        total_remediations
+    )
+
+    print(
+        "[DASHBOARD] Open Remediations:",
+        open_remediations
+    )
+
+    print(
+        "[DASHBOARD] In Progress Remediations:",
+        in_progress_remediations
+    )
+
+    print(
+        "[DASHBOARD] Verified Remediations:",
+        verified_remediations
+    )
+
+    print(
+        "[DASHBOARD] Closed Remediations:",
+        closed_remediations
+    )
+
+    print(
+        "[DASHBOARD] Remediation Completion:",
+        remediation_completion
+    )
+
+    print(
+        "[DASHBOARD] Security Score:",
+        security_score
+    )
+
+
+    # ======================================================
     # Render Dashboard
     # ======================================================
 
@@ -361,15 +682,50 @@ def dashboard():
 
         "dashboard.html",
 
+        # --------------------------------------------------
+        # Asset Statistics
+        # --------------------------------------------------
+
         total_assets=total_assets,
 
         active_assets=active_assets,
 
         high_risk_assets=high_risk_assets,
 
+
+        # --------------------------------------------------
+        # Scan Statistics
+        # --------------------------------------------------
+
         total_scans=total_scans,
 
         completed_scans=completed_scans,
+
+        failed_scans=failed_scans,
+
+
+        # --------------------------------------------------
+        # Vulnerability Statistics
+        # --------------------------------------------------
+
+        total_vulnerabilities=total_vulnerabilities,
+
+        unique_cve_count=unique_cve_count,
+
+        critical_vulnerabilities=critical_vulnerabilities,
+
+        high_vulnerabilities=high_vulnerabilities,
+
+        medium_vulnerabilities=medium_vulnerabilities,
+
+        low_vulnerabilities=low_vulnerabilities,
+
+        highest_cvss=highest_cvss,
+
+
+        # --------------------------------------------------
+        # Incident Statistics
+        # --------------------------------------------------
 
         total_incidents=total_incidents,
 
@@ -377,7 +733,36 @@ def dashboard():
 
         critical_incidents=critical_incidents,
 
+
+        # --------------------------------------------------
+        # Remediation Statistics
+        # --------------------------------------------------
+
+        total_remediations=total_remediations,
+
+        open_remediations=open_remediations,
+
+        in_progress_remediations=in_progress_remediations,
+
+        verified_remediations=verified_remediations,
+
+        closed_remediations=closed_remediations,
+
+        high_priority_remediations=high_priority_remediations,
+
+        remediation_completion=remediation_completion,
+
+
+        # --------------------------------------------------
+        # Security Score
+        # --------------------------------------------------
+
         security_score=security_score,
+
+
+        # --------------------------------------------------
+        # Recent Activity
+        # --------------------------------------------------
 
         recent_scans=recent_scans,
 
@@ -386,7 +771,6 @@ def dashboard():
         recent_audits=recent_audits
 
     )
-
 
 # ==========================================================
 # Create Database Tables

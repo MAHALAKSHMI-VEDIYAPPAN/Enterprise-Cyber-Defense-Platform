@@ -1,10 +1,8 @@
 {% extends "base.html" %}
 
-
 {% block title %}
 Dashboard - ECDP
 {% endblock %}
-
 
 {% block content %}
 
@@ -12,62 +10,738 @@ Dashboard - ECDP
      Dashboard Header
 ========================================================== -->
 
-<div class="mb-4">
+<div class="d-flex justify-content-between align-items-start mb-4">
 
-    <h1 class="fw-bold mb-1">
-        <i class="bi bi-shield-lock me-2"></i>
-        Enterprise Cyber Defense Platform
-    </h1>
+    <div>
 
-    <p class="text-muted mb-0">
-        An integrated security management platform designed to
-        monitor, detect, analyze, and respond to cyber threats.
-    </p>
+        <h1 class="fw-bold mb-1">
+
+            <i class="bi bi-speedometer2 me-2"></i>
+
+            Security Dashboard
+
+        </h1>
+
+        <p class="text-muted mb-0">
+
+            Enterprise Cyber Defense Platform security
+            operations overview and monitoring dashboard.
+
+        </p>
+
+    </div>
+
+
+    <div class="text-end">
+
+        <span class="badge bg-success">
+
+            <i class="bi bi-circle-fill me-1"></i>
+
+            Platform Online
+
+        </span>
+
+    </div>
 
 </div>
 
 
 <!-- ==========================================================
-     Welcome + Platform Status
+     SECURITY OVERVIEW
+========================================================== -->
+
+<div class="row g-3 mb-4">
+
+    <!-- Total Assets -->
+
+    <div class="col-xl-3 col-md-6">
+
+        <div class="card shadow border-0 h-100">
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between align-items-start">
+
+                    <div>
+
+                        <small class="text-muted fw-semibold">
+                            TOTAL ASSETS
+                        </small>
+
+                        <h2 class="fw-bold mb-1">
+                            {{ total_assets }}
+                        </h2>
+
+                        <small class="text-success">
+
+                            <i class="bi bi-check-circle me-1"></i>
+
+                            {{ active_assets }} Active
+
+                        </small>
+
+                    </div>
+
+                    <div>
+
+                        <i class="bi bi-pc-display fs-1 text-primary"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Total Scans -->
+
+    <div class="col-xl-3 col-md-6">
+
+        <div class="card shadow border-0 h-100">
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between align-items-start">
+
+                    <div>
+
+                        <small class="text-muted fw-semibold">
+                            TOTAL SCANS
+                        </small>
+
+                        <h2 class="fw-bold mb-1">
+                            {{ total_scans }}
+                        </h2>
+
+                        <small class="text-success">
+
+                            <i class="bi bi-check-circle me-1"></i>
+
+                            {{ completed_scans }} Completed
+
+                        </small>
+
+                    </div>
+
+                    <div>
+
+                        <i class="bi bi-search fs-1 text-info"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Vulnerabilities -->
+
+    <div class="col-xl-3 col-md-6">
+
+        <div class="card shadow border-0 h-100">
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between align-items-start">
+
+                    <div>
+
+                        <small class="text-muted fw-semibold">
+                            VULNERABILITIES
+                        </small>
+
+                        <h2 class="fw-bold mb-1">
+                            {{ total_vulnerabilities }}
+                        </h2>
+
+                        <small class="text-muted">
+
+                            {{ unique_cve_count }} Unique CVEs
+
+                        </small>
+
+                    </div>
+
+                    <div>
+
+                        <i class="bi bi-bug fs-1 text-danger"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Security Score -->
+
+    <div class="col-xl-3 col-md-6">
+
+        <div class="card shadow border-0 h-100">
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between align-items-start">
+
+                    <div>
+
+                        <small class="text-muted fw-semibold">
+                            SECURITY SCORE
+                        </small>
+
+                        <h2 class="fw-bold mb-1">
+                            {{ security_score }}
+                        </h2>
+
+                        <small class="text-muted">
+                            Platform Security Health
+                        </small>
+
+                    </div>
+
+                    <div>
+
+                        <i class="bi bi-shield-check fs-1 text-success"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ==========================================================
+     REMEDIATION OVERVIEW
+========================================================== -->
+
+<div class="row g-3 mb-4">
+
+    <!-- Total Remediations -->
+
+    <div class="col-xl-3 col-md-6">
+
+        <div class="card shadow border-0 h-100">
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between align-items-start">
+
+                    <div>
+
+                        <small class="text-muted fw-semibold">
+                            TOTAL REMEDIATIONS
+                        </small>
+
+                        <h2 class="fw-bold mb-1">
+                            {{ total_remediations }}
+                        </h2>
+
+                        <small class="text-primary">
+
+                            <i class="bi bi-tools me-1"></i>
+
+                            Security Actions
+
+                        </small>
+
+                    </div>
+
+                    <div>
+
+                        <i class="bi bi-tools fs-1 text-primary"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Open Remediations -->
+
+    <div class="col-xl-3 col-md-6">
+
+        <div class="card shadow border-0 h-100">
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between align-items-start">
+
+                    <div>
+
+                        <small class="text-muted fw-semibold">
+                            OPEN REMEDIATIONS
+                        </small>
+
+                        <h2 class="fw-bold mb-1">
+                            {{ open_remediations }}
+                        </h2>
+
+                        <small class="text-danger">
+
+                            <i class="bi bi-exclamation-circle me-1"></i>
+
+                            Requires Attention
+
+                        </small>
+
+                    </div>
+
+                    <div>
+
+                        <i class="bi bi-exclamation-circle fs-1 text-danger"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- In Progress -->
+
+    <div class="col-xl-3 col-md-6">
+
+        <div class="card shadow border-0 h-100">
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between align-items-start">
+
+                    <div>
+
+                        <small class="text-muted fw-semibold">
+                            IN PROGRESS
+                        </small>
+
+                        <h2 class="fw-bold mb-1">
+                            {{ in_progress_remediations }}
+                        </h2>
+
+                        <small class="text-warning">
+
+                            <i class="bi bi-arrow-repeat me-1"></i>
+
+                            Being Addressed
+
+                        </small>
+
+                    </div>
+
+                    <div>
+
+                        <i class="bi bi-arrow-repeat fs-1 text-warning"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Completion -->
+
+    <div class="col-xl-3 col-md-6">
+
+        <div class="card shadow border-0 h-100">
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between align-items-start">
+
+                    <div>
+
+                        <small class="text-muted fw-semibold">
+                            REMEDIATION COMPLETION
+                        </small>
+
+                        <h2 class="fw-bold mb-1">
+                            {{ remediation_completion }}%
+                        </h2>
+
+                        <small class="text-success">
+
+                            <i class="bi bi-check-circle me-1"></i>
+
+                            Verified / Closed
+
+                        </small>
+
+                    </div>
+
+                    <div>
+
+                        <i class="bi bi-check-circle fs-1 text-success"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ==========================================================
+     RISK SUMMARY
+========================================================== -->
+
+<div class="row g-3 mb-4">
+
+    <!-- Critical -->
+
+    <div class="col-xl-3 col-md-6">
+
+        <div class="card shadow border-0">
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between">
+
+                    <div>
+
+                        <small class="text-muted">
+                            CRITICAL
+                        </small>
+
+                        <h3 class="fw-bold text-danger mb-0">
+                            {{ critical_vulnerabilities }}
+                        </h3>
+
+                    </div>
+
+                    <i class="bi bi-exclamation-octagon fs-2 text-danger"></i>
+
+                </div>
+
+                <div class="progress mt-3" style="height: 6px;">
+
+                    {% if total_vulnerabilities > 0 %}
+
+                    <div class="progress-bar bg-danger"
+                        style="width: {{ ((critical_vulnerabilities / total_vulnerabilities) * 100)|round(1) }}%;">
+                    </div>
+
+                    {% else %}
+
+                    <div class="progress-bar bg-danger" style="width: 0%;">
+                    </div>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- High -->
+
+    <div class="col-xl-3 col-md-6">
+
+        <div class="card shadow border-0">
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between">
+
+                    <div>
+
+                        <small class="text-muted">
+                            HIGH
+                        </small>
+
+                        <h3 class="fw-bold text-warning mb-0">
+                            {{ high_vulnerabilities }}
+                        </h3>
+
+                    </div>
+
+                    <i class="bi bi-exclamation-triangle fs-2 text-warning"></i>
+
+                </div>
+
+                <div class="progress mt-3" style="height: 6px;">
+
+                    {% if total_vulnerabilities > 0 %}
+
+                    <div class="progress-bar bg-warning"
+                        style="width: {{ ((high_vulnerabilities / total_vulnerabilities) * 100)|round(1) }}%;">
+                    </div>
+
+                    {% else %}
+
+                    <div class="progress-bar bg-warning" style="width: 0%;">
+                    </div>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Medium -->
+
+    <div class="col-xl-3 col-md-6">
+
+        <div class="card shadow border-0">
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between">
+
+                    <div>
+
+                        <small class="text-muted">
+                            MEDIUM
+                        </small>
+
+                        <h3 class="fw-bold text-info mb-0">
+                            {{ medium_vulnerabilities }}
+                        </h3>
+
+                    </div>
+
+                    <i class="bi bi-exclamation-circle fs-2 text-info"></i>
+
+                </div>
+
+                <div class="progress mt-3" style="height: 6px;">
+
+                    {% if total_vulnerabilities > 0 %}
+
+                    <div class="progress-bar bg-info"
+                        style="width: {{ ((medium_vulnerabilities / total_vulnerabilities) * 100)|round(1) }}%;">
+                    </div>
+
+                    {% else %}
+
+                    <div class="progress-bar bg-info" style="width: 0%;">
+                    </div>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Low -->
+
+    <div class="col-xl-3 col-md-6">
+
+        <div class="card shadow border-0">
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between">
+
+                    <div>
+
+                        <small class="text-muted">
+                            LOW
+                        </small>
+
+                        <h3 class="fw-bold text-success mb-0">
+                            {{ low_vulnerabilities }}
+                        </h3>
+
+                    </div>
+
+                    <i class="bi bi-shield-check fs-2 text-success"></i>
+
+                </div>
+
+                <div class="progress mt-3" style="height: 6px;">
+
+                    {% if total_vulnerabilities > 0 %}
+
+                    <div class="progress-bar bg-success"
+                        style="width: {{ ((low_vulnerabilities / total_vulnerabilities) * 100)|round(1) }}%;">
+                    </div>
+
+                    {% else %}
+
+                    <div class="progress-bar bg-success" style="width: 0%;">
+                    </div>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ==========================================================
+     SECURITY HEALTH + VULNERABILITY SUMMARY
 ========================================================== -->
 
 <div class="row g-4 mb-4">
 
-    <!-- Welcome -->
+    <!-- Security Health -->
 
-    <div class="col-lg-8">
+    <div class="col-lg-5">
 
         <div class="card shadow border-0 h-100">
 
+            <div class="card-header">
+
+                <h5 class="mb-0 fw-bold">
+
+                    <i class="bi bi-shield-lock me-2"></i>
+
+                    Security Health
+
+                </h5>
+
+            </div>
+
             <div class="card-body">
 
-                <h4 class="fw-bold mb-3">
+                <div class="text-center mb-4">
 
-                    <i class="bi bi-shield-check me-2"></i>
+                    <div class="security-score-circle mx-auto">
 
-                    Welcome to ECDP
+                        <div>
 
-                </h4>
+                            <h1 class="fw-bold mb-0">
+                                {{ security_score }}
+                            </h1>
 
-                <p class="text-muted">
+                            <small>
+                                SCORE
+                            </small>
 
-                    The Enterprise Cyber Defense Platform (ECDP)
-                    is a centralized cybersecurity platform that
-                    brings asset management, vulnerability assessment,
-                    threat intelligence, CVE analysis, and incident
-                    response together within a unified security
-                    environment.
+                        </div>
 
-                </p>
+                    </div>
 
-                <p class="text-muted mb-0">
+                </div>
 
-                    It is designed to support practical Security
-                    Operations Center (SOC) workflows and provide
-                    security analysts with a centralized platform
-                    for security monitoring and analysis.
 
-                </p>
+                <div class="row text-center g-3">
+
+                    <div class="col-6">
+
+                        <div class="border rounded p-3">
+
+                            <h4 class="fw-bold mb-1">
+                                {{ high_risk_assets }}
+                            </h4>
+
+                            <small class="text-muted">
+                                High Risk Assets
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-6">
+
+                        <div class="border rounded p-3">
+
+                            <h4 class="fw-bold mb-1">
+                                {{ highest_cvss|round(1) }}
+                            </h4>
+
+                            <small class="text-muted">
+                                Highest CVSS
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-6">
+
+                        <div class="border rounded p-3">
+
+                            <h4 class="fw-bold mb-1">
+                                {{ open_incidents }}
+                            </h4>
+
+                            <small class="text-muted">
+                                Open Incidents
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-6">
+
+                        <div class="border rounded p-3">
+
+                            <h4 class="fw-bold mb-1">
+                                {{ failed_scans }}
+                            </h4>
+
+                            <small class="text-muted">
+                                Failed Scans
+                            </small>
+
+                        </div>
+
+                    </div>
+
+                </div>
 
             </div>
 
@@ -76,60 +750,156 @@ Dashboard - ECDP
     </div>
 
 
-    <!-- Platform Status -->
+    <!-- Vulnerability Distribution -->
 
-    <div class="col-lg-4">
+    <div class="col-lg-7">
 
         <div class="card shadow border-0 h-100">
 
-            <div class="card-body">
+            <div class="card-header">
 
-                <h5 class="fw-bold mb-4">
+                <h5 class="mb-0 fw-bold">
 
-                    <i class="bi bi-activity me-2"></i>
+                    <i class="bi bi-bar-chart me-2"></i>
 
-                    Platform Status
+                    Vulnerability Distribution
 
                 </h5>
 
+            </div>
 
-                <div class="d-flex align-items-center mb-3">
+            <div class="card-body">
 
-                    <span class="badge bg-success me-2">
-                        Active
-                    </span>
+                {% if total_vulnerabilities > 0 %}
 
-                    <span>
-                        Platform Online
-                    </span>
+                <!-- Critical -->
+
+                <div class="mb-4">
+
+                    <div class="d-flex justify-content-between mb-1">
+
+                        <span class="fw-semibold">
+                            Critical
+                        </span>
+
+                        <span>
+                            {{ critical_vulnerabilities }}
+                        </span>
+
+                    </div>
+
+                    <div class="progress" style="height: 12px;">
+
+                        <div class="progress-bar bg-danger"
+                            style="width: {{ ((critical_vulnerabilities / total_vulnerabilities) * 100)|round(1) }}%;">
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- High -->
+
+                <div class="mb-4">
+
+                    <div class="d-flex justify-content-between mb-1">
+
+                        <span class="fw-semibold">
+                            High
+                        </span>
+
+                        <span>
+                            {{ high_vulnerabilities }}
+                        </span>
+
+                    </div>
+
+                    <div class="progress" style="height: 12px;">
+
+                        <div class="progress-bar bg-warning"
+                            style="width: {{ ((high_vulnerabilities / total_vulnerabilities) * 100)|round(1) }}%;">
+                        </div>
+
+                    </div>
 
                 </div>
 
 
-                <div class="d-flex align-items-center mb-3">
+                <!-- Medium -->
 
-                    <span class="badge bg-primary me-2">
-                        SOC
-                    </span>
+                <div class="mb-4">
 
-                    <span>
-                        Security Operations
-                    </span>
+                    <div class="d-flex justify-content-between mb-1">
+
+                        <span class="fw-semibold">
+                            Medium
+                        </span>
+
+                        <span>
+                            {{ medium_vulnerabilities }}
+                        </span>
+
+                    </div>
+
+                    <div class="progress" style="height: 12px;">
+
+                        <div class="progress-bar bg-info"
+                            style="width: {{ ((medium_vulnerabilities / total_vulnerabilities) * 100)|round(1) }}%;">
+                        </div>
+
+                    </div>
 
                 </div>
 
 
-                <div class="d-flex align-items-center">
+                <!-- Low -->
 
-                    <span class="badge bg-warning text-dark me-2">
-                        Monitoring
-                    </span>
+                <div class="mb-4">
 
-                    <span>
-                        Security Modules
-                    </span>
+                    <div class="d-flex justify-content-between mb-1">
+
+                        <span class="fw-semibold">
+                            Low
+                        </span>
+
+                        <span>
+                            {{ low_vulnerabilities }}
+                        </span>
+
+                    </div>
+
+                    <div class="progress" style="height: 12px;">
+
+                        <div class="progress-bar bg-success"
+                            style="width: {{ ((low_vulnerabilities / total_vulnerabilities) * 100)|round(1) }}%;">
+                        </div>
+
+                    </div>
 
                 </div>
+
+
+                {% else %}
+
+                <div class="text-center py-5">
+
+                    <i class="bi bi-shield-check fs-1 text-success"></i>
+
+                    <h5 class="mt-3">
+                        No Applicable Vulnerabilities
+                    </h5>
+
+                    <p class="text-muted mb-0">
+
+                        No CVEs have been identified from
+                        completed vulnerability scans.
+
+                    </p>
+
+                </div>
+
+                {% endif %}
 
             </div>
 
@@ -141,10 +911,767 @@ Dashboard - ECDP
 
 
 <!-- ==========================================================
-     Security Modules
+     REMEDIATION HEALTH
 ========================================================== -->
 
-<div class="card shadow border-0">
+<div class="row g-4 mb-4">
+
+    <!-- Remediation Status -->
+
+    <div class="col-lg-7">
+
+        <div class="card shadow border-0 h-100">
+
+            <div class="card-header d-flex justify-content-between align-items-center">
+
+                <h5 class="mb-0 fw-bold">
+
+                    <i class="bi bi-tools me-2"></i>
+
+                    Remediation Status
+
+                </h5>
+
+                <a href="{{ url_for('remediation.remediation') }}" class="btn btn-sm btn-outline-primary">
+
+                    Manage Remediation
+
+                </a>
+
+            </div>
+
+            <div class="card-body">
+
+                {% if total_remediations > 0 %}
+
+                <div class="row g-3 text-center">
+
+                    <div class="col-6 col-md-3">
+
+                        <div class="border rounded p-3">
+
+                            <i class="bi bi-exclamation-circle fs-3 text-danger"></i>
+
+                            <h4 class="fw-bold mt-2 mb-1">
+                                {{ open_remediations }}
+                            </h4>
+
+                            <small class="text-muted">
+                                Open
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-6 col-md-3">
+
+                        <div class="border rounded p-3">
+
+                            <i class="bi bi-arrow-repeat fs-3 text-warning"></i>
+
+                            <h4 class="fw-bold mt-2 mb-1">
+                                {{ in_progress_remediations }}
+                            </h4>
+
+                            <small class="text-muted">
+                                In Progress
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-6 col-md-3">
+
+                        <div class="border rounded p-3">
+
+                            <i class="bi bi-patch-check fs-3 text-info"></i>
+
+                            <h4 class="fw-bold mt-2 mb-1">
+                                {{ verified_remediations }}
+                            </h4>
+
+                            <small class="text-muted">
+                                Verified
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-6 col-md-3">
+
+                        <div class="border rounded p-3">
+
+                            <i class="bi bi-check-circle fs-3 text-success"></i>
+
+                            <h4 class="fw-bold mt-2 mb-1">
+                                {{ closed_remediations }}
+                            </h4>
+
+                            <small class="text-muted">
+                                Closed
+                            </small>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Completion -->
+
+                <div class="mt-4">
+
+                    <div class="d-flex justify-content-between mb-2">
+
+                        <span class="fw-semibold">
+                            Remediation Completion
+                        </span>
+
+                        <strong>
+                            {{ remediation_completion }}%
+                        </strong>
+
+                    </div>
+
+                    <div class="progress" style="height: 12px;">
+
+                        <div class="progress-bar bg-success" role="progressbar"
+                            style="width: {{ remediation_completion }}%;">
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Priority -->
+
+                <div class="alert alert-warning mt-4 mb-0">
+
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+
+                    <strong>
+                        {{ high_priority_remediations }}
+                    </strong>
+
+                    high or critical remediation item(s)
+                    require attention.
+
+                </div>
+
+                {% else %}
+
+                <div class="text-center py-5">
+
+                    <i class="bi bi-check-circle fs-1 text-success"></i>
+
+                    <h5 class="mt-3">
+                        No Remediation Items
+                    </h5>
+
+                    <p class="text-muted mb-3">
+                        No remediation actions have been created yet.
+                    </p>
+
+                    <a href="{{ url_for('remediation.remediation') }}" class="btn btn-primary">
+
+                        Open Remediation
+
+                    </a>
+
+                </div>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Remediation Summary -->
+
+    <div class="col-lg-5">
+
+        <div class="card shadow border-0 h-100">
+
+            <div class="card-header">
+
+                <h5 class="mb-0 fw-bold">
+
+                    <i class="bi bi-clipboard-check me-2"></i>
+
+                    Remediation Summary
+
+                </h5>
+
+            </div>
+
+            <div class="card-body">
+
+                <div class="mb-4">
+
+                    <div class="d-flex justify-content-between">
+
+                        <span>
+                            Total Remediations
+                        </span>
+
+                        <strong>
+                            {{ total_remediations }}
+                        </strong>
+
+                    </div>
+
+                    <hr>
+
+                    <div class="d-flex justify-content-between">
+
+                        <span>
+                            Open
+                        </span>
+
+                        <span class="badge bg-danger">
+                            {{ open_remediations }}
+                        </span>
+
+                    </div>
+
+                    <hr>
+
+                    <div class="d-flex justify-content-between">
+
+                        <span>
+                            In Progress
+                        </span>
+
+                        <span class="badge bg-warning text-dark">
+                            {{ in_progress_remediations }}
+                        </span>
+
+                    </div>
+
+                    <hr>
+
+                    <div class="d-flex justify-content-between">
+
+                        <span>
+                            Verified
+                        </span>
+
+                        <span class="badge bg-info">
+                            {{ verified_remediations }}
+                        </span>
+
+                    </div>
+
+                    <hr>
+
+                    <div class="d-flex justify-content-between">
+
+                        <span>
+                            Closed
+                        </span>
+
+                        <span class="badge bg-success">
+                            {{ closed_remediations }}
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <a href="{{ url_for('remediation.remediation') }}" class="btn btn-outline-primary w-100">
+
+                    <i class="bi bi-tools me-2"></i>
+
+                    View All Remediations
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ==========================================================
+     Recent Scan Activity
+========================================================== -->
+
+<div class="card shadow border-0 mb-4">
+
+    <div class="card-header d-flex justify-content-between align-items-center">
+
+        <h5 class="mb-0 fw-bold">
+
+            <i class="bi bi-activity me-2"></i>
+
+            Recent Scan Activity
+
+        </h5>
+
+        <a href="{{ url_for('scanner.scanner') }}" class="btn btn-sm btn-outline-primary">
+
+            View Scanner
+
+        </a>
+
+    </div>
+
+
+    <div class="card-body p-0">
+
+        {% if recent_scans %}
+
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle mb-0">
+
+                <thead>
+
+                    <tr>
+
+                        <th>Asset</th>
+
+                        <th>Target</th>
+
+                        <th>Ports</th>
+
+                        <th>Risk</th>
+
+                        <th>CVSS</th>
+
+                        <th>Status</th>
+
+                        <th>Date</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for scan in recent_scans %}
+
+                    <tr>
+
+                        <td>
+
+                            {% if scan.asset %}
+
+                            <strong>
+                                {{ scan.asset.asset_name }}
+                            </strong>
+
+                            {% else %}
+
+                            <span class="text-muted">
+                                Unregistered Target
+                            </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+                            <strong>
+                                {{ scan.target }}
+                            </strong>
+
+                        </td>
+
+
+                        <td>
+
+                            {% if scan.open_ports == "None" %}
+
+                            <span class="text-muted">
+                                None
+                            </span>
+
+                            {% else %}
+
+                            {{ scan.open_ports }}
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+                            {% set risk = (scan.risk_level or "Low")|upper %}
+
+                            {% if risk == "CRITICAL" %}
+
+                            <span class="badge bg-danger">
+                                Critical
+                            </span>
+
+                            {% elif risk == "HIGH" %}
+
+                            <span class="badge bg-warning text-dark">
+                                High
+                            </span>
+
+                            {% elif risk == "MEDIUM" %}
+
+                            <span class="badge bg-info text-dark">
+                                Medium
+                            </span>
+
+                            {% else %}
+
+                            <span class="badge bg-success">
+                                Low
+                            </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+                            <strong>
+                                {{ scan.max_cvss|default(0, true)|float|round(1) }}
+                            </strong>
+
+                        </td>
+
+
+                        <td>
+
+                            {% if scan.status == "Completed" %}
+
+                            <span class="badge bg-success">
+                                Completed
+                            </span>
+
+                            {% elif scan.status == "Host Down" %}
+
+                            <span class="badge bg-warning text-dark">
+                                Host Down
+                            </span>
+
+                            {% else %}
+
+                            <span class="badge bg-danger">
+                                {{ scan.status }}
+                            </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+                            {% if scan.scan_date %}
+
+                            {{ scan.scan_date.strftime(
+                            "%Y-%m-%d %H:%M"
+                            ) }}
+
+                            {% else %}
+
+                            —
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% else %}
+
+        <div class="text-center py-5">
+
+            <i class="bi bi-search fs-1 text-muted"></i>
+
+            <h5 class="mt-3">
+                No Scan Activity
+            </h5>
+
+            <p class="text-muted mb-0">
+                Run a vulnerability scan to populate this section.
+            </p>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+<!-- ==========================================================
+     Incidents + Audit Activity
+========================================================== -->
+
+<div class="row g-4 mb-4">
+
+
+    <!-- Recent Incidents -->
+
+    <div class="col-lg-6">
+
+        <div class="card shadow border-0 h-100">
+
+            <div class="card-header d-flex justify-content-between align-items-center">
+
+                <h5 class="mb-0 fw-bold">
+
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+
+                    Recent Incidents
+
+                </h5>
+
+                <a href="{{ url_for('incidents.incidents') }}" class="btn btn-sm btn-outline-primary">
+
+                    View All
+
+                </a>
+
+            </div>
+
+
+            <div class="card-body p-0">
+
+                {% if recent_incidents %}
+
+                <div class="list-group list-group-flush">
+
+                    {% for incident in recent_incidents %}
+
+                    <div class="list-group-item">
+
+                        <div class="d-flex justify-content-between align-items-start">
+
+                            <div>
+
+                                <strong>
+                                    {{ incident.title }}
+                                </strong>
+
+                                <div class="small text-muted mt-1">
+
+                                    {{ incident.created_at.strftime(
+                                    "%Y-%m-%d %H:%M"
+                                    ) if incident.created_at else "—" }}
+
+                                </div>
+
+                            </div>
+
+
+                            <div>
+
+                                {% set severity = (
+                                incident.severity or "Unknown"
+                                )|upper %}
+
+
+                                {% if severity == "CRITICAL" %}
+
+                                <span class="badge bg-danger">
+                                    Critical
+                                </span>
+
+                                {% elif severity == "HIGH" %}
+
+                                <span class="badge bg-warning text-dark">
+                                    High
+                                </span>
+
+                                {% elif severity == "MEDIUM" %}
+
+                                <span class="badge bg-info text-dark">
+                                    Medium
+                                </span>
+
+                                {% else %}
+
+                                <span class="badge bg-secondary">
+                                    {{ severity }}
+                                </span>
+
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="mt-2">
+
+                            {% if incident.status == "Open" %}
+
+                            <span class="badge bg-danger">
+                                Open
+                            </span>
+
+                            {% else %}
+
+                            <span class="badge bg-secondary">
+                                {{ incident.status }}
+                            </span>
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+                {% else %}
+
+                <div class="text-center py-5">
+
+                    <i class="bi bi-check-circle fs-1 text-success"></i>
+
+                    <h6 class="mt-3">
+                        No Recent Incidents
+                    </h6>
+
+                    <p class="text-muted small mb-0">
+                        No incidents are currently available.
+                    </p>
+
+                </div>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Audit Activity -->
+
+    <div class="col-lg-6">
+
+        <div class="card shadow border-0 h-100">
+
+            <div class="card-header">
+
+                <h5 class="mb-0 fw-bold">
+
+                    <i class="bi bi-journal-text me-2"></i>
+
+                    Recent Security Activity
+
+                </h5>
+
+            </div>
+
+
+            <div class="card-body p-0">
+
+                {% if recent_audits %}
+
+                <div class="list-group list-group-flush">
+
+                    {% for audit in recent_audits %}
+
+                    <div class="list-group-item">
+
+                        <div class="d-flex justify-content-between align-items-start">
+
+                            <div>
+
+                                <strong>
+                                    {{ audit.action }}
+                                </strong>
+
+                                <div class="small text-muted mt-1">
+
+                                    {{ audit.details }}
+
+                                </div>
+
+                            </div>
+
+
+                            <small class="text-muted text-nowrap ms-3">
+
+                                {{ audit.timestamp.strftime(
+                                "%H:%M"
+                                ) if audit.timestamp else "—" }}
+
+                            </small>
+
+                        </div>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+                {% else %}
+
+                <div class="text-center py-5">
+
+                    <i class="bi bi-journal-check fs-1 text-muted"></i>
+
+                    <h6 class="mt-3">
+                        No Recent Activity
+                    </h6>
+
+                    <p class="text-muted small mb-0">
+                        Security activity will appear here.
+                    </p>
+
+                </div>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ==========================================================
+     SECURITY MODULES
+========================================================== -->
+
+<div class="card shadow border-0 mb-4">
 
     <div class="card-header">
 
@@ -164,41 +1691,7 @@ Dashboard - ECDP
         <div class="row g-3">
 
 
-            <!-- ==================================================
-                 Security Dashboard
-            =================================================== -->
-
-            <div class="col-lg-3 col-md-6">
-
-                <a href="{{ url_for('dashboard') }}" class="text-decoration-none">
-
-                    <div class="card h-100 border">
-
-                        <div class="card-body">
-
-                            <i class="bi bi-speedometer2 fs-2 text-primary"></i>
-
-                            <h6 class="fw-bold mt-3">
-                                Security Dashboard
-                            </h6>
-
-                            <p class="text-muted small mb-0">
-                                Centralized overview of security
-                                operations and activities.
-                            </p>
-
-                        </div>
-
-                    </div>
-
-                </a>
-
-            </div>
-
-
-            <!-- ==================================================
-                 Asset Inventory
-            =================================================== -->
+            <!-- Asset Inventory -->
 
             <div class="col-lg-3 col-md-6">
 
@@ -228,9 +1721,7 @@ Dashboard - ECDP
             </div>
 
 
-            <!-- ==================================================
-                 Vulnerability Scanner
-            =================================================== -->
+            <!-- Vulnerability Scanner -->
 
             <div class="col-lg-3 col-md-6">
 
@@ -248,7 +1739,7 @@ Dashboard - ECDP
 
                             <p class="text-muted small mb-0">
                                 Perform authorized network scanning
-                                and vulnerability assessment using Nmap.
+                                and vulnerability assessment.
                             </p>
 
                         </div>
@@ -260,9 +1751,7 @@ Dashboard - ECDP
             </div>
 
 
-            <!-- ==================================================
-                 Threat Intelligence
-            =================================================== -->
+            <!-- Threat Intelligence -->
 
             <div class="col-lg-3 col-md-6">
 
@@ -292,9 +1781,7 @@ Dashboard - ECDP
             </div>
 
 
-            <!-- ==================================================
-                 CVE Intelligence
-            =================================================== -->
+            <!-- CVE Intelligence -->
 
             <div class="col-lg-3 col-md-6">
 
@@ -312,7 +1799,7 @@ Dashboard - ECDP
 
                             <p class="text-muted small mb-0">
                                 Search and analyze known vulnerabilities
-                                using CVE intelligence.
+                                using NVD intelligence.
                             </p>
 
                         </div>
@@ -324,9 +1811,7 @@ Dashboard - ECDP
             </div>
 
 
-            <!-- ==================================================
-                 Incident Response
-            =================================================== -->
+            <!-- Incident Response -->
 
             <div class="col-lg-3 col-md-6">
 
@@ -343,8 +1828,8 @@ Dashboard - ECDP
                             </h6>
 
                             <p class="text-muted small mb-0">
-                                Track, manage, investigate, and resolve
-                                cybersecurity incidents.
+                                Track, manage, investigate,
+                                and resolve incidents.
                             </p>
 
                         </div>
@@ -357,8 +1842,38 @@ Dashboard - ECDP
 
 
             <!-- ==================================================
-                 Reports
+                 REMEDIATION
             =================================================== -->
+
+            <div class="col-lg-3 col-md-6">
+
+                <a href="{{ url_for('remediation.remediation') }}" class="text-decoration-none">
+
+                    <div class="card h-100 border">
+
+                        <div class="card-body">
+
+                            <i class="bi bi-tools fs-2 text-success"></i>
+
+                            <h6 class="fw-bold mt-3">
+                                Remediation
+                            </h6>
+
+                            <p class="text-muted small mb-0">
+                                Track, assign, verify, and close
+                                vulnerability remediation actions.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+
+            <!-- Reports -->
 
             <div class="col-lg-3 col-md-6">
 
@@ -375,8 +1890,8 @@ Dashboard - ECDP
                             </h6>
 
                             <p class="text-muted small mb-0">
-                                Generate and review security analysis
-                                and incident reports.
+                                Generate and review security
+                                analysis and reports.
                             </p>
 
                         </div>
@@ -388,9 +1903,7 @@ Dashboard - ECDP
             </div>
 
 
-            <!-- ==================================================
-                 AI Security Assistant
-            =================================================== -->
+            <!-- AI Security Assistant -->
 
             <div class="col-lg-3 col-md-6">
 
@@ -420,11 +1933,161 @@ Dashboard - ECDP
             </div>
 
 
+            <!-- Audit Logs -->
+
+            <div class="col-lg-3 col-md-6">
+
+                <a href="{{ url_for('audit.audit_logs') }}" class="text-decoration-none">
+
+                    <div class="card h-100 border">
+
+                        <div class="card-body">
+
+                            <i class="bi bi-journal-text fs-2 text-secondary"></i>
+
+                            <h6 class="fw-bold mt-3">
+                                Audit Logs
+                            </h6>
+
+                            <p class="text-muted small mb-0">
+                                Review security actions,
+                                events, and audit activity.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+
         </div>
 
     </div>
 
 </div>
+
+
+<!-- ==========================================================
+     Dashboard Information
+========================================================== -->
+
+<div class="alert alert-info shadow-sm">
+
+    <div class="d-flex align-items-start">
+
+        <i class="bi bi-info-circle fs-4 me-3"></i>
+
+        <div>
+
+            <strong>
+                ECDP Security Monitoring
+            </strong>
+
+            <p class="mb-0 mt-1">
+
+                Dashboard metrics are calculated from the current
+                Asset Inventory, vulnerability scan history,
+                detected CVEs, incidents, remediation activities,
+                and audit activity.
+
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ==========================================================
+     Dashboard Styling
+========================================================== -->
+
+<style>
+    .security-score-circle {
+
+        width: 150px;
+
+        height: 150px;
+
+        border-radius: 50%;
+
+        border: 10px solid rgba(25, 135, 84, 0.25);
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        text-align: center;
+
+    }
+
+
+    .security-score-circle h1 {
+
+        font-size: 42px;
+
+    }
+
+
+    .security-score-circle small {
+
+        color: #6c757d;
+
+        font-weight: 600;
+
+        letter-spacing: 1px;
+
+    }
+
+
+    .progress {
+
+        background-color: rgba(108, 117, 125, 0.15);
+
+    }
+
+
+    .table th {
+
+        font-size: 0.75rem;
+
+        text-transform: uppercase;
+
+        letter-spacing: 0.05em;
+
+        white-space: nowrap;
+
+    }
+
+
+    .table td {
+
+        vertical-align: middle;
+
+    }
+
+
+    .card {
+
+        transition:
+            transform 0.15s ease,
+            box-shadow 0.15s ease;
+
+    }
+
+
+    .card:hover {
+
+        transform: translateY(-1px);
+
+    }
+</style>
 
 
 {% endblock %}

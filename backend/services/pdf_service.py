@@ -687,12 +687,115 @@ def generate_security_pdf(report):
 
 
     # ======================================================
-    # 6. Recent Vulnerability Scans
+    # 6. Remediation Summary
+    # ======================================================
+
+    remediation = report.get("remediations", {})
+
+    remediation_data = [
+        ["Category", "Count"],
+        ["Total", remediation.get("total", 0)],
+        ["Open", remediation.get("open", 0)],
+        ["In Progress", remediation.get("in_progress", 0)],
+        ["Resolved", remediation.get("resolved", 0)],
+        ["Verified", remediation.get("verified", 0)],
+        ["Closed", remediation.get("closed", 0)],
+        ["Critical", remediation.get("critical", 0)],
+        ["High", remediation.get("high", 0)],
+        ["Medium", remediation.get("medium", 0)],
+        ["Low", remediation.get("low", 0)],
+    ]
+
+    remediation_table = Table(
+        remediation_data,
+        colWidths=[100 * mm, 60 * mm],
+        repeatRows=1
+    )
+
+    remediation_table.setStyle(
+        TableStyle([
+            ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#1e293b")),
+            ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
+            ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+            ("GRID", (0, 0), (-1, -1), 0.5, colors.grey),
+            ("ALIGN", (1, 1), (1, -1), "CENTER"),
+            ("TOPPADDING", (0, 0), (-1, -1), 6),
+            ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
+        ])
+    )
+
+    story.append(
+        Paragraph(
+            "6. Remediation Summary",
+            heading_style
+        )
+    )
+
+    story.append(remediation_table)
+
+    story.append(Spacer(1, 10))
+
+    recent_remediations = remediation.get("recent", [])
+
+    if recent_remediations:
+        story.append(
+            Paragraph(
+                "<b>Recent Remediations</b>",
+                body_style
+            )
+        )
+
+        remediation_history = [
+            ["Remediation ID", "Title", "Severity", "Status"]
+        ]
+
+        for item in recent_remediations:
+            remediation_history.append([
+                item.remediation_id or "N/A",
+                Paragraph(
+                    escape(str(item.title or "N/A")),
+                    small_style
+                ),
+                item.severity or "N/A",
+                item.status or "N/A"
+            ])
+
+        remediation_history_table = Table(
+            remediation_history,
+            colWidths=[30 * mm, 70 * mm, 30 * mm, 30 * mm],
+            repeatRows=1
+        )
+
+        remediation_history_table.setStyle(
+            TableStyle([
+                ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#1e293b")),
+                ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
+                ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+                ("GRID", (0, 0), (-1, -1), 0.5, colors.grey),
+                ("FONTSIZE", (0, 0), (-1, -1), 8),
+                ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                ("TOPPADDING", (0, 0), (-1, -1), 5),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
+            ])
+        )
+
+        story.append(remediation_history_table)
+    else:
+        story.append(
+            Paragraph(
+                "No remediation records available.",
+                body_style
+            )
+        )
+
+
+    # ======================================================
+    # 7. Recent Vulnerability Scans
     # ======================================================
 
     story.append(
         Paragraph(
-            "6. Recent Vulnerability Scans",
+            "7. Recent Vulnerability Scans",
             heading_style
         )
     )
@@ -818,12 +921,12 @@ def generate_security_pdf(report):
 
 
     # ======================================================
-    # 7. SOC Correlation Analysis
+    # 8. SOC Correlation Analysis
     # ======================================================
 
     story.append(
         Paragraph(
-            "7. SOC Correlation Analysis",
+            "8. SOC Correlation Analysis",
             heading_style
         )
     )
@@ -1341,12 +1444,12 @@ def generate_security_pdf(report):
 
 
     # ======================================================
-    # 8. Security Recommendations
+    # 9. Security Recommendations
     # ======================================================
 
     story.append(
         Paragraph(
-            "8. Security Recommendations",
+            "9. Security Recommendations",
             heading_style
         )
     )

@@ -1,12 +1,14 @@
 from flask_wtf import FlaskForm
+
 from wtforms import (
     SelectField,
     StringField,
     SubmitField
 )
+
 from wtforms.validators import (
-    DataRequired,
     IPAddress,
+    DataRequired,
     Optional
 )
 
@@ -20,19 +22,40 @@ class ScanForm(FlaskForm):
     # ------------------------------------------------------
     # Asset Selection
     # ------------------------------------------------------
+    #
+    # Asset selection is OPTIONAL.
+    #
+    # This allows the user to:
+    #
+    # 1. Scan an existing registered asset
+    #
+    # OR
+    #
+    # 2. Enter a new authorized target IP directly.
+    #
+    # ------------------------------------------------------
 
     asset_id = SelectField(
         "Select Asset",
         coerce=int,
         validators=[
-            DataRequired(
-                message="Please select an asset."
-            )
+            Optional()
         ]
     )
 
+
     # ------------------------------------------------------
     # Target IP
+    # ------------------------------------------------------
+    #
+    # Target IP is always required.
+    #
+    # If an existing asset is selected, the IP is
+    # automatically populated from the asset.
+    #
+    # If no asset is selected, the user can enter
+    # the authorized target IP manually.
+    #
     # ------------------------------------------------------
 
     target = StringField(
@@ -41,11 +64,13 @@ class ScanForm(FlaskForm):
             DataRequired(
                 message="Target IP address is required."
             ),
+
             IPAddress(
                 message="Enter a valid IP address."
             )
         ]
     )
+
 
     # ------------------------------------------------------
     # Submit

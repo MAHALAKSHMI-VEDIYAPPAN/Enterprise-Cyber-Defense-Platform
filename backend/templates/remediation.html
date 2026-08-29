@@ -1,0 +1,840 @@
+{% extends "base.html" %}
+
+{% block title %}
+Remediation - ECDP
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+        <h1>
+            <i class="fas fa-wrench"></i>
+            Remediation Center
+        </h1>
+
+        <p>
+            Track, prioritize and manage security remediation activities.
+        </p>
+    </div>
+
+    <div>
+        <a href="{{ url_for('remediation.create_remediation') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i>
+            Create Remediation
+        </a>
+    </div>
+
+</div>
+
+
+<!-- ======================================================
+     SUMMARY CARDS
+====================================================== -->
+
+<div class="stats-grid">
+
+    <div class="stat-card">
+
+        <div class="stat-icon blue">
+            <i class="fas fa-list"></i>
+        </div>
+
+        <div>
+            <span class="stat-label">
+                TOTAL
+            </span>
+
+            <strong>
+                {{ total_remediations }}
+            </strong>
+
+            <small>
+                All remediation items
+            </small>
+        </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <div class="stat-icon red">
+            <i class="fas fa-exclamation-circle"></i>
+        </div>
+
+        <div>
+            <span class="stat-label">
+                OPEN
+            </span>
+
+            <strong>
+                {{ open_remediations }}
+            </strong>
+
+            <small>
+                Awaiting action
+            </small>
+        </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <div class="stat-icon yellow">
+            <i class="fas fa-spinner"></i>
+        </div>
+
+        <div>
+            <span class="stat-label">
+                IN PROGRESS
+            </span>
+
+            <strong>
+                {{ in_progress_remediations }}
+            </strong>
+
+            <small>
+                Currently being fixed
+            </small>
+        </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <div class="stat-icon green">
+            <i class="fas fa-check-circle"></i>
+        </div>
+
+        <div>
+            <span class="stat-label">
+                VERIFIED
+            </span>
+
+            <strong>
+                {{ verified_count }}
+            </strong>
+
+            <small>
+                Successfully verified
+            </small>
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ======================================================
+     SEVERITY SUMMARY
+====================================================== -->
+
+<div class="panel">
+
+    <div class="panel-header">
+
+        <h2>
+            <i class="fas fa-chart-bar"></i>
+            Severity Overview
+        </h2>
+
+    </div>
+
+
+    <div class="severity-grid">
+
+        <div class="severity-item critical">
+
+            <span>
+                Critical
+            </span>
+
+            <strong>
+                {{ critical_count }}
+            </strong>
+
+        </div>
+
+
+        <div class="severity-item high">
+
+            <span>
+                High
+            </span>
+
+            <strong>
+                {{ high_count }}
+            </strong>
+
+        </div>
+
+
+        <div class="severity-item medium">
+
+            <span>
+                Medium
+            </span>
+
+            <strong>
+                {{ medium_count }}
+            </strong>
+
+        </div>
+
+
+        <div class="severity-item low">
+
+            <span>
+                Low
+            </span>
+
+            <strong>
+                {{ low_count }}
+            </strong>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ======================================================
+     FILTERS
+====================================================== -->
+
+<div class="panel">
+
+    <div class="panel-header">
+
+        <h2>
+            <i class="fas fa-filter"></i>
+            Remediation Filters
+        </h2>
+
+    </div>
+
+
+    <form method="GET" action="{{ url_for('remediation.remediation') }}" class="filter-form">
+
+        <input type="text" name="search" value="{{ search }}" placeholder="Search remediation, CVE or analyst...">
+
+
+        <select name="status">
+
+            <option value="">
+                All Status
+            </option>
+
+            <option value="Open" {% if status_filter=="Open" %}selected{% endif %}>
+                Open
+            </option>
+
+            <option value="Assigned" {% if status_filter=="Assigned" %}selected{% endif %}>
+                Assigned
+            </option>
+
+            <option value="In Progress" {% if status_filter=="In Progress" %}selected{% endif %}>
+                In Progress
+            </option>
+
+            <option value="Remediated" {% if status_filter=="Remediated" %}selected{% endif %}>
+                Remediated
+            </option>
+
+            <option value="Verified" {% if status_filter=="Verified" %}selected{% endif %}>
+                Verified
+            </option>
+
+            <option value="Closed" {% if status_filter=="Closed" %}selected{% endif %}>
+                Closed
+            </option>
+
+        </select>
+
+
+        <select name="severity">
+
+            <option value="">
+                All Severity
+            </option>
+
+            <option value="Critical" {% if severity_filter=="Critical" %}selected{% endif %}>
+                Critical
+            </option>
+
+            <option value="High" {% if severity_filter=="High" %}selected{% endif %}>
+                High
+            </option>
+
+            <option value="Medium" {% if severity_filter=="Medium" %}selected{% endif %}>
+                Medium
+            </option>
+
+            <option value="Low" {% if severity_filter=="Low" %}selected{% endif %}>
+                Low
+            </option>
+
+        </select>
+
+
+        <button type="submit" class="btn btn-primary">
+            <i class="fas fa-search"></i>
+            Filter
+        </button>
+
+
+        <a href="{{ url_for('remediation.remediation') }}" class="btn btn-secondary">
+            Reset
+        </a>
+
+    </form>
+
+</div>
+
+
+<!-- ======================================================
+     REMEDIATION TABLE
+====================================================== -->
+
+<div class="panel">
+
+    <div class="panel-header">
+
+        <h2>
+            <i class="fas fa-tasks"></i>
+            Remediation Queue
+        </h2>
+
+        <span>
+            {{ remediations|length }} item(s)
+        </span>
+
+    </div>
+
+
+    {% if remediations %}
+
+    <div class="table-container">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>ID</th>
+
+                    <th>Title</th>
+
+                    <th>CVE</th>
+
+                    <th>Asset</th>
+
+                    <th>Severity</th>
+
+                    <th>Status</th>
+
+                    <th>Assigned</th>
+
+                    <th>Created</th>
+
+                    <th>Action</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for item in remediations %}
+
+                <tr>
+
+                    <td>
+                        <strong>
+                            {{ item.remediation_id }}
+                        </strong>
+                    </td>
+
+
+                    <td>
+
+                        <div class="item-title">
+
+                            {{ item.title }}
+
+                        </div>
+
+                    </td>
+
+
+                    <td>
+
+                        {% if item.cve_id %}
+
+                        <span class="cve-tag">
+                            {{ item.cve_id }}
+                        </span>
+
+                        {% else %}
+
+                        <span class="muted">
+                            N/A
+                        </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <td>
+
+                        {% if item.asset %}
+
+                        {{ item.asset.asset_name }}
+
+                        <small class="asset-ip">
+                            {{ item.asset.ip_address }}
+                        </small>
+
+                        {% else %}
+
+                        <span class="muted">
+                            Unassigned
+                        </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <td>
+
+                        <span class="severity-badge severity-{{ item.severity|lower }}">
+                            {{ item.severity }}
+                        </span>
+
+                    </td>
+
+
+                    <td>
+
+                        <span class="status-badge status-{{ item.status|lower|replace(' ', '-') }}">
+                            {{ item.status }}
+                        </span>
+
+                    </td>
+
+
+                    <td>
+
+                        {% if item.assigned_to %}
+
+                        {{ item.assigned_to }}
+
+                        {% else %}
+
+                        <span class="muted">
+                            Unassigned
+                        </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <td>
+
+                        {% if item.created_at %}
+
+                        {{ item.created_at.strftime("%Y-%m-%d %H:%M") }}
+
+                        {% else %}
+
+                        N/A
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <td>
+
+                        <a href="{{ url_for(
+                                'remediation.view_remediation',
+                                id=item.id
+                            ) }}" class="btn btn-view">
+                            View
+                        </a>
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    {% else %}
+
+    <div class="empty-state">
+
+        <i class="fas fa-shield-alt"></i>
+
+        <h3>
+            No remediation items found
+        </h3>
+
+        <p>
+            No remediation activities match the current filters.
+        </p>
+
+        <a href="{{ url_for('remediation.create_remediation') }}" class="btn btn-primary">
+            Create First Remediation
+        </a>
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+
+<!-- ======================================================
+     INLINE STYLE
+====================================================== -->
+
+<style>
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+    }
+
+    .page-header h1 {
+        margin: 0;
+        color: #e8ffff;
+    }
+
+    .page-header p {
+        color: #8aa8a8;
+        margin-top: 7px;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+
+    .stat-card {
+        background: rgba(2, 20, 20, 0.88);
+        border: 1px solid #063e3b;
+        border-radius: 6px;
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+    }
+
+    .stat-icon {
+        font-size: 28px;
+    }
+
+    .stat-icon.blue {
+        color: #008cff;
+    }
+
+    .stat-icon.red {
+        color: #ff304f;
+    }
+
+    .stat-icon.yellow {
+        color: #ffc400;
+    }
+
+    .stat-icon.green {
+        color: #00c878;
+    }
+
+    .stat-label {
+        display: block;
+        font-size: 11px;
+        color: #6e9999;
+        letter-spacing: 1px;
+    }
+
+    .stat-card strong {
+        display: block;
+        font-size: 28px;
+        color: #e9ffff;
+        margin: 3px 0;
+    }
+
+    .stat-card small {
+        color: #6f9999;
+    }
+
+    .panel {
+        background: rgba(2, 20, 20, 0.88);
+        border: 1px solid #063e3b;
+        border-radius: 6px;
+        margin-bottom: 20px;
+        overflow: hidden;
+    }
+
+    .panel-header {
+        padding: 15px 18px;
+        border-bottom: 1px solid #063e3b;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .panel-header h2 {
+        margin: 0;
+        font-size: 16px;
+        color: #e8ffff;
+    }
+
+    .panel-header span {
+        color: #6e9999;
+    }
+
+    .severity-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+        padding: 18px;
+    }
+
+    .severity-item {
+        border: 1px solid #174242;
+        padding: 18px;
+        text-align: center;
+        border-radius: 5px;
+    }
+
+    .severity-item span {
+        display: block;
+        color: #9ababa;
+    }
+
+    .severity-item strong {
+        display: block;
+        font-size: 25px;
+        margin-top: 7px;
+    }
+
+    .severity-item.critical strong {
+        color: #ff304f;
+    }
+
+    .severity-item.high strong {
+        color: #ffb900;
+    }
+
+    .severity-item.medium strong {
+        color: #00bfff;
+    }
+
+    .severity-item.low strong {
+        color: #00c878;
+    }
+
+    .filter-form {
+        display: flex;
+        gap: 10px;
+        padding: 18px;
+    }
+
+    .filter-form input,
+    .filter-form select {
+        background: #031616;
+        border: 1px solid #174242;
+        color: #dfffff;
+        padding: 10px;
+        border-radius: 4px;
+    }
+
+    .filter-form input {
+        flex: 1;
+    }
+
+    .btn {
+        border: 0;
+        border-radius: 4px;
+        padding: 10px 15px;
+        text-decoration: none;
+        cursor: pointer;
+        display: inline-block;
+    }
+
+    .btn-primary {
+        background: #00c98b;
+        color: #001513;
+    }
+
+    .btn-secondary {
+        background: #123030;
+        color: #b9dede;
+    }
+
+    .btn-view {
+        background: #063b5c;
+        color: #55baff;
+        padding: 7px 12px;
+    }
+
+    .table-container {
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    thead {
+        background: rgba(0, 70, 60, 0.28);
+    }
+
+    th {
+        color: #00d8a0;
+        font-size: 11px;
+        letter-spacing: .8px;
+        text-align: left;
+        padding: 13px;
+    }
+
+    td {
+        padding: 13px;
+        border-top: 1px solid #103333;
+        color: #c5dddd;
+        font-size: 13px;
+    }
+
+    tr:hover {
+        background: rgba(0, 120, 100, 0.08);
+    }
+
+    .item-title {
+        color: #e8ffff;
+        font-weight: 600;
+    }
+
+    .asset-ip {
+        display: block;
+        color: #6e9999;
+        margin-top: 4px;
+    }
+
+    .muted {
+        color: #607d7d;
+    }
+
+    .cve-tag {
+        color: #6dc9ff;
+        font-family: monospace;
+    }
+
+    .severity-badge,
+    .status-badge {
+        padding: 5px 9px;
+        border-radius: 3px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+    .severity-critical {
+        background: #8d1728;
+        color: #ffb7c1;
+    }
+
+    .severity-high {
+        background: #735500;
+        color: #ffe58a;
+    }
+
+    .severity-medium {
+        background: #064e69;
+        color: #8cddff;
+    }
+
+    .severity-low {
+        background: #075638;
+        color: #8bf0c5;
+    }
+
+    .status-open {
+        background: #64182a;
+        color: #ffb8c6;
+    }
+
+    .status-assigned {
+        background: #07536a;
+        color: #9ce6ff;
+    }
+
+    .status-in-progress {
+        background: #6d5500;
+        color: #ffe58a;
+    }
+
+    .status-remediated {
+        background: #075638;
+        color: #8bf0c5;
+    }
+
+    .status-verified {
+        background: #075638;
+        color: #8bf0c5;
+    }
+
+    .status-closed {
+        background: #273c3c;
+        color: #b6cccc;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #729393;
+    }
+
+    .empty-state i {
+        font-size: 45px;
+        color: #00c98b;
+        margin-bottom: 15px;
+    }
+
+    .empty-state h3 {
+        color: #dff;
+    }
+
+    @media (max-width: 1000px) {
+
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .severity-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+    }
+</style>
+
+{% endblock %}

@@ -16,11 +16,13 @@ BASE_DIR = os.path.abspath(
 # Load Environment Variables
 # ==========================================================
 
+ENV_FILE = os.path.join(
+    BASE_DIR,
+    ".env"
+)
+
 load_dotenv(
-    os.path.join(
-        BASE_DIR,
-        ".env"
-    )
+    ENV_FILE
 )
 
 
@@ -67,26 +69,14 @@ class Config:
     # Session Security
     # ======================================================
 
-    # Prevent JavaScript from accessing session cookies
-
     SESSION_COOKIE_HTTPONLY = True
 
-
-    # Helps protect against CSRF attacks
-
     SESSION_COOKIE_SAMESITE = "Lax"
-
-
-    # False for local HTTP development.
-    # Set SESSION_COOKIE_SECURE=True when using HTTPS.
 
     SESSION_COOKIE_SECURE = os.getenv(
         "SESSION_COOKIE_SECURE",
         "False"
     ).lower() == "true"
-
-
-    # Regenerate / refresh session cookie periodically
 
     SESSION_REFRESH_EACH_REQUEST = True
 
@@ -111,8 +101,6 @@ class Config:
     # Request Size Protection
     # ======================================================
 
-    # Prevent unnecessarily large HTTP requests
-
     MAX_CONTENT_LENGTH = 2 * 1024 * 1024
 
 
@@ -133,12 +121,31 @@ class Config:
 
 
     # ======================================================
+    # OpenAI Configuration
+    # ======================================================
+
+    OPENAI_API_KEY = os.getenv(
+        "OPENAI_API_KEY"
+    )
+
+    OPENAI_MODEL = os.getenv(
+        "OPENAI_MODEL",
+        "gpt-4o-mini"
+    )
+
+
+    # ======================================================
     # VirusTotal API
     # ======================================================
 
     VIRUSTOTAL_API_KEY = os.getenv(
         "VIRUSTOTAL_API_KEY"
     )
+
+    VIRUSTOTAL_REFRESH_ANALYSIS = os.getenv(
+        "VIRUSTOTAL_REFRESH_ANALYSIS",
+        "False"
+    ).lower() == "true"
 
 
     # ======================================================

@@ -1,5 +1,3 @@
-import json
-
 from models.asset import Asset
 from models.scan import Scan
 from models.incident import Incident
@@ -7,7 +5,7 @@ from models.remediation import Remediation
 
 
 # ==========================================================
-# Collect ECDP Security Context
+# ECDP SECURITY DATA
 # ==========================================================
 
 def get_ecdp_context():
@@ -19,9 +17,7 @@ def get_ecdp_context():
     ).count()
 
     high_risk_assets = Asset.query.filter(
-        Asset.risk_level.in_(
-            ["High", "Critical"]
-        )
+        Asset.risk_level.in_(["High", "Critical"])
     ).count()
 
     total_scans = Scan.query.count()
@@ -75,7 +71,6 @@ def get_ecdp_context():
     ).count()
 
     return {
-
         "assets": {
             "total": total_assets,
             "active": active_assets,
@@ -108,27 +103,22 @@ def get_ecdp_context():
 
 
 # ==========================================================
-# Calculate Security Score
+# SECURITY SCORE
 # ==========================================================
 
 def calculate_security_score(context):
 
     total_assets = context["assets"]["total"]
-
     high_risk_assets = context["assets"]["high_risk"]
-
     open_incidents = context["incidents"]["open"]
-
     critical_incidents = context["incidents"]["critical"]
 
     score = 100
 
-
     if total_assets > 0:
 
         risk_percentage = (
-            high_risk_assets /
-            total_assets
+            high_risk_assets / total_assets
         ) * 100
 
         score -= min(
@@ -136,18 +126,15 @@ def calculate_security_score(context):
             30
         )
 
-
     score -= min(
         critical_incidents * 10,
         30
     )
 
-
     score -= min(
         open_incidents * 3,
         20
     )
-
 
     return max(
         0,
@@ -159,7 +146,25 @@ def calculate_security_score(context):
 
 
 # ==========================================================
-# Generate Security Analysis
+# RISK LEVEL
+# ==========================================================
+
+def get_risk_level(score):
+
+    if score >= 80:
+        return "Low"
+
+    elif score >= 60:
+        return "Moderate"
+
+    elif score >= 40:
+        return "High"
+
+    return "Critical"
+
+
+# ==========================================================
+# REQUIRED BY ai_security.py
 # ==========================================================
 
 def generate_security_analysis():
@@ -170,34 +175,11 @@ def generate_security_analysis():
         context
     )
 
-
-    # ======================================================
-    # Risk Level
-    # ======================================================
-
-    if score >= 80:
-
-        risk_level = "Low"
-
-    elif score >= 60:
-
-        risk_level = "Moderate"
-
-    elif score >= 40:
-
-        risk_level = "High"
-
-    else:
-
-        risk_level = "Critical"
-
-
-    # ======================================================
-    # Recommendations
-    # ======================================================
+    risk_level = get_risk_level(
+        score
+    )
 
     recommendations = []
-
 
     if context["assets"]["high_risk"] > 0:
 
@@ -206,14 +188,12 @@ def generate_security_analysis():
             "critical-risk assets."
         )
 
-
     if context["incidents"]["open"] > 0:
 
         recommendations.append(
             "Investigate and resolve all open "
             "security incidents."
         )
-
 
     if context["incidents"]["critical"] > 0:
 
@@ -222,20 +202,17 @@ def generate_security_analysis():
             "security incidents."
         )
 
-
     if context["scans"]["failed"] > 0:
 
         recommendations.append(
             "Investigate failed vulnerability scans."
         )
 
-
     if context["remediations"]["open"] > 0:
 
         recommendations.append(
             "Prioritize open remediation tasks."
         )
-
 
     if not recommendations:
 
@@ -244,16 +221,12 @@ def generate_security_analysis():
             "and security monitoring."
         )
 
-
-    # ======================================================
-    # Summary
-    # ======================================================
-
     if risk_level == "Low":
 
         summary = (
             "The current security posture is healthy. "
-            "Continue regular monitoring and scanning."
+            "Continue regular monitoring and "
+            "vulnerability scanning."
         )
 
     elif risk_level == "Moderate":
@@ -267,20 +240,17 @@ def generate_security_analysis():
 
         summary = (
             "The environment has significant security "
-            "risks. Immediate remediation is recommended."
+            "risks. Immediate remediation and "
+            "monitoring are recommended."
         )
 
     else:
 
         summary = (
             "The environment is in a critical security "
-            "state. Immediate investigation is required."
+            "state. Immediate investigation and "
+            "remediation are required."
         )
-
-
-    # ======================================================
-    # Return Dashboard-Compatible Structure
-    # ======================================================
 
     return {
 
@@ -347,38 +317,118 @@ def generate_security_analysis():
 
         "recommendations":
             recommendations
-
     }
 
 
 # ==========================================================
-# ECDP Security Assistant
+# AI SECURITY ASSISTANT
 # ==========================================================
 
 def ask_security_ai(question):
 
     if not question:
 
-        return (
-            "Please enter a cybersecurity question."
-        )
-
+        return "Please enter a cybersecurity question."
 
     question = question.strip()
 
-
-    if not question:
-
-        return (
-            "Please enter a cybersecurity question."
-        )
-
-
-    question_lower = question.lower()
+    q = question.lower()
 
 
     # ======================================================
-    # Get Current ECDP Data
+    # GREETINGS
+    # ======================================================
+
+    if q in {
+        "hi",
+        "hello",
+        "hey",
+        "hii",
+        "hiii",
+        "good morning",
+        "good afternoon",
+        "good evening"
+    }:
+
+        return (
+            "Hello! 👋 I'm your ECDP Security Assistant.\n\n"
+            "I can help you understand your security "
+            "environment and answer cybersecurity questions.\n\n"
+            "What would you like to investigate?"
+        )
+
+
+    # ======================================================
+    # HOW ARE YOU
+    # ======================================================
+
+    if (
+        "how are you" in q
+        or "how r u" in q
+        or "how are u" in q
+    ):
+
+        return (
+            "I'm doing great! 😊\n\n"
+            "I'm ready to help you with cybersecurity "
+            "questions or analyze your ECDP environment."
+        )
+
+
+    # ======================================================
+    # THANK YOU
+    # ======================================================
+
+    if (
+        "thank you" in q
+        or "thanks" in q
+        or "thank u" in q
+    ):
+
+        return (
+            "You're welcome! 😊\n\n"
+            "Let me know if you need any more "
+            "security analysis."
+        )
+
+
+    # ======================================================
+    # GOODBYE
+    # ======================================================
+
+    if q in {
+        "bye",
+        "goodbye",
+        "see you",
+        "see you later"
+    }:
+
+        return (
+            "Goodbye! 👋\n\n"
+            "Stay secure and keep monitoring "
+            "your ECDP environment."
+        )
+
+
+    # ======================================================
+    # IDENTITY
+    # ======================================================
+
+    if (
+        "who are you" in q
+        or "what are you" in q
+    ):
+
+        return (
+            "I'm the ECDP Security Assistant. 🤖\n\n"
+            "I provide cybersecurity guidance and "
+            "analyze security information available "
+            "in your Enterprise Cyber Defense Platform."
+        )
+
+
+    # ======================================================
+    # GET DATABASE CONTEXT
     # ======================================================
 
     try:
@@ -397,39 +447,110 @@ def ask_security_ai(question):
         )
 
         return (
-            "Unable to analyze the current "
-            "ECDP security environment."
+            "I couldn't access the current "
+            "ECDP security data."
         )
 
 
     # ======================================================
-    # Security Score
+    # SECURITY SUMMARY
+    # ======================================================
+
+    if any(x in q for x in [
+        "security summary",
+        "overall security",
+        "overall status",
+        "security overview",
+        "summarize my security",
+        "give me a summary"
+    ]):
+
+        return (
+            "ECDP SECURITY SUMMARY\n\n"
+
+            f"Security Score: {score}/100\n"
+            f"Risk Level: {get_risk_level(score)}\n\n"
+
+            f"Total Assets: "
+            f"{context['assets']['total']}\n"
+
+            f"Active Assets: "
+            f"{context['assets']['active']}\n"
+
+            f"High/Critical-Risk Assets: "
+            f"{context['assets']['high_risk']}\n\n"
+
+            f"Total Incidents: "
+            f"{context['incidents']['total']}\n"
+
+            f"Open Incidents: "
+            f"{context['incidents']['open']}\n"
+
+            f"Critical Incidents: "
+            f"{context['incidents']['critical']}\n"
+
+            f"High Incidents: "
+            f"{context['incidents']['high']}\n\n"
+
+            f"Total Scans: "
+            f"{context['scans']['total']}\n"
+
+            f"Completed Scans: "
+            f"{context['scans']['completed']}\n"
+
+            f"Failed Scans: "
+            f"{context['scans']['failed']}\n\n"
+
+            f"Open Remediations: "
+            f"{context['remediations']['open']}\n\n"
+
+            "Recommended priority:\n"
+
+            "1. Address Critical and High security issues.\n"
+            "2. Review high-risk assets.\n"
+            "3. Resolve open remediation tasks.\n"
+            "4. Investigate failed vulnerability scans."
+        )
+
+
+    # ======================================================
+    # SECURITY SCORE
     # ======================================================
 
     if (
-        "security score" in question_lower
-        or "score" in question_lower
+        "security score" in q
+        or "security rating" in q
+        or q == "score"
+        or "how secure am i" in q
+        or "why is my score low" in q
     ):
 
         return (
-            f"CURRENT SECURITY SCORE\n\n"
+            "CURRENT SECURITY SCORE\n\n"
+
             f"Security Score: {score}/100\n\n"
+
             f"Risk Level: "
             f"{get_risk_level(score)}\n\n"
-            f"The score is calculated using the current "
-            f"asset risk and incident information in ECDP."
+
+            "The score is calculated from the "
+            "current security posture recorded in ECDP."
         )
 
 
     # ======================================================
-    # Highest Security Risks
+    # RISKY ASSETS
     # ======================================================
 
     if (
-        "highest security risks" in question_lower
-        or "main security risks" in question_lower
-        or "biggest security risks" in question_lower
-        or "security risks" in question_lower
+        "security risks" in q
+        or "risky assets" in q
+        or "risky asset" in q
+        or "high risk assets" in q
+        or "high-risk assets" in q
+        or "critical assets" in q
+        or "assets at risk" in q
+        or "which assets are risky" in q
     ):
 
         return (
@@ -442,9 +563,12 @@ def ask_security_ai(question):
             f"{context['incidents']['open']}\n"
 
             f"Critical incidents: "
-            f"{context['incidents']['critical']}\n\n"
+            f"{context['incidents']['critical']}\n"
 
-            "Recommended action:\n"
+            f"High incidents: "
+            f"{context['incidents']['high']}\n\n"
+
+            "Recommended action:\n\n"
 
             "1. Investigate Critical and High incidents.\n"
             "2. Review High/Critical-risk assets.\n"
@@ -454,12 +578,16 @@ def ask_security_ai(question):
 
 
     # ======================================================
-    # Open Incidents
+    # INCIDENTS
     # ======================================================
 
     if (
-        "open incidents" in question_lower
-        or "how many incidents" in question_lower
+        "open incidents" in q
+        or "incident status" in q
+        or "incident count" in q
+        or "how many incidents" in q
+        or "any incidents" in q
+        or "incidents should i worry about" in q
     ):
 
         return (
@@ -489,13 +617,17 @@ def ask_security_ai(question):
 
 
     # ======================================================
-    # Asset Status
+    # ASSETS
     # ======================================================
 
     if (
-        "asset status" in question_lower
-        or "assets" in question_lower
-        or "asset count" in question_lower
+        "asset status" in q
+        or "asset count" in q
+        or "how many assets" in q
+        or "show my assets" in q
+        or "show me my assets" in q
+        or "tell me about my assets" in q
+        or q == "assets"
     ):
 
         return (
@@ -516,13 +648,15 @@ def ask_security_ai(question):
 
 
     # ======================================================
-    # Scan Status
+    # SCANS
     # ======================================================
 
     if (
-        "scan" in question_lower
-        or "scans" in question_lower
-        or "vulnerability scan" in question_lower
+        "scan" in q
+        or "scans" in q
+        or "vulnerability scan" in q
+        or "are my scans okay" in q
+        or "scan status" in q
     ):
 
         return (
@@ -538,19 +672,22 @@ def ask_security_ai(question):
             f"{context['scans']['failed']}\n\n"
 
             "Failed scans should be investigated to "
-            "ensure that assets are being properly assessed."
+            "ensure that assets are properly assessed."
         )
 
 
     # ======================================================
-    # Remediation
+    # REMEDIATION
     # ======================================================
 
     if (
-        "remediation" in question_lower
-        or "remediations" in question_lower
-        or "fix first" in question_lower
-        or "what should i fix" in question_lower
+        "remediation" in q
+        or "remediations" in q
+        or "fix first" in q
+        or "what should i fix" in q
+        or "what needs fixing" in q
+        or "what needs to be fixed" in q
+        or "priority fixes" in q
     ):
 
         return (
@@ -571,23 +708,24 @@ def ask_security_ai(question):
             f"Verified: "
             f"{context['remediations']['verified']}\n\n"
 
-            "Recommended priority:\n"
+            "Recommended priority:\n\n"
 
             "1. Critical security issues\n"
             "2. High severity issues\n"
             "3. Internet-facing vulnerabilities\n"
-            "4. Remaining medium-risk issues\n"
+            "4. Medium-risk issues\n"
             "5. Low-risk findings"
         )
 
 
     # ======================================================
-    # SQL Injection
+    # SQL INJECTION
     # ======================================================
 
     if (
-        "sql injection" in question_lower
-        or "sqli" in question_lower
+        "sql injection" in q
+        or "sqli" in q
+        or "sql attack" in q
     ):
 
         return (
@@ -621,9 +759,9 @@ def ask_security_ai(question):
     # ======================================================
 
     if (
-        "xss" in question_lower
-        or "cross site scripting" in question_lower
-        or "cross-site scripting" in question_lower
+        "xss" in q
+        or "cross site scripting" in q
+        or "cross-site scripting" in q
     ):
 
         return (
@@ -631,13 +769,13 @@ def ask_security_ai(question):
 
             "Recommended controls:\n\n"
 
-            "1. Context-aware output encoding.\n"
+            "1. Use context-aware output encoding.\n\n"
 
-            "2. Validate and sanitize untrusted input.\n"
+            "2. Validate and sanitize untrusted input.\n\n"
 
-            "3. Use framework-provided escaping mechanisms.\n"
+            "3. Use framework-provided escaping mechanisms.\n\n"
 
-            "4. Implement an appropriate Content Security Policy.\n"
+            "4. Implement an appropriate Content Security Policy.\n\n"
 
             "5. Use HttpOnly and Secure cookie attributes "
             "where appropriate.\n\n"
@@ -648,45 +786,45 @@ def ask_security_ai(question):
 
 
     # ======================================================
-    # Phishing
+    # PHISHING
     # ======================================================
 
-    if "phishing" in question_lower:
+    if "phishing" in q:
 
         return (
             "PHISHING RISK REDUCTION\n\n"
 
             "Recommended controls:\n\n"
 
-            "1. Enable multi-factor authentication.\n"
+            "1. Enable multi-factor authentication.\n\n"
 
-            "2. Train users to identify suspicious messages.\n"
+            "2. Train users to identify suspicious messages.\n\n"
 
-            "3. Use email filtering and anti-phishing controls.\n"
+            "3. Use email filtering and anti-phishing controls.\n\n"
 
-            "4. Verify unexpected links and attachments.\n"
+            "4. Verify unexpected links and attachments.\n\n"
 
-            "5. Report suspicious messages to the security team.\n"
+            "5. Report suspicious messages to the security team.\n\n"
 
             "6. Monitor authentication logs for unusual activity."
         )
 
 
     # ======================================================
-    # CVE / CVSS
+    # CVE / CVSS / VULNERABILITIES
     # ======================================================
 
     if (
-        "cve" in question_lower
-        or "cvss" in question_lower
-        or "vulnerability" in question_lower
+        "cve" in q
+        or "cvss" in q
+        or "vulnerabilit" in q
     ):
 
         return (
             "VULNERABILITY MANAGEMENT\n\n"
 
-            "ECDP can prioritize vulnerabilities using "
-            "severity, affected assets and available "
+            "ECDP can help prioritize vulnerabilities "
+            "using severity, affected assets and "
             "security findings.\n\n"
 
             "Recommended approach:\n\n"
@@ -701,21 +839,45 @@ def ask_security_ai(question):
 
 
     # ======================================================
-    # General Cybersecurity
+    # NETWORK SECURITY
     # ======================================================
 
     if (
-        "cybersecurity" in question_lower
-        or "cyber security" in question_lower
-        or "security" in question_lower
+        "network security" in q
+        or "secure network" in q
+        or "network attack" in q
+        or "network risk" in q
+    ):
+
+        return (
+            "NETWORK SECURITY\n\n"
+
+            "Important controls include:\n\n"
+
+            "1. Use firewalls and network segmentation.\n"
+            "2. Disable unnecessary services and ports.\n"
+            "3. Apply security updates regularly.\n"
+            "4. Monitor network traffic and authentication logs.\n"
+            "5. Use strong authentication and access controls.\n"
+            "6. Regularly scan authorized systems for vulnerabilities."
+        )
+
+
+    # ======================================================
+    # GENERAL CYBERSECURITY
+    # ======================================================
+
+    if (
+        "cybersecurity" in q
+        or "cyber security" in q
     ):
 
         return (
             "CYBERSECURITY GUIDANCE\n\n"
 
-            "The ECDP Security Assistant can help analyze "
-            "assets, vulnerability scans, incidents and "
-            "remediation status.\n\n"
+            "I can help with application security, "
+            "network security, vulnerability management, "
+            "incident response and your ECDP environment.\n\n"
 
             f"Current security score: {score}/100\n"
 
@@ -725,53 +887,29 @@ def ask_security_ai(question):
             f"Open incidents: "
             f"{context['incidents']['open']}\n\n"
 
-            "For application security, prioritize secure "
-            "coding, strong authentication, authorization, "
-            "input validation, logging, monitoring and "
-            "regular vulnerability assessment."
+            "Tell me what security topic or ECDP "
+            "information you want to investigate."
         )
 
 
     # ======================================================
-    # Default Response
+    # DEFAULT
     # ======================================================
 
     return (
-        "I can help you analyze your ECDP security "
-        "environment.\n\n"
+        "I'm not sure how to answer that yet. 😊\n\n"
+
+        "I can help with cybersecurity topics and "
+        "your ECDP environment.\n\n"
 
         "Try asking:\n"
 
-        "• What are my highest security risks?\n"
-        "• Why is my security score low?\n"
-        "• How many open incidents do I have?\n"
+        "• Give me a security summary\n"
+        "• Show me my risky assets\n"
+        "• Any incidents I should worry about?\n"
+        "• Are my scans okay?\n"
         "• What should I fix first?\n"
-        "• What is my asset status?\n"
-        "• How many vulnerability scans were completed?\n"
         "• How can I prevent SQL injection?\n"
         "• How can I prevent XSS?\n"
         "• Explain CVE and CVSS."
     )
-
-
-# ==========================================================
-# Risk Level Helper
-# ==========================================================
-
-def get_risk_level(score):
-
-    if score >= 80:
-
-        return "Low"
-
-    elif score >= 60:
-
-        return "Moderate"
-
-    elif score >= 40:
-
-        return "High"
-
-    else:
-
-        return "Critical"

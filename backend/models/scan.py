@@ -35,12 +35,43 @@ class Scan(db.Model):
         db.Text
     )
 
+    # ------------------------------------------------------
+    # Potential CVE matches returned by NVD
+    # Stored as JSON text
+    # ------------------------------------------------------
+
+    vulnerabilities = db.Column(
+        db.Text,
+        default="[]"
+    )
+
+    # ------------------------------------------------------
+    # ECDP application-level risk
+    # ------------------------------------------------------
+
+    risk_level = db.Column(
+        db.String(20),
+        default="LOW"
+    )
+
+    # ------------------------------------------------------
+    # Highest CVSS score found
+    # ------------------------------------------------------
+
+    max_cvss = db.Column(
+        db.Float,
+        default=0.0
+    )
+
     status = db.Column(
         db.String(20),
         default="Completed"
     )
 
+    # ======================================================
     # Relationship with Asset
+    # ======================================================
+
     asset = db.relationship(
         "Asset",
         backref=db.backref(

@@ -1,0 +1,606 @@
+{% extends "base.html" %}
+
+{% block title %}
+{{ remediation.remediation_id }} - ECDP
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+
+        <h1>
+            <i class="fas fa-wrench"></i>
+
+            {{ remediation.remediation_id }}
+        </h1>
+
+        <p>
+            Remediation details and workflow management.
+        </p>
+
+    </div>
+
+    <a href="{{ url_for('remediation.remediation') }}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i>
+        Back to Remediation
+    </a>
+
+</div>
+
+
+<!-- ======================================================
+     HEADER
+====================================================== -->
+
+<div class="detail-card">
+
+    <div class="detail-header">
+
+        <div>
+
+            <h2>
+                {{ remediation.title }}
+            </h2>
+
+            <span class="remediation-id">
+                {{ remediation.remediation_id }}
+            </span>
+
+        </div>
+
+
+        <div>
+
+            <span class="severity-badge severity-{{ remediation.severity|lower }}">
+                {{ remediation.severity }}
+            </span>
+
+            <span class="status-badge status-{{ remediation.status|lower|replace(' ', '-') }}">
+                {{ remediation.status }}
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==================================================
+         INFORMATION
+    ================================================== -->
+
+    <div class="info-grid">
+
+        <div class="info-item">
+
+            <label>
+                CVE
+            </label>
+
+            <strong>
+
+                {% if remediation.cve_id %}
+
+                {{ remediation.cve_id }}
+
+                {% else %}
+
+                N/A
+
+                {% endif %}
+
+            </strong>
+
+        </div>
+
+
+        <div class="info-item">
+
+            <label>
+                Asset
+            </label>
+
+            <strong>
+
+                {% if remediation.asset %}
+
+                {{ remediation.asset.asset_name }}
+
+                <small>
+                    {{ remediation.asset.ip_address }}
+                </small>
+
+                {% else %}
+
+                N/A
+
+                {% endif %}
+
+            </strong>
+
+        </div>
+
+
+        <div class="info-item">
+
+            <label>
+                Scan
+            </label>
+
+            <strong>
+
+                {% if remediation.scan %}
+
+                Scan #{{ remediation.scan.id }}
+
+                {% else %}
+
+                N/A
+
+                {% endif %}
+
+            </strong>
+
+        </div>
+
+
+        <div class="info-item">
+
+            <label>
+                Assigned To
+            </label>
+
+            <strong>
+
+                {% if remediation.assigned_to %}
+
+                {{ remediation.assigned_to }}
+
+                {% else %}
+
+                Unassigned
+
+                {% endif %}
+
+            </strong>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ======================================================
+     DESCRIPTION
+====================================================== -->
+
+<div class="detail-card">
+
+    <h3>
+        <i class="fas fa-search"></i>
+        Finding
+    </h3>
+
+    <div class="text-box">
+
+        {% if remediation.description %}
+
+        {{ remediation.description }}
+
+        {% else %}
+
+        No finding description provided.
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+<!-- ======================================================
+     RECOMMENDATION
+====================================================== -->
+
+<div class="detail-card">
+
+    <h3>
+        <i class="fas fa-shield-alt"></i>
+        Recommended Remediation
+    </h3>
+
+    <div class="text-box">
+
+        {% if remediation.recommendation %}
+
+        {{ remediation.recommendation }}
+
+        {% else %}
+
+        No remediation recommendation provided.
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+<!-- ======================================================
+     STATUS
+====================================================== -->
+
+<div class="detail-card">
+
+    <h3>
+        <i class="fas fa-tasks"></i>
+        Update Status
+    </h3>
+
+
+    <form method="POST" action="{{ url_for(
+            'remediation.update_status',
+            id=remediation.id
+        ) }}" class="inline-form">
+
+        <select name="status">
+
+            {% for status in [
+            "Open",
+            "Assigned",
+            "In Progress",
+            "Remediated",
+            "Verified",
+            "Closed"
+            ] %}
+
+            <option value="{{ status }}" {% if remediation.status==status %} selected {% endif %}>
+                {{ status }}
+            </option>
+
+            {% endfor %}
+
+        </select>
+
+
+        <button type="submit" class="btn btn-primary">
+            Update Status
+        </button>
+
+    </form>
+
+</div>
+
+
+<!-- ======================================================
+     ASSIGN
+====================================================== -->
+
+<div class="detail-card">
+
+    <h3>
+        <i class="fas fa-user"></i>
+        Assignment
+    </h3>
+
+
+    <form method="POST" action="{{ url_for(
+            'remediation.assign_remediation',
+            id=remediation.id
+        ) }}" class="inline-form">
+
+        <input type="text" name="assigned_to" value="{{ remediation.assigned_to or '' }}"
+            placeholder="SOC Analyst / Administrator" required>
+
+
+        <button type="submit" class="btn btn-primary">
+            Assign
+        </button>
+
+    </form>
+
+</div>
+
+
+<!-- ======================================================
+     NOTES
+====================================================== -->
+
+<div class="detail-card">
+
+    <h3>
+        <i class="fas fa-sticky-note"></i>
+        Notes
+    </h3>
+
+
+    <form method="POST" action="{{ url_for(
+            'remediation.update_notes',
+            id=remediation.id
+        ) }}">
+
+        <textarea name="notes" rows="5" placeholder="Remediation notes...">{{ remediation.notes or '' }}</textarea>
+
+
+        <h4>
+            Verification Notes
+        </h4>
+
+
+        <textarea name="verification_notes" rows="5"
+            placeholder="Verification evidence...">{{ remediation.verification_notes or '' }}</textarea>
+
+
+        <button type="submit" class="btn btn-primary">
+            Save Notes
+        </button>
+
+    </form>
+
+</div>
+
+
+<!-- ======================================================
+     DELETE
+====================================================== -->
+
+{% if current_user.role == "Admin" %}
+
+<div class="danger-zone">
+
+    <h3>
+        <i class="fas fa-trash"></i>
+        Delete Remediation
+    </h3>
+
+    <p>
+        This action permanently removes this remediation record.
+    </p>
+
+
+    <form method="POST" action="{{ url_for(
+            'remediation.delete_remediation',
+            id=remediation.id
+        ) }}" onsubmit="return confirm(
+            'Are you sure you want to delete this remediation?'
+        );">
+
+        <button type="submit" class="btn btn-danger">
+            Delete Remediation
+        </button>
+
+    </form>
+
+</div>
+
+{% endif %}
+
+
+<style>
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+    }
+
+    .page-header h1 {
+        color: #e8ffff;
+    }
+
+    .page-header p {
+        color: #789999;
+    }
+
+    .detail-card {
+        background: rgba(2, 20, 20, .9);
+        border: 1px solid #063e3b;
+        border-radius: 6px;
+        margin-bottom: 20px;
+        padding: 22px;
+    }
+
+    .detail-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .detail-header h2 {
+        color: #e8ffff;
+        margin: 0 0 8px;
+    }
+
+    .remediation-id {
+        color: #00c98b;
+        font-family: monospace;
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+        margin-top: 25px;
+    }
+
+    .info-item {
+        background: #031616;
+        border: 1px solid #123737;
+        padding: 15px;
+        border-radius: 4px;
+    }
+
+    .info-item label {
+        display: block;
+        color: #658888;
+        font-size: 11px;
+        margin-bottom: 7px;
+    }
+
+    .info-item strong {
+        color: #d9ffff;
+    }
+
+    .info-item small {
+        display: block;
+        color: #6d9999;
+        margin-top: 5px;
+    }
+
+    .detail-card h3 {
+        color: #dfffff;
+        margin-top: 0;
+    }
+
+    .text-box {
+        background: #031616;
+        border: 1px solid #123737;
+        padding: 17px;
+        border-radius: 4px;
+        color: #a9caca;
+        line-height: 1.7;
+        white-space: pre-wrap;
+    }
+
+    .inline-form {
+        display: flex;
+        gap: 10px;
+    }
+
+    .inline-form input,
+    .inline-form select,
+    .detail-card textarea {
+        box-sizing: border-box;
+        background: #031616;
+        border: 1px solid #174242;
+        color: #dfffff;
+        padding: 11px;
+        border-radius: 4px;
+    }
+
+    .inline-form input {
+        flex: 1;
+    }
+
+    .detail-card textarea {
+        width: 100%;
+        margin-bottom: 15px;
+        resize: vertical;
+    }
+
+    .detail-card h4 {
+        color: #8fb0b0;
+    }
+
+    .btn {
+        padding: 10px 16px;
+        border: 0;
+        border-radius: 4px;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .btn-primary {
+        background: #00c98b;
+        color: #001513;
+    }
+
+    .btn-secondary {
+        background: #123030;
+        color: #c4dddd;
+    }
+
+    .btn-danger {
+        background: #8d1e32;
+        color: #ffdce2;
+    }
+
+    .severity-badge,
+    .status-badge {
+        display: inline-block;
+        padding: 6px 10px;
+        border-radius: 3px;
+        font-size: 11px;
+        margin-left: 5px;
+    }
+
+    .severity-critical {
+        background: #8d1728;
+        color: #ffb7c1;
+    }
+
+    .severity-high {
+        background: #735500;
+        color: #ffe58a;
+    }
+
+    .severity-medium {
+        background: #064e69;
+        color: #8cddff;
+    }
+
+    .severity-low {
+        background: #075638;
+        color: #8bf0c5;
+    }
+
+    .status-open {
+        background: #64182a;
+        color: #ffb8c6;
+    }
+
+    .status-assigned {
+        background: #07536a;
+        color: #9ce6ff;
+    }
+
+    .status-in-progress {
+        background: #6d5500;
+        color: #ffe58a;
+    }
+
+    .status-remediated,
+    .status-verified {
+        background: #075638;
+        color: #8bf0c5;
+    }
+
+    .status-closed {
+        background: #273c3c;
+        color: #b6cccc;
+    }
+
+    .danger-zone {
+        border: 1px solid #702333;
+        background: rgba(50, 5, 15, .5);
+        padding: 22px;
+        border-radius: 6px;
+        margin-bottom: 30px;
+    }
+
+    .danger-zone h3 {
+        color: #ff7187;
+    }
+
+    .danger-zone p {
+        color: #a77b82;
+    }
+
+    @media(max-width: 800px) {
+
+        .info-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .detail-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+    }
+</style>
+
+{% endblock %}
