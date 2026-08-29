@@ -1629,26 +1629,36 @@ Dashboard - ECDP
 
 
 <!-- ==========================================================
-     SECURITY HEALTH + VULNERABILITY SUMMARY
+     SECURITY POSTURE OVERVIEW
 ========================================================== -->
 
 <div class="row g-4 mb-4">
 
-    <!-- Security Health -->
-
+    <!-- Security Posture -->
     <div class="col-lg-5">
 
         <div class="card shadow border-0 h-100">
 
-            <div class="card-header">
+            <div class="card-header d-flex justify-content-between align-items-center">
 
-                <h5 class="mb-0 fw-bold">
+                <div>
+                    <h5 class="mb-0 fw-bold">
+                        <i class="bi bi-shield-lock me-2"></i>
+                        Security Posture
+                    </h5>
 
-                    <i class="bi bi-shield-lock me-2"></i>
+                    <small class="text-muted">
+                        Current enterprise security health
+                    </small>
+                </div>
 
-                    Security Health
-
-                </h5>
+                {% if security_score >= 80 %}
+                <span class="badge bg-success">Healthy</span>
+                {% elif security_score >= 60 %}
+                <span class="badge bg-warning text-dark">Moderate</span>
+                {% else %}
+                <span class="badge bg-danger">Needs Attention</span>
+                {% endif %}
 
             </div>
 
@@ -1659,89 +1669,75 @@ Dashboard - ECDP
                     <div class="security-score-circle mx-auto">
 
                         <div>
-
                             <h1 class="fw-bold mb-0">
                                 {{ security_score }}
                             </h1>
 
-                            <small>
-                                SCORE
-                            </small>
-
+                            <small>/ 100</small>
                         </div>
+
+                    </div>
+
+                    <div class="mt-3">
+
+                        {% if security_score >= 80 %}
+                        <span class="fw-semibold text-success">
+                            Strong Security Posture
+                        </span>
+                        {% elif security_score >= 60 %}
+                        <span class="fw-semibold text-warning">
+                            Moderate Security Posture
+                        </span>
+                        {% else %}
+                        <span class="fw-semibold text-danger">
+                            Security Attention Required
+                        </span>
+                        {% endif %}
 
                     </div>
 
                 </div>
 
-
-                <div class="row text-center g-3">
+                <div class="row g-3 text-center">
 
                     <div class="col-6">
-
-                        <div class="border rounded p-3">
-
-                            <h4 class="fw-bold mb-1">
+                        <div class="posture-metric border rounded p-3">
+                            <i class="bi bi-pc-display fs-4 text-primary"></i>
+                            <h4 class="fw-bold mb-0 mt-2">
                                 {{ high_risk_assets }}
                             </h4>
-
-                            <small class="text-muted">
-                                High Risk Assets
-                            </small>
-
+                            <small class="text-muted">High-Risk Assets</small>
                         </div>
-
                     </div>
 
-
                     <div class="col-6">
-
-                        <div class="border rounded p-3">
-
-                            <h4 class="fw-bold mb-1">
-                                {{ highest_cvss|round(1) }}
-                            </h4>
-
-                            <small class="text-muted">
-                                Highest CVSS
-                            </small>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="col-6">
-
-                        <div class="border rounded p-3">
-
-                            <h4 class="fw-bold mb-1">
+                        <div class="posture-metric border rounded p-3">
+                            <i class="bi bi-exclamation-triangle fs-4 text-danger"></i>
+                            <h4 class="fw-bold mb-0 mt-2">
                                 {{ open_incidents }}
                             </h4>
-
-                            <small class="text-muted">
-                                Open Incidents
-                            </small>
-
+                            <small class="text-muted">Open Incidents</small>
                         </div>
-
                     </div>
 
+                    <div class="col-6">
+                        <div class="posture-metric border rounded p-3">
+                            <i class="bi bi-bug fs-4 text-warning"></i>
+                            <h4 class="fw-bold mb-0 mt-2">
+                                {{ critical_vulnerabilities + high_vulnerabilities }}
+                            </h4>
+                            <small class="text-muted">High/Critical Findings</small>
+                        </div>
+                    </div>
 
                     <div class="col-6">
-
-                        <div class="border rounded p-3">
-
-                            <h4 class="fw-bold mb-1">
-                                {{ failed_scans }}
+                        <div class="posture-metric border rounded p-3">
+                            <i class="bi bi-tools fs-4 text-info"></i>
+                            <h4 class="fw-bold mb-0 mt-2">
+                                {{ open_remediations }}
                             </h4>
-
-                            <small class="text-muted">
-                                Failed Scans
-                            </small>
-
+                            <small class="text-muted">Pending Remediations</small>
                         </div>
-
                     </div>
 
                 </div>
@@ -1753,8 +1749,7 @@ Dashboard - ECDP
     </div>
 
 
-    <!-- Vulnerability Distribution -->
-
+    <!-- Security Priorities -->
     <div class="col-lg-7">
 
         <div class="card shadow border-0 h-100">
@@ -1762,147 +1757,254 @@ Dashboard - ECDP
             <div class="card-header">
 
                 <h5 class="mb-0 fw-bold">
-
-                    <i class="bi bi-bar-chart me-2"></i>
-
-                    Vulnerability Distribution
-
+                    <i class="bi bi-bullseye me-2"></i>
+                    Security Priorities
                 </h5>
+
+                <small class="text-muted">
+                    Areas requiring the most immediate attention
+                </small>
 
             </div>
 
             <div class="card-body">
 
-                {% if total_vulnerabilities > 0 %}
+                <div class="posture-priority-list">
 
-                <!-- Critical -->
-
-                <div class="mb-4">
-
-                    <div class="d-flex justify-content-between mb-1">
-
-                        <span class="fw-semibold">
-                            Critical
-                        </span>
-
-                        <span>
-                            {{ critical_vulnerabilities }}
-                        </span>
-
-                    </div>
-
-                    <div class="progress" style="height: 12px;">
-
-                        <div class="progress-bar bg-danger"
-                            style="width: {{ ((critical_vulnerabilities / total_vulnerabilities) * 100)|round(1) }}%;">
+                    {% if critical_incidents > 0 %}
+                    <div class="posture-priority">
+                        <div class="priority-icon text-danger">
+                            <i class="bi bi-exclamation-octagon"></i>
                         </div>
-
+                        <div class="flex-grow-1">
+                            <div class="fw-bold">Investigate critical incidents</div>
+                            <small class="text-muted">
+                                {{ critical_incidents }} critical/high-severity incident(s) require attention.
+                            </small>
+                        </div>
+                        <span class="badge bg-danger">Critical</span>
                     </div>
+                    {% endif %}
+
+
+                    {% if critical_vulnerabilities > 0 %}
+                    <div class="posture-priority">
+                        <div class="priority-icon text-danger">
+                            <i class="bi bi-bug"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="fw-bold">Remediate critical vulnerabilities</div>
+                            <small class="text-muted">
+                                {{ critical_vulnerabilities }} critical vulnerability finding(s) detected.
+                            </small>
+                        </div>
+                        <span class="badge bg-danger">Critical</span>
+                    </div>
+                    {% endif %}
+
+
+                    {% if high_risk_assets > 0 %}
+                    <div class="posture-priority">
+                        <div class="priority-icon text-warning">
+                            <i class="bi bi-pc-display"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="fw-bold">Review high-risk assets</div>
+                            <small class="text-muted">
+                                {{ high_risk_assets }} asset(s) are classified as High or Critical risk.
+                            </small>
+                        </div>
+                        <span class="badge bg-warning text-dark">High</span>
+                    </div>
+                    {% endif %}
+
+
+                    {% if high_vulnerabilities > 0 %}
+                    <div class="posture-priority">
+                        <div class="priority-icon text-warning">
+                            <i class="bi bi-shield-exclamation"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="fw-bold">Prioritize high-severity vulnerabilities</div>
+                            <small class="text-muted">
+                                {{ high_vulnerabilities }} high-severity finding(s) detected.
+                            </small>
+                        </div>
+                        <span class="badge bg-warning text-dark">High</span>
+                    </div>
+                    {% endif %}
+
+
+                    {% if open_incidents > 0 %}
+                    <div class="posture-priority">
+                        <div class="priority-icon text-warning">
+                            <i class="bi bi-activity"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="fw-bold">Reduce open incident backlog</div>
+                            <small class="text-muted">
+                                {{ open_incidents }} incident(s) are currently open.
+                            </small>
+                        </div>
+                        <span class="badge bg-warning text-dark">High</span>
+                    </div>
+                    {% endif %}
+
+
+                    {% if open_remediations > 0 %}
+                    <div class="posture-priority">
+                        <div class="priority-icon text-info">
+                            <i class="bi bi-tools"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="fw-bold">Complete pending remediations</div>
+                            <small class="text-muted">
+                                {{ open_remediations }} remediation task(s) remain open.
+                            </small>
+                        </div>
+                        <span class="badge bg-info">Medium</span>
+                    </div>
+                    {% endif %}
+
+
+                    {% if failed_scans > 0 %}
+                    <div class="posture-priority">
+                        <div class="priority-icon text-info">
+                            <i class="bi bi-search"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="fw-bold">Investigate failed scans</div>
+                            <small class="text-muted">
+                                {{ failed_scans }} vulnerability scan(s) did not complete successfully.
+                            </small>
+                        </div>
+                        <span class="badge bg-info">Medium</span>
+                    </div>
+                    {% endif %}
+
+
+                    {% if critical_incidents == 0
+                    and critical_vulnerabilities == 0
+                    and high_risk_assets == 0
+                    and high_vulnerabilities == 0
+                    and open_incidents == 0
+                    and open_remediations == 0
+                    and failed_scans == 0 %}
+
+                    <div class="text-center py-4">
+                        <i class="bi bi-shield-check fs-1 text-success"></i>
+                        <h6 class="fw-bold mt-3">
+                            No Immediate Security Priorities
+                        </h6>
+                        <p class="text-muted mb-0">
+                            Continue routine monitoring, scanning,
+                            incident review, and remediation verification.
+                        </p>
+                    </div>
+
+                    {% endif %}
 
                 </div>
 
+            </div>
 
-                <!-- High -->
+        </div>
 
-                <div class="mb-4">
+    </div>
 
-                    <div class="d-flex justify-content-between mb-1">
-
-                        <span class="fw-semibold">
-                            High
-                        </span>
-
-                        <span>
-                            {{ high_vulnerabilities }}
-                        </span>
-
-                    </div>
-
-                    <div class="progress" style="height: 12px;">
-
-                        <div class="progress-bar bg-warning"
-                            style="width: {{ ((high_vulnerabilities / total_vulnerabilities) * 100)|round(1) }}%;">
-                        </div>
-
-                    </div>
-
-                </div>
+</div>
 
 
-                <!-- Medium -->
+<!-- ==========================================================
+     VULNERABILITY SUMMARY
+========================================================== -->
 
-                <div class="mb-4">
+<div class="row g-4 mb-4">
 
-                    <div class="d-flex justify-content-between mb-1">
+    <div class="col-12">
 
-                        <span class="fw-semibold">
-                            Medium
-                        </span>
+        <div class="card shadow border-0">
 
-                        <span>
-                            {{ medium_vulnerabilities }}
-                        </span>
+            <div class="card-header d-flex justify-content-between align-items-center">
 
-                    </div>
-
-                    <div class="progress" style="height: 12px;">
-
-                        <div class="progress-bar bg-info"
-                            style="width: {{ ((medium_vulnerabilities / total_vulnerabilities) * 100)|round(1) }}%;">
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- Low -->
-
-                <div class="mb-4">
-
-                    <div class="d-flex justify-content-between mb-1">
-
-                        <span class="fw-semibold">
-                            Low
-                        </span>
-
-                        <span>
-                            {{ low_vulnerabilities }}
-                        </span>
-
-                    </div>
-
-                    <div class="progress" style="height: 12px;">
-
-                        <div class="progress-bar bg-success"
-                            style="width: {{ ((low_vulnerabilities / total_vulnerabilities) * 100)|round(1) }}%;">
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                {% else %}
-
-                <div class="text-center py-5">
-
-                    <i class="bi bi-shield-check fs-1 text-success"></i>
-
-                    <h5 class="mt-3">
-                        No Applicable Vulnerabilities
+                <div>
+                    <h5 class="mb-0 fw-bold">
+                        <i class="bi bi-bar-chart me-2"></i>
+                        Vulnerability Summary
                     </h5>
 
-                    <p class="text-muted mb-0">
+                    <small class="text-muted">
+                        Current vulnerability findings by severity
+                    </small>
+                </div>
 
-                        No CVEs have been identified from
-                        completed vulnerability scans.
+                <span class="badge security-badge">
+                    {{ unique_cve_count }} Unique CVEs
+                </span>
 
-                    </p>
+            </div>
+
+            <div class="card-body">
+
+                <div class="row g-3 text-center">
+
+                    <div class="col-6 col-md-3">
+                        <div class="posture-metric border rounded p-3">
+                            <i class="bi bi-exclamation-octagon fs-4 text-danger"></i>
+                            <h4 class="fw-bold mt-2 mb-0">
+                                {{ critical_vulnerabilities }}
+                            </h4>
+                            <small class="text-muted">Critical</small>
+                        </div>
+                    </div>
+
+                    <div class="col-6 col-md-3">
+                        <div class="posture-metric border rounded p-3">
+                            <i class="bi bi-exclamation-triangle fs-4 text-warning"></i>
+                            <h4 class="fw-bold mt-2 mb-0">
+                                {{ high_vulnerabilities }}
+                            </h4>
+                            <small class="text-muted">High</small>
+                        </div>
+                    </div>
+
+                    <div class="col-6 col-md-3">
+                        <div class="posture-metric border rounded p-3">
+                            <i class="bi bi-exclamation-circle fs-4 text-info"></i>
+                            <h4 class="fw-bold mt-2 mb-0">
+                                {{ medium_vulnerabilities }}
+                            </h4>
+                            <small class="text-muted">Medium</small>
+                        </div>
+                    </div>
+
+                    <div class="col-6 col-md-3">
+                        <div class="posture-metric border rounded p-3">
+                            <i class="bi bi-shield-check fs-4 text-success"></i>
+                            <h4 class="fw-bold mt-2 mb-0">
+                                {{ low_vulnerabilities }}
+                            </h4>
+                            <small class="text-muted">Low</small>
+                        </div>
+                    </div>
 
                 </div>
 
-                {% endif %}
+                <div class="mt-4">
+
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="fw-semibold">Highest CVSS</span>
+                        <strong>{{ highest_cvss|round(1) }}/10</strong>
+                    </div>
+
+                    <div class="progress" style="height: 10px;">
+                        <div class="progress-bar bg-danger" role="progressbar"
+                            style="width: {{ ((highest_cvss / 10) * 100)|round(1) }}%;"
+                            aria-valuenow="{{ highest_cvss }}" aria-valuemin="0" aria-valuemax="10">
+                        </div>
+                    </div>
+
+                </div>
 
             </div>
 
@@ -3052,6 +3154,54 @@ Dashboard - ECDP
         background: rgba(0, 229, 204, 0.08) !important;
         color: #00e5cc !important;
         border: 1px solid rgba(0, 229, 204, 0.40) !important;
+    }
+
+
+    /* ==========================================================
+       SECURITY POSTURE OVERVIEW
+    ========================================================== */
+
+    .posture-metric {
+        min-height: 105px;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .posture-metric:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.08);
+    }
+
+    .posture-priority-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .posture-priority {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px;
+        border: 1px solid rgba(128, 128, 128, 0.18);
+        border-radius: 8px;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .posture-priority:hover {
+        transform: translateX(3px);
+        box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.07);
+    }
+
+    .priority-icon {
+        width: 38px;
+        height: 38px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        background: rgba(128, 128, 128, 0.10);
+        font-size: 1.1rem;
+        flex-shrink: 0;
     }
 
     .analytics-stat {
