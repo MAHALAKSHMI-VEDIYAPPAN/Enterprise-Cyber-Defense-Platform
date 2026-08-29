@@ -1523,6 +1523,112 @@ Dashboard - ECDP
 </script>
 
 <!-- ==========================================================
+     ASSET RISK INTELLIGENCE
+========================================================== -->
+
+<div class="card shadow border-0 mb-4">
+
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <div>
+            <h5 class="mb-0 fw-bold">
+                <i class="bi bi-pc-display-horizontal me-2"></i>
+                Asset Risk Intelligence
+            </h5>
+            <small class="text-muted">
+                Correlated risk, vulnerabilities, incidents and remediation status
+            </small>
+        </div>
+        <span class="badge security-badge">
+            {{ asset_risk_intelligence|length }} Assets
+        </span>
+    </div>
+
+    <div class="card-body p-0">
+
+        {% if asset_risk_intelligence %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 asset-risk-table">
+                <thead>
+                    <tr>
+                        <th>Asset</th>
+                        <th>Risk</th>
+                        <th>Vulnerabilities</th>
+                        <th>CVSS</th>
+                        <th>Incidents</th>
+                        <th>Remediation</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for asset in asset_risk_intelligence %}
+                    <tr>
+                        <td>
+                            <div class="fw-semibold">{{ asset.name }}</div>
+                            <small class="text-muted">
+                                {{ asset.ip_address }} · {{ asset.asset_type }}
+                            </small>
+                        </td>
+
+                        <td>
+                            {% if asset.risk_level == "Critical" %}
+                            <span class="badge bg-danger">Critical</span>
+                            {% elif asset.risk_level == "High" %}
+                            <span class="badge bg-warning text-dark">High</span>
+                            {% elif asset.risk_level == "Medium" %}
+                            <span class="badge bg-info text-dark">Medium</span>
+                            {% elif asset.risk_level == "Low" %}
+                            <span class="badge bg-success">Low</span>
+                            {% else %}
+                            <span class="badge bg-secondary">Unknown</span>
+                            {% endif %}
+                        </td>
+
+                        <td class="fw-semibold">{{ asset.vulnerabilities }}</td>
+
+                        <td>
+                            {% if asset.highest_cvss >= 9 %}
+                            <strong class="text-danger">{{ asset.highest_cvss }}</strong>
+                            {% elif asset.highest_cvss >= 7 %}
+                            <strong class="text-warning">{{ asset.highest_cvss }}</strong>
+                            {% elif asset.highest_cvss > 0 %}
+                            <strong>{{ asset.highest_cvss }}</strong>
+                            {% else %}
+                            <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+
+                        <td class="fw-semibold">{{ asset.incidents }}</td>
+
+                        <td class="fw-semibold">{{ asset.remediations }}</td>
+
+                        <td>
+                            {% if asset.action == "Immediate Review" %}
+                            <span class="badge bg-danger">Immediate Review</span>
+                            {% elif asset.action == "Prioritize Remediation" %}
+                            <span class="badge bg-warning text-dark">Prioritize</span>
+                            {% elif asset.action == "Monitor & Review" %}
+                            <span class="badge bg-info text-dark">Monitor</span>
+                            {% else %}
+                            <span class="badge bg-success">Healthy</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="p-4 text-center text-muted">
+            <i class="bi bi-pc-display fs-2 d-block mb-2"></i>
+            No assets are currently registered.
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+
+
+<!-- ==========================================================
      SECURITY HEALTH + VULNERABILITY SUMMARY
 ========================================================== -->
 
@@ -2912,6 +3018,17 @@ Dashboard - ECDP
     /* ==========================================================
        DARK THEME SECURITY BADGES
     ========================================================== */
+
+    .asset-risk-table th {
+        white-space: nowrap;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    .asset-risk-table td {
+        white-space: nowrap;
+    }
 
     .security-badge {
         display: inline-block;
