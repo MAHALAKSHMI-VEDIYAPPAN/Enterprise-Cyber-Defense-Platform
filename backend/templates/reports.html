@@ -1,6 +1,92 @@
 {% extends "base.html" %}
 
-{% block title %}Security Reports - ECDP{% endblock %}
+{% block title %}Security Reports - ECDP<style>
+    .executive-card {
+        border-radius: 12px
+    }
+
+    .executive-score {
+        width: 150px;
+        height: 150px;
+        margin: auto;
+        border-radius: 50%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border: 10px solid rgba(13, 110, 253, .12)
+    }
+
+    .executive-score-value {
+        font-size: 2.5rem;
+        font-weight: 700;
+        line-height: 1
+    }
+
+    .executive-score-label {
+        font-size: .68rem;
+        font-weight: 700;
+        color: var(--bs-secondary-color, #6c757d);
+        margin-top: 7px;
+        letter-spacing: .05em
+    }
+
+    .executive-metric {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 11px 0;
+        border-bottom: 1px solid rgba(128, 128, 128, .16)
+    }
+
+    .executive-metric:last-child {
+        border-bottom: 0
+    }
+
+    .executive-priority {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px;
+        margin-bottom: 10px;
+        border-radius: 8px;
+        background: rgba(128, 128, 128, .07)
+    }
+
+    .executive-priority:last-child {
+        margin-bottom: 0
+    }
+
+    .executive-priority>i {
+        font-size: 1.25rem;
+        width: 28px;
+        text-align: center
+    }
+
+    .executive-priority strong,
+    .executive-priority small {
+        display: block
+    }
+
+    .executive-priority small {
+        color: var(--bs-secondary-color, #6c757d);
+        margin-top: 2px
+    }
+
+    .priority-critical>i {
+        color: #dc3545
+    }
+
+    .priority-high>i {
+        color: #ffc107
+    }
+
+    .priority-medium>i {
+        color: #0dcaf0
+    }
+</style>
+
+{% endblock %}
 
 {% block content %}
 
@@ -124,6 +210,88 @@
 
     </div>
 
+
+    <!-- ==================================================
+         Executive Security Overview
+    =================================================== -->
+
+    <div class="row g-4 mb-4">
+        <div class="col-lg-7">
+            <div class="card shadow border-0 h-100 executive-card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="mb-0 fw-bold"><i class="bi bi-speedometer2 me-2"></i>Executive Security Overview</h5>
+                        <small class="text-muted">Current enterprise security posture at a glance</small>
+                    </div>
+                    {% if report.security_score >= 80 %}<span class="badge bg-success">Healthy</span>
+                    {% elif report.security_score >= 60 %}<span class="badge bg-warning text-dark">Moderate</span>
+                    {% else %}<span class="badge bg-danger">Needs Attention</span>{% endif %}
+                </div>
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-5 text-center">
+                            <div class="executive-score">
+                                <div class="executive-score-value">{{ report.security_score }}</div>
+                                <div class="executive-score-label">SECURITY SCORE</div>
+                            </div>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="executive-metric"><span class="text-muted">Assets at High Risk</span><strong>{{
+                                    report.assets.high_risk }}</strong></div>
+                            <div class="executive-metric"><span class="text-muted">Open Incidents</span><strong>{{
+                                    report.incidents.open }}</strong></div>
+                            <div class="executive-metric"><span class="text-muted">Critical Incidents</span><strong
+                                    class="text-danger">{{ report.incidents.critical }}</strong></div>
+                            <div class="executive-metric"><span class="text-muted">Failed Scans</span><strong
+                                    class="text-danger">{{ report.scans.failed }}</strong></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card shadow border-0 h-100 executive-card">
+                <div class="card-header">
+                    <h5 class="mb-0 fw-bold"><i class="bi bi-bullseye me-2"></i>Executive Priorities</h5>
+                    <small class="text-muted">Recommended areas for immediate review</small>
+                </div>
+                <div class="card-body">
+                    {% if report.incidents.critical > 0 %}
+                    <div class="executive-priority priority-critical"><i class="bi bi-exclamation-octagon"></i>
+                        <div><strong>Critical incidents</strong><small>{{ report.incidents.critical }} require
+                                investigation.</small></div>
+                    </div>
+                    {% endif %}
+                    {% if report.assets.high_risk > 0 %}
+                    <div class="executive-priority priority-high"><i class="bi bi-pc-display"></i>
+                        <div><strong>High-risk assets</strong><small>{{ report.assets.high_risk }} asset(s) require
+                                review.</small></div>
+                    </div>
+                    {% endif %}
+                    {% if report.scans.failed > 0 %}
+                    <div class="executive-priority priority-medium"><i class="bi bi-search"></i>
+                        <div><strong>Failed scans</strong><small>{{ report.scans.failed }} scan(s) require
+                                investigation.</small></div>
+                    </div>
+                    {% endif %}
+                    {% if report.incidents.open > 0 %}
+                    <div class="executive-priority priority-high"><i class="bi bi-activity"></i>
+                        <div><strong>Open incidents</strong><small>{{ report.incidents.open }} incident(s) remain
+                                open.</small></div>
+                    </div>
+                    {% endif %}
+                    {% if report.incidents.critical == 0 and report.assets.high_risk == 0 and report.scans.failed == 0
+                    and report.incidents.open == 0 %}
+                    <div class="text-center py-3"><i class="bi bi-shield-check fs-1 text-success"></i>
+                        <h6 class="fw-bold mt-3 mb-1">No Immediate Priorities</h6><small class="text-muted">Continue
+                            routine security monitoring and review.</small>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- ==================================================
          Summary Cards
