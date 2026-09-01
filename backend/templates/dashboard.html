@@ -3112,14 +3112,108 @@ Dashboard - ECDP
 ========================================================== -->
 
 <style>
+    /* ==========================================================
+       ECDP DASHBOARD — FINAL UI / UX THEME
+       Fixes light/white dashboard surfaces and improves visibility.
+       Existing Jinja variables, HTML, SVG chart logic and scripts
+       remain unchanged.
+    ========================================================== */
+
+    :root {
+        --ecdp-bg: #0b1220;
+        --ecdp-surface: #111827;
+        --ecdp-surface-2: #172033;
+        --ecdp-border: rgba(148, 163, 184, 0.20);
+        --ecdp-text: #e5e7eb;
+        --ecdp-muted: #aab4c3;
+        --ecdp-cyan: #00e5cc;
+    }
+
     .security-intelligence-card {
         overflow: hidden;
     }
 
+    .card {
+        background-color: var(--ecdp-surface) !important;
+        color: var(--ecdp-text) !important;
+        border: 1px solid var(--ecdp-border) !important;
+        border-radius: 12px;
+        overflow: hidden;
+        transition: transform 0.15s ease, box-shadow 0.15s ease,
+            border-color 0.15s ease;
+    }
 
-    /* ==========================================================
-       DARK THEME SECURITY BADGES
-    ========================================================== */
+    .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0.55rem 1.25rem rgba(0, 0, 0, 0.28);
+        border-color: rgba(0, 229, 204, 0.25) !important;
+    }
+
+    .card-header {
+        background-color: var(--ecdp-surface-2) !important;
+        color: var(--ecdp-text) !important;
+        border-bottom: 1px solid var(--ecdp-border) !important;
+        padding: 1rem 1.15rem;
+    }
+
+    .card-body {
+        background-color: var(--ecdp-surface) !important;
+        color: var(--ecdp-text) !important;
+        padding: 1.15rem;
+    }
+
+    .card .text-muted,
+    .text-muted {
+        color: var(--ecdp-muted) !important;
+    }
+
+    .card h1,
+    .card h2,
+    .card h3,
+    .card h4,
+    .card h5,
+    .card h6,
+    .card strong,
+    .card .fw-bold,
+    .card .fw-semibold {
+        color: var(--ecdp-text);
+    }
+
+    .bg-light,
+    .card.bg-light,
+    .table-light,
+    .list-group-item {
+        background-color: var(--ecdp-surface-2) !important;
+        color: var(--ecdp-text) !important;
+        border-color: var(--ecdp-border) !important;
+    }
+
+    .border {
+        border-color: var(--ecdp-border) !important;
+    }
+
+    .security-badge {
+        display: inline-block;
+        background: rgba(0, 229, 204, 0.08) !important;
+        color: var(--ecdp-cyan) !important;
+        border: 1px solid rgba(0, 229, 204, 0.40) !important;
+        border-radius: 6px;
+        padding: 6px 10px;
+        font-weight: 600;
+        box-shadow: none !important;
+    }
+
+    .security-badge:hover {
+        background: rgba(0, 229, 204, 0.14) !important;
+        color: #ffffff !important;
+        border-color: var(--ecdp-cyan) !important;
+    }
+
+    .badge.bg-light {
+        background: rgba(0, 229, 204, 0.08) !important;
+        color: var(--ecdp-cyan) !important;
+        border: 1px solid rgba(0, 229, 204, 0.40) !important;
+    }
 
     .asset-risk-table th {
         white-space: nowrap;
@@ -3132,43 +3226,54 @@ Dashboard - ECDP
         white-space: nowrap;
     }
 
-    .security-badge {
-        display: inline-block;
-        background: rgba(0, 229, 204, 0.08) !important;
-        color: #00e5cc !important;
-        border: 1px solid rgba(0, 229, 204, 0.40) !important;
-        border-radius: 6px;
-        padding: 6px 10px;
-        font-weight: 600;
-        box-shadow: none !important;
+    .table {
+        --bs-table-bg: transparent;
+        --bs-table-color: var(--ecdp-text);
+        --bs-table-border-color: var(--ecdp-border);
+        color: var(--ecdp-text) !important;
+        margin-bottom: 0;
     }
 
-    .security-badge:hover {
-        background: rgba(0, 229, 204, 0.14) !important;
-        color: #ffffff !important;
-        border-color: #00e5cc !important;
+    .table> :not(caption)>*>* {
+        background-color: transparent !important;
+        color: inherit !important;
+        border-bottom-color: var(--ecdp-border) !important;
     }
 
-    /* Keep Bootstrap light badges consistent with the ECDP dark theme. */
-    .badge.bg-light {
-        background: rgba(0, 229, 204, 0.08) !important;
-        color: #00e5cc !important;
-        border: 1px solid rgba(0, 229, 204, 0.40) !important;
+    .table thead th,
+    .table th {
+        background-color: var(--ecdp-surface-2) !important;
+        color: var(--ecdp-muted) !important;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        white-space: nowrap;
+        font-weight: 700;
     }
 
+    .table td {
+        vertical-align: middle;
+        color: var(--ecdp-text) !important;
+    }
 
-    /* ==========================================================
-       SECURITY POSTURE OVERVIEW
-    ========================================================== */
+    .table-hover>tbody>tr:hover>* {
+        background-color: rgba(0, 229, 204, 0.045) !important;
+        color: var(--ecdp-text) !important;
+    }
 
-    .posture-metric {
+    .posture-metric,
+    .analytics-stat {
         min-height: 105px;
+        background-color: var(--ecdp-surface-2) !important;
+        border-color: var(--ecdp-border) !important;
+        border-radius: 10px !important;
         transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
 
-    .posture-metric:hover {
+    .posture-metric:hover,
+    .analytics-stat:hover {
         transform: translateY(-2px);
-        box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.08);
+        box-shadow: 0 0.3rem 0.8rem rgba(0, 0, 0, 0.24);
     }
 
     .posture-priority-list {
@@ -3182,14 +3287,15 @@ Dashboard - ECDP
         align-items: center;
         gap: 12px;
         padding: 14px;
-        border: 1px solid rgba(128, 128, 128, 0.18);
+        border: 1px solid var(--ecdp-border);
         border-radius: 8px;
+        background-color: var(--ecdp-surface-2);
         transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
 
     .posture-priority:hover {
         transform: translateX(3px);
-        box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.07);
+        box-shadow: 0 0.3rem 0.8rem rgba(0, 0, 0, 0.22);
     }
 
     .priority-icon {
@@ -3199,18 +3305,77 @@ Dashboard - ECDP
         align-items: center;
         justify-content: center;
         border-radius: 8px;
-        background: rgba(128, 128, 128, 0.10);
+        background: rgba(128, 128, 128, 0.12);
         font-size: 1.1rem;
         flex-shrink: 0;
     }
 
-    .analytics-stat {
-        transition: transform 0.15s ease, box-shadow 0.15s ease;
+    .analytics-row,
+    .security-attention-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        min-height: 48px;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid var(--ecdp-border);
+    }
+
+    .analytics-row:last-child,
+    .security-attention-item:last-child {
+        border-bottom: 0;
+    }
+
+    .analytics-row strong {
+        font-size: 1.05rem;
+        color: var(--ecdp-text);
+    }
+
+    .security-intelligence-card .alert {
+        border: 0;
+    }
+
+    .security-score-circle {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        border: 10px solid rgba(25, 135, 84, 0.25);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        background-color: var(--ecdp-surface-2);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .security-score-circle:hover {
+        transform: scale(1.025);
+        box-shadow: 0 0 0 10px rgba(25, 135, 84, 0.08);
+    }
+
+    .security-score-circle h1 {
+        font-size: 42px;
+    }
+
+    .security-score-circle small {
+        color: var(--ecdp-muted) !important;
+        font-weight: 600;
+        letter-spacing: 1px;
+    }
+
+    .progress {
+        background-color: rgba(148, 163, 184, 0.18) !important;
+        border-radius: 999px;
+        overflow: hidden;
+    }
+
+    .progress-bar {
+        border-radius: 999px;
     }
 
     .risk-trend-chart-wrapper {
         width: 100%;
         overflow-x: auto;
+        scrollbar-width: thin;
     }
 
     .risk-trend-chart {
@@ -3221,25 +3386,22 @@ Dashboard - ECDP
     }
 
     .risk-chart-grid {
-        stroke: rgba(128, 128, 128, 0.18);
+        stroke: rgba(148, 163, 184, 0.22);
         stroke-width: 1;
     }
 
     .risk-chart-vertical-grid {
-        stroke: rgba(128, 128, 128, 0.08);
+        stroke: rgba(148, 163, 184, 0.10);
         stroke-width: 1;
     }
 
     .risk-chart-axis-label {
         fill: currentColor;
-        opacity: 0.65;
+        opacity: 0.72;
         font-size: 13px;
     }
 
-    .risk-chart-line {
-        vector-effect: non-scaling-stroke;
-    }
-
+    .risk-chart-line,
     .risk-chart-point {
         vector-effect: non-scaling-stroke;
     }
@@ -3253,129 +3415,57 @@ Dashboard - ECDP
         background: currentColor;
     }
 
-    .risk-trend-chart+* {
-        color: inherit;
+    .alert {
+        border-radius: 10px;
     }
 
-
-
-    .analytics-stat:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.08);
-    }
-
-    .analytics-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0.85rem 0;
-        border-bottom: 1px solid rgba(108, 117, 125, 0.15);
-    }
-
-    .analytics-row:last-child {
-        border-bottom: 0;
-    }
-
-    .analytics-row strong {
-        font-size: 1.05rem;
-    }
-
-
-    .security-attention-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0.65rem 0;
-        border-bottom: 1px solid rgba(108, 117, 125, 0.15);
-    }
-
-    .security-attention-item:last-child {
-        border-bottom: 0;
-    }
-
-    .security-intelligence-card .alert {
-        border: 0;
-    }
-
-    .security-score-circle {
-
-        width: 150px;
-
-        height: 150px;
-
-        border-radius: 50%;
-
-        border: 10px solid rgba(25, 135, 84, 0.25);
-
-        display: flex;
-
-        align-items: center;
-
-        justify-content: center;
-
-        text-align: center;
-
-    }
-
-
-    .security-score-circle h1 {
-
-        font-size: 42px;
-
-    }
-
-
-    .security-score-circle small {
-
-        color: #6c757d;
-
+    .btn {
+        border-radius: 8px;
         font-weight: 600;
-
-        letter-spacing: 1px;
-
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
 
-
-    .progress {
-
-        background-color: rgba(108, 117, 125, 0.15);
-
-    }
-
-
-    .table th {
-
-        font-size: 0.75rem;
-
-        text-transform: uppercase;
-
-        letter-spacing: 0.05em;
-
-        white-space: nowrap;
-
-    }
-
-
-    .table td {
-
-        vertical-align: middle;
-
-    }
-
-
-    .card {
-
-        transition:
-            transform 0.15s ease,
-            box-shadow 0.15s ease;
-
-    }
-
-
-    .card:hover {
-
+    .btn:hover {
         transform: translateY(-1px);
+    }
 
+    @media (max-width: 768px) {
+        .card-body {
+            padding: 1rem;
+        }
+
+        .card-header {
+            padding: 0.9rem 1rem;
+        }
+
+        .security-score-circle {
+            width: 130px;
+            height: 130px;
+        }
+
+        .security-score-circle h1 {
+            font-size: 36px;
+        }
+
+        .posture-priority {
+            align-items: flex-start;
+        }
+
+        .risk-trend-chart {
+            min-width: 600px;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+        .card,
+        .btn,
+        .posture-metric,
+        .posture-priority,
+        .security-score-circle,
+        .analytics-stat {
+            transition: none !important;
+        }
     }
 </style>
 
