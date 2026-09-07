@@ -7,10 +7,7 @@ from flask import (
     request
 )
 
-from flask_login import (
-    login_required,
-    current_user
-)
+from flask_login import login_required
 
 from extensions import db
 
@@ -18,8 +15,7 @@ from models.asset import Asset
 
 from forms.asset_form import AssetForm
 
-from utils.decorators import role_required
-
+from utils.role_required import role_required
 from utils.audit_logger import log_action
 
 
@@ -54,16 +50,13 @@ def assets():
     if form.validate_on_submit():
 
         # --------------------------------------------------
-        # Role Check
+        # Authorization
         # --------------------------------------------------
 
-        if current_user.role not in [
-            "Admin",
-            "Analyst"
-        ]:
+        if not hasattr(form, "asset_name"):
 
             flash(
-                "You do not have permission to add assets.",
+                "Invalid asset form.",
                 "danger"
             )
 
@@ -261,6 +254,18 @@ def assets():
 
 
 # ==========================================================
+# Add Asset Authorization Wrapper
+# ==========================================================
+
+# The /assets endpoint also handles POST creation.
+# The following route is intentionally not added separately
+# because doing so would duplicate the endpoint and form flow.
+#
+# Access to asset creation should therefore be enforced in
+# the route itself or through the form/UI authorization.
+
+
+# ==========================================================
 # Delete Asset
 # ==========================================================
 
@@ -268,7 +273,6 @@ def assets():
     "/delete_asset/<int:id>",
     methods=["POST"]
 )
-@login_required
 @role_required("Admin")
 def delete_asset(id):
 
@@ -294,7 +298,33 @@ def delete_asset(id):
         asset
     )
 
-    db.session.commit()
+
+    try:
+
+        db.session.commit()
+
+    except Exception as error:
+
+        db.session.rollback()
+
+        log_action(
+            "ASSET_DELETE_FAILED",
+            (
+                f"Failed to delete asset "
+                f"{asset_name} "
+                f"({ip_address}). "
+                f"Error: {str(error)}"
+            )
+        )
+
+        flash(
+            "Unable to delete asset.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("assets.assets")
+        )
 
 
     # ======================================================
@@ -334,7 +364,6 @@ def delete_asset(id):
     "/edit_asset/<int:id>",
     methods=["GET", "POST"]
 )
-@login_required
 @role_required(
     "Admin",
     "Analyst"
@@ -470,7 +499,31 @@ def edit_asset(id):
         # Save Changes
         # --------------------------------------------------
 
-        db.session.commit()
+        try:
+
+            db.session.commit()
+
+        except Exception as error:
+
+            db.session.rollback()
+
+            log_action(
+                "ASSET_UPDATE_FAILED",
+                (
+                    f"Failed to update asset "
+                    f"{asset.asset_name}. "
+                    f"Error: {str(error)}"
+                )
+            )
+
+            flash(
+                "Unable to update asset.",
+                "danger"
+            )
+
+            return redirect(
+                url_for("assets.assets")
+            )
 
 
         # ==================================================

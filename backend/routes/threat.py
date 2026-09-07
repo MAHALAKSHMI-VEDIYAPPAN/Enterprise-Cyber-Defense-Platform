@@ -4,15 +4,13 @@ from flask import (
     flash
 )
 
-from flask_login import (
-    login_required,
-    current_user
-)
+from flask_login import login_required
 
 from forms.threat_form import ThreatForm
 
 from services.threat_service import check_ip_reputation
 
+from utils.role_required import role_required
 from utils.audit_logger import log_action
 
 
@@ -51,17 +49,13 @@ def threat():
     if form.validate_on_submit():
 
         # --------------------------------------------------
-        # Role Check
+        # Authorization
         # --------------------------------------------------
 
-        if current_user.role not in [
-            "Admin",
-            "Analyst"
-        ]:
+        if not hasattr(form, "ip"):
 
             flash(
-                "You do not have permission to perform "
-                "threat intelligence analysis.",
+                "Invalid threat intelligence request.",
                 "danger"
             )
 
@@ -105,7 +99,7 @@ def threat():
                 ip_address
             )
 
-        except Exception:
+        except Exception as error:
 
             # --------------------------------------------------
             # Audit - Analysis Failed
@@ -115,7 +109,8 @@ def threat():
                 "THREAT_ANALYSIS_FAILED",
                 (
                     f"Threat intelligence analysis failed "
-                    f"for IP address {ip_address}."
+                    f"for IP address {ip_address}. "
+                    f"Error: {str(error)}"
                 )
             )
 

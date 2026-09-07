@@ -20,10 +20,12 @@ Remediation - ECDP
     </div>
 
     <div>
+        {% if current_user.role in ["Admin", "Analyst"] %}
         <a href="{{ url_for('remediation.create_remediation') }}" class="btn btn-primary">
             <i class="fas fa-plus"></i>
             Create Remediation
         </a>
+        {% endif %}
     </div>
 
 </div>
@@ -357,18 +359,18 @@ Remediation - ECDP
                 <tr>
 
                     <td>
+
                         <strong>
                             {{ item.remediation_id }}
                         </strong>
+
                     </td>
 
 
                     <td>
 
                         <div class="item-title">
-
                             {{ item.title }}
-
                         </div>
 
                     </td>
@@ -499,9 +501,11 @@ Remediation - ECDP
             No remediation activities match the current filters.
         </p>
 
+        {% if current_user.role in ["Admin", "Analyst"] %}
         <a href="{{ url_for('remediation.create_remediation') }}" class="btn btn-primary">
             Create First Remediation
         </a>
+        {% endif %}
 
     </div>
 
@@ -522,15 +526,18 @@ Remediation - ECDP
         margin-bottom: 25px;
     }
 
+
     .page-header h1 {
         margin: 0;
         color: #e8ffff;
     }
 
+
     .page-header p {
         color: #8aa8a8;
         margin-top: 7px;
     }
+
 
     .stats-grid {
         display: grid;
@@ -538,6 +545,7 @@ Remediation - ECDP
         gap: 16px;
         margin-bottom: 20px;
     }
+
 
     .stat-card {
         background: rgba(2, 20, 20, 0.88);
@@ -549,25 +557,31 @@ Remediation - ECDP
         gap: 18px;
     }
 
+
     .stat-icon {
         font-size: 28px;
     }
+
 
     .stat-icon.blue {
         color: #008cff;
     }
 
+
     .stat-icon.red {
         color: #ff304f;
     }
+
 
     .stat-icon.yellow {
         color: #ffc400;
     }
 
+
     .stat-icon.green {
         color: #00c878;
     }
+
 
     .stat-label {
         display: block;
@@ -576,6 +590,7 @@ Remediation - ECDP
         letter-spacing: 1px;
     }
 
+
     .stat-card strong {
         display: block;
         font-size: 28px;
@@ -583,9 +598,11 @@ Remediation - ECDP
         margin: 3px 0;
     }
 
+
     .stat-card small {
         color: #6f9999;
     }
+
 
     .panel {
         background: rgba(2, 20, 20, 0.88);
@@ -595,6 +612,7 @@ Remediation - ECDP
         overflow: hidden;
     }
 
+
     .panel-header {
         padding: 15px 18px;
         border-bottom: 1px solid #063e3b;
@@ -603,15 +621,18 @@ Remediation - ECDP
         align-items: center;
     }
 
+
     .panel-header h2 {
         margin: 0;
         font-size: 16px;
         color: #e8ffff;
     }
 
+
     .panel-header span {
         color: #6e9999;
     }
+
 
     .severity-grid {
         display: grid;
@@ -620,6 +641,7 @@ Remediation - ECDP
         padding: 18px;
     }
 
+
     .severity-item {
         border: 1px solid #174242;
         padding: 18px;
@@ -627,10 +649,12 @@ Remediation - ECDP
         border-radius: 5px;
     }
 
+
     .severity-item span {
         display: block;
         color: #9ababa;
     }
+
 
     .severity-item strong {
         display: block;
@@ -638,27 +662,33 @@ Remediation - ECDP
         margin-top: 7px;
     }
 
+
     .severity-item.critical strong {
         color: #ff304f;
     }
+
 
     .severity-item.high strong {
         color: #ffb900;
     }
 
+
     .severity-item.medium strong {
         color: #00bfff;
     }
 
+
     .severity-item.low strong {
         color: #00c878;
     }
+
 
     .filter-form {
         display: flex;
         gap: 10px;
         padding: 18px;
     }
+
 
     .filter-form input,
     .filter-form select {
@@ -669,9 +699,11 @@ Remediation - ECDP
         border-radius: 4px;
     }
 
+
     .filter-form input {
         flex: 1;
     }
+
 
     .btn {
         border: 0;
@@ -682,15 +714,18 @@ Remediation - ECDP
         display: inline-block;
     }
 
+
     .btn-primary {
         background: #00c98b;
         color: #001513;
     }
 
+
     .btn-secondary {
         background: #123030;
         color: #b9dede;
     }
+
 
     .btn-view {
         background: #063b5c;
@@ -698,18 +733,22 @@ Remediation - ECDP
         padding: 7px 12px;
     }
 
+
     .table-container {
         overflow-x: auto;
     }
+
 
     table {
         width: 100%;
         border-collapse: collapse;
     }
 
+
     thead {
         background: rgba(0, 70, 60, 0.28);
     }
+
 
     th {
         color: #00d8a0;
@@ -719,6 +758,7 @@ Remediation - ECDP
         padding: 13px;
     }
 
+
     td {
         padding: 13px;
         border-top: 1px solid #103333;
@@ -726,14 +766,17 @@ Remediation - ECDP
         font-size: 13px;
     }
 
+
     tr:hover {
         background: rgba(0, 120, 100, 0.08);
     }
+
 
     .item-title {
         color: #e8ffff;
         font-weight: 600;
     }
+
 
     .asset-ip {
         display: block;
@@ -741,14 +784,17 @@ Remediation - ECDP
         margin-top: 4px;
     }
 
+
     .muted {
         color: #607d7d;
     }
+
 
     .cve-tag {
         color: #6dc9ff;
         font-family: monospace;
     }
+
 
     .severity-badge,
     .status-badge {
@@ -758,55 +804,66 @@ Remediation - ECDP
         font-weight: 600;
     }
 
+
     .severity-critical {
         background: #8d1728;
         color: #ffb7c1;
     }
+
 
     .severity-high {
         background: #735500;
         color: #ffe58a;
     }
 
+
     .severity-medium {
         background: #064e69;
         color: #8cddff;
     }
+
 
     .severity-low {
         background: #075638;
         color: #8bf0c5;
     }
 
+
     .status-open {
         background: #64182a;
         color: #ffb8c6;
     }
+
 
     .status-assigned {
         background: #07536a;
         color: #9ce6ff;
     }
 
+
     .status-in-progress {
         background: #6d5500;
         color: #ffe58a;
     }
+
 
     .status-remediated {
         background: #075638;
         color: #8bf0c5;
     }
 
+
     .status-verified {
         background: #075638;
         color: #8bf0c5;
     }
 
+
     .status-closed {
         background: #273c3c;
         color: #b6cccc;
     }
+
 
     .empty-state {
         text-align: center;
@@ -814,21 +871,25 @@ Remediation - ECDP
         color: #729393;
     }
 
+
     .empty-state i {
         font-size: 45px;
         color: #00c98b;
         margin-bottom: 15px;
     }
 
+
     .empty-state h3 {
         color: #dff;
     }
+
 
     @media (max-width: 1000px) {
 
         .stats-grid {
             grid-template-columns: repeat(2, 1fr);
         }
+
 
         .severity-grid {
             grid-template-columns: repeat(2, 1fr);

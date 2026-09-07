@@ -676,8 +676,8 @@ def ask_security_ai(question):
         )
 
 
-    # ======================================================
-    # REMEDIATION
+       # ======================================================
+    # REMEDIATION PRIORITY
     # ======================================================
 
     if (
@@ -688,35 +688,122 @@ def ask_security_ai(question):
         or "what needs fixing" in q
         or "what needs to be fixed" in q
         or "priority fixes" in q
+        or "what should i prioritize" in q
+        or "where should i start" in q
     ):
 
-        return (
-            "REMEDIATION PRIORITY\n\n"
-
-            f"Total remediation tasks: "
-            f"{context['remediations']['total']}\n"
-
-            f"Open: "
-            f"{context['remediations']['open']}\n"
-
-            f"In Progress: "
-            f"{context['remediations']['in_progress']}\n"
-
-            f"Resolved: "
-            f"{context['remediations']['resolved']}\n"
-
-            f"Verified: "
-            f"{context['remediations']['verified']}\n\n"
-
-            "Recommended priority:\n\n"
-
-            "1. Critical security issues\n"
-            "2. High severity issues\n"
-            "3. Internet-facing vulnerabilities\n"
-            "4. Medium-risk issues\n"
-            "5. Low-risk findings"
+        total_remediations = (
+            context["remediations"]["total"]
         )
 
+        open_remediations = (
+            context["remediations"]["open"]
+        )
+
+        in_progress_remediations = (
+            context["remediations"]["in_progress"]
+        )
+
+        resolved_remediations = (
+            context["remediations"]["resolved"]
+        )
+
+        verified_remediations = (
+            context["remediations"]["verified"]
+        )
+
+        critical_incidents = (
+            context["incidents"]["critical"]
+        )
+
+        open_incidents = (
+            context["incidents"]["open"]
+        )
+
+        high_risk_assets = (
+            context["assets"]["high_risk"]
+        )
+
+        failed_scans = (
+            context["scans"]["failed"]
+        )
+
+        priority_items = []
+
+        if critical_incidents > 0:
+            priority_items.append(
+                "1. CRITICAL — Investigate critical "
+                "security incidents immediately."
+            )
+
+        if high_risk_assets > 0:
+            priority_items.append(
+                "2. HIGH — Review and remediate "
+                "high/critical-risk assets."
+            )
+
+        if open_remediations > 0:
+            priority_items.append(
+                "3. HIGH — Complete open remediation "
+                "tasks and verify the fixes."
+            )
+
+        if open_incidents > 0:
+            priority_items.append(
+                "4. HIGH — Investigate remaining open "
+                "security incidents."
+            )
+
+        if failed_scans > 0:
+            priority_items.append(
+                "5. MEDIUM — Investigate failed "
+                "vulnerability scans."
+            )
+
+        if not priority_items:
+            priority_items.append(
+                "1. Continue regular vulnerability "
+                "scanning and security monitoring."
+            )
+
+        return (
+            "ECDP REMEDIATION PRIORITY\n\n"
+
+            f"Security Score: {score}/100\n"
+            f"Risk Level: {get_risk_level(score)}\n\n"
+
+            "CURRENT STATUS\n\n"
+
+            f"Total remediation tasks: "
+            f"{total_remediations}\n"
+
+            f"Open: "
+            f"{open_remediations}\n"
+
+            f"In Progress: "
+            f"{in_progress_remediations}\n"
+
+            f"Resolved: "
+            f"{resolved_remediations}\n"
+
+            f"Verified: "
+            f"{verified_remediations}\n\n"
+
+            "PRIORITY ACTIONS\n\n"
+
+            + "\n".join(priority_items)
+
+            + "\n\n"
+            "Recommended workflow:\n\n"
+
+            "1. Investigate Critical incidents first.\n"
+            "2. Remediate High/Critical-risk assets.\n"
+            "3. Complete and verify open remediation tasks.\n"
+            "4. Resolve remaining security incidents.\n"
+            "5. Re-run failed vulnerability scans.\n"
+            "6. Perform follow-up vulnerability scans "
+            "after remediation."
+        )
 
     # ======================================================
     # SQL INJECTION

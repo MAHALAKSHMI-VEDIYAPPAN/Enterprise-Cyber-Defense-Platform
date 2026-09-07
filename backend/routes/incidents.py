@@ -19,7 +19,7 @@ from models.remediation import Remediation
 
 from forms.incident_form import IncidentForm
 
-from utils.decorators import role_required
+from utils.role_required import role_required
 from utils.audit_logger import log_action
 
 
@@ -45,9 +45,7 @@ def generate_remediation_id():
 
     if last_remediation:
 
-        next_number = (
-            last_remediation.id + 1
-        )
+        next_number = last_remediation.id + 1
 
     else:
 
@@ -85,9 +83,7 @@ def normalize_severity(severity):
 def create_incident_remediation(incident):
 
     # ------------------------------------------------------
-    # Check for existing remediation
-    #
-    # Prevent duplicate remediation tasks.
+    # Prevent duplicate remediation tasks
     # ------------------------------------------------------
 
     existing = Remediation.query.filter_by(
@@ -194,7 +190,6 @@ def create_incident_remediation(incident):
             f"Automatically generated from "
             f"{incident.incident_id}."
         )
-
     )
 
 
@@ -260,13 +255,22 @@ def incidents():
     if form.validate_on_submit():
 
         # --------------------------------------------------
-        # Role Check
+        # Server-Side Authorization
         # --------------------------------------------------
 
         if current_user.role not in [
             "Admin",
             "Analyst"
         ]:
+
+            log_action(
+                "ACCESS_DENIED",
+                (
+                    f"User '{current_user.username}' "
+                    f"with role '{current_user.role}' "
+                    f"attempted to create an incident."
+                )
+            )
 
             flash(
                 "You do not have permission to create incidents.",
@@ -281,7 +285,7 @@ def incidents():
 
 
         # --------------------------------------------------
-        # Generate Incident ID
+        # Create Incident
         # --------------------------------------------------
 
         last_incident = Incident.query.order_by(
@@ -299,10 +303,6 @@ def incidents():
 
             incident_number = 1
 
-
-        # --------------------------------------------------
-        # Create Incident
-        # --------------------------------------------------
 
         incident = Incident(
 
@@ -338,7 +338,19 @@ def incidents():
                 else ""
             ),
 
-            status="Open"
+            status=(
+                form.status.data
+                if getattr(form, "status", None)
+                and form.status.data
+                else "Open"
+            ),
+
+            resolution=(
+                form.resolution.data.strip()
+                if getattr(form, "resolution", None)
+                and form.resolution.data
+                else ""
+            )
 
         )
 
@@ -422,9 +434,9 @@ def incidents():
         )
 
 
-        # ==================================================
+        # --------------------------------------------------
         # Success Message
-        # ==================================================
+        # --------------------------------------------------
 
         flash(
             (
@@ -514,21 +526,17 @@ def incidents():
 
     total_incidents = Incident.query.count()
 
-
     open_incidents = Incident.query.filter_by(
         status="Open"
     ).count()
-
 
     in_progress_incidents = Incident.query.filter_by(
         status="In Progress"
     ).count()
 
-
     resolved_incidents = Incident.query.filter_by(
         status="Resolved"
     ).count()
-
 
     closed_incidents = Incident.query.filter_by(
         status="Closed"
@@ -543,16 +551,13 @@ def incidents():
         severity="Critical"
     ).count()
 
-
     high_incidents = Incident.query.filter_by(
         severity="High"
     ).count()
 
-
     medium_incidents = Incident.query.filter_by(
         severity="Medium"
     ).count()
-
 
     low_incidents = Incident.query.filter_by(
         severity="Low"
@@ -565,16 +570,13 @@ def incidents():
 
     total_remediations = Remediation.query.count()
 
-
     open_remediations = Remediation.query.filter_by(
         status="Open"
     ).count()
 
-
     critical_remediations = Remediation.query.filter_by(
         severity="Critical"
     ).count()
-
 
     high_remediations = Remediation.query.filter_by(
         severity="High"
@@ -632,7 +634,6 @@ def incidents():
     "/delete_incident/<int:id>",
     methods=["POST"]
 )
-@login_required
 @role_required("Admin")
 def delete_incident(id):
 
@@ -654,9 +655,6 @@ def delete_incident(id):
 
     # ------------------------------------------------------
     # Delete Related Remediations First
-    #
-    # This prevents foreign-key problems when deleting
-    # an incident that has remediation records.
     # ------------------------------------------------------
 
     related_remediations = Remediation.query.filter_by(
@@ -727,10 +725,6 @@ def delete_incident(id):
     )
 
 
-    # ------------------------------------------------------
-    # Success Message
-    # ------------------------------------------------------
-
     flash(
         "Incident and related remediation(s) deleted successfully!",
         "success"
@@ -752,7 +746,6 @@ def delete_incident(id):
     "/edit_incident/<int:id>",
     methods=["GET", "POST"]
 )
-@login_required
 @role_required(
     "Admin",
     "Analyst"
@@ -786,6 +779,10 @@ def edit_incident(id):
         old_asset = incident.asset
 
         old_assigned_to = incident.assigned_to
+
+        old_status = incident.status
+
+        old_resolution = incident.resolution
 
 
         # --------------------------------------------------
@@ -860,11 +857,34 @@ def edit_incident(id):
 
 
         # --------------------------------------------------
-        # Update Related Remediation
-        #
-        # Keep the automatically created remediation
-        # synchronized with important incident changes.
+        # Update Status
         # --------------------------------------------------
+
+        if getattr(form, "status", None):
+
+            incident.status = (
+                form.status.data
+                if form.status.data
+                else "Open"
+            )
+
+
+        # --------------------------------------------------
+        # Update Resolution
+        # --------------------------------------------------
+
+        if getattr(form, "resolution", None):
+
+            incident.resolution = (
+                form.resolution.data.strip()
+                if form.resolution.data
+                else ""
+            )
+
+
+        # ==================================================
+        # Update Related Remediation
+        # ==================================================
 
         related_remediations = Remediation.query.filter_by(
             incident_id=incident.id
@@ -947,7 +967,11 @@ def edit_incident(id):
                 f"Asset: {old_asset} -> "
                 f"{incident.asset}. "
                 f"Assigned To: {old_assigned_to} -> "
-                f"{incident.assigned_to}"
+                f"{incident.assigned_to}. "
+                f"Status: {old_status} -> "
+                f"{incident.status}. "
+                f"Resolution: {old_resolution} -> "
+                f"{incident.resolution}"
             )
         )
 

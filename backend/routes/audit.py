@@ -4,12 +4,9 @@ from flask import (
     request
 )
 
-from flask_login import (
-    login_required,
-    current_user
-)
-
 from models.audit_log import AuditLog
+
+from utils.role_required import role_required
 
 
 # ==========================================================
@@ -30,19 +27,8 @@ audit_bp = Blueprint(
     "/audit-logs",
     methods=["GET"]
 )
-@login_required
+@role_required("Admin")
 def audit_logs():
-
-    # ======================================================
-    # Admin Only
-    # ======================================================
-
-    if current_user.role != "Admin":
-
-        return render_template(
-            "403.html"
-        ), 403
-
 
     # ======================================================
     # Search

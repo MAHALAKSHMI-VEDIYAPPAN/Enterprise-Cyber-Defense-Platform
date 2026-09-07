@@ -3,13 +3,15 @@ from flask import (
     render_template,
     redirect,
     url_for,
-    flash
+    flash,
+    request
 )
 
 from flask_login import (
     login_user,
     logout_user,
-    login_required
+    login_required,
+    current_user
 )
 
 from sqlalchemy.exc import IntegrityError
@@ -48,23 +50,13 @@ def register():
 
     form = RegistrationForm()
 
-
-    # ======================================================
-    # Registration
-    # ======================================================
-
     if form.validate_on_submit():
-
-        # --------------------------------------------------
-        # Normalize Input
-        # --------------------------------------------------
 
         username = form.username.data.strip()
 
         email = form.email.data.strip().lower()
 
         password = form.password.data
-
 
         # --------------------------------------------------
         # Check Existing Username
@@ -73,7 +65,6 @@ def register():
         existing_username = User.query.filter_by(
             username=username
         ).first()
-
 
         if existing_username:
 
@@ -86,7 +77,6 @@ def register():
                 url_for("auth.register")
             )
 
-
         # --------------------------------------------------
         # Check Existing Email
         # --------------------------------------------------
@@ -94,7 +84,6 @@ def register():
         existing_email = User.query.filter_by(
             email=email
         ).first()
-
 
         if existing_email:
 
@@ -107,30 +96,21 @@ def register():
                 url_for("auth.register")
             )
 
-
         # --------------------------------------------------
         # Create User
         # --------------------------------------------------
 
         user = User(
-
             username=username,
-
             email=email,
-
             role="Analyst"
-
         )
-
 
         # --------------------------------------------------
         # Secure Password Hashing
         # --------------------------------------------------
 
-        user.set_password(
-            password
-        )
-
+        user.set_password(password)
 
         # --------------------------------------------------
         # Save User
@@ -138,22 +118,14 @@ def register():
 
         try:
 
-            db.session.add(
-                user
-            )
+            db.session.add(user)
 
             db.session.commit()
-
-
-            # --------------------------------------------------
-            # Audit Registration
-            # --------------------------------------------------
 
             log_action(
                 "USER_REGISTERED",
                 f"New user account registered: {username}"
             )
-
 
         except IntegrityError:
 
@@ -169,7 +141,6 @@ def register():
                 url_for("auth.register")
             )
 
-
         # --------------------------------------------------
         # Success
         # --------------------------------------------------
@@ -179,15 +150,9 @@ def register():
             "success"
         )
 
-
         return redirect(
             url_for("auth.login")
         )
-
-
-    # ======================================================
-    # Registration Page
-    # ======================================================
 
     return render_template(
         "register.html",
@@ -207,17 +172,11 @@ def login():
 
     form = LoginForm()
 
-
-    # ======================================================
-    # Login
-    # ======================================================
-
     if form.validate_on_submit():
 
         email = form.email.data.strip().lower()
 
         password = form.password.data
-
 
         # --------------------------------------------------
         # Find User
@@ -226,7 +185,6 @@ def login():
         user = User.query.filter_by(
             email=email
         ).first()
-
 
         # ==================================================
         # Account Lock Check
@@ -250,55 +208,29 @@ def login():
                 form=form
             )
 
-
         # ==================================================
         # Verify Credentials
         # ==================================================
 
-        if user and user.check_password(
-            password
-        ):
-
-            # --------------------------------------------------
-            # Reset Failed Attempts
-            # --------------------------------------------------
+        if user and user.check_password(password):
 
             user.reset_login_attempts()
 
-
-            # --------------------------------------------------
-            # Create Login Session
-            # --------------------------------------------------
-
-            login_user(
-                user
-            )
-
-
-            # --------------------------------------------------
-            # Audit Successful Login
-            # --------------------------------------------------
+            login_user(user)
 
             log_action(
                 "LOGIN_SUCCESS",
                 "User logged in successfully."
             )
 
-
-            # --------------------------------------------------
-            # Success
-            # --------------------------------------------------
-
             flash(
                 "Login successful!",
                 "success"
             )
 
-
             return redirect(
                 url_for("dashboard")
             )
-
 
         # ==================================================
         # Failed Login
@@ -307,11 +239,6 @@ def login():
         if user:
 
             user.record_failed_login()
-
-
-            # --------------------------------------------------
-            # Check Whether Account Was Locked
-            # --------------------------------------------------
 
             if user.is_locked():
 
@@ -335,20 +262,10 @@ def login():
                 "Login attempt for an unknown account."
             )
 
-
-        # --------------------------------------------------
-        # Generic Authentication Error
-        # --------------------------------------------------
-
         flash(
             "Invalid Email or Password.",
             "danger"
         )
-
-
-    # ======================================================
-    # Login Page
-    # ======================================================
 
     return render_template(
         "login.html",
@@ -366,25 +283,266 @@ def login():
 @login_required
 def logout():
 
-    # ------------------------------------------------------
-    # Audit Logout
-    # ------------------------------------------------------
-
     log_action(
         "LOGOUT",
         "User logged out successfully."
     )
 
-
     logout_user()
-
 
     flash(
         "Logged out successfully.",
         "success"
     )
 
-
     return redirect(
         url_for("auth.login")
+    )
+
+
+# ==========================================================
+# Settings
+# ==========================================================
+
+@auth_bp.route(
+    "/settings",
+    methods=["GET", "POST"]
+)
+@login_required
+def settings():
+
+    # ------------------------------------------------------
+    # Update Profile
+    # ------------------------------------------------------
+
+    if request.method == "POST":
+
+        action = request.form.get("action")
+
+        # ==================================================
+        # Profile Update
+        # ==================================================
+
+        if action == "update_profile":
+
+            username = (
+                request.form.get("username", "")
+                .strip()
+            )
+
+            email = (
+                request.form.get("email", "")
+                .strip()
+                .lower()
+            )
+
+            if not username or not email:
+
+                flash(
+                    "Username and email are required.",
+                    "warning"
+                )
+
+                return redirect(
+                    url_for("auth.settings")
+                )
+
+            # --------------------------------------------------
+            # Check Username Conflict
+            # --------------------------------------------------
+
+            username_exists = User.query.filter(
+                User.username == username,
+                User.id != current_user.id
+            ).first()
+
+            if username_exists:
+
+                flash(
+                    "That username is already in use.",
+                    "danger"
+                )
+
+                return redirect(
+                    url_for("auth.settings")
+                )
+
+            # --------------------------------------------------
+            # Check Email Conflict
+            # --------------------------------------------------
+
+            email_exists = User.query.filter(
+                User.email == email,
+                User.id != current_user.id
+            ).first()
+
+            if email_exists:
+
+                flash(
+                    "That email address is already in use.",
+                    "danger"
+                )
+
+                return redirect(
+                    url_for("auth.settings")
+                )
+
+            # --------------------------------------------------
+            # Update User
+            # --------------------------------------------------
+
+            current_user.username = username
+
+            current_user.email = email
+
+            try:
+
+                db.session.commit()
+
+                log_action(
+                    "PROFILE_UPDATED",
+                    "User profile information was updated."
+                )
+
+                flash(
+                    "Profile updated successfully.",
+                    "success"
+                )
+
+            except IntegrityError:
+
+                db.session.rollback()
+
+                flash(
+                    "Unable to update profile.",
+                    "danger"
+                )
+
+            return redirect(
+                url_for("auth.settings")
+            )
+
+        # ==================================================
+        # Password Update
+        # ==================================================
+
+        elif action == "change_password":
+
+            current_password = request.form.get(
+                "current_password",
+                ""
+            )
+
+            new_password = request.form.get(
+                "new_password",
+                ""
+            )
+
+            confirm_password = request.form.get(
+                "confirm_password",
+                ""
+            )
+
+            # --------------------------------------------------
+            # Validate Current Password
+            # --------------------------------------------------
+
+            if not current_user.check_password(
+                current_password
+            ):
+
+                log_action(
+                    "PASSWORD_CHANGE_FAILED",
+                    "Password change failed because "
+                    "the current password was incorrect."
+                )
+
+                flash(
+                    "Current password is incorrect.",
+                    "danger"
+                )
+
+                return redirect(
+                    url_for("auth.settings")
+                )
+
+            # --------------------------------------------------
+            # Password Length
+            # --------------------------------------------------
+
+            if len(new_password) < 8:
+
+                flash(
+                    "New password must contain at least 8 characters.",
+                    "warning"
+                )
+
+                return redirect(
+                    url_for("auth.settings")
+                )
+
+            # --------------------------------------------------
+            # Confirm Password
+            # --------------------------------------------------
+
+            if new_password != confirm_password:
+
+                flash(
+                    "New passwords do not match.",
+                    "warning"
+                )
+
+                return redirect(
+                    url_for("auth.settings")
+                )
+
+            # --------------------------------------------------
+            # Prevent Same Password
+            # --------------------------------------------------
+
+            if current_user.check_password(
+                new_password
+            ):
+
+                flash(
+                    "New password must be different "
+                    "from the current password.",
+                    "warning"
+                )
+
+                return redirect(
+                    url_for("auth.settings")
+                )
+
+            # --------------------------------------------------
+            # Update Password
+            # --------------------------------------------------
+
+            current_user.set_password(
+                new_password
+            )
+
+            db.session.commit()
+
+            log_action(
+                "PASSWORD_CHANGED",
+                "User password was changed successfully."
+            )
+
+            flash(
+                "Password changed successfully.",
+                "success"
+            )
+
+            return redirect(
+                url_for("auth.settings")
+            )
+
+    # ------------------------------------------------------
+    # Settings Page
+    # ------------------------------------------------------
+
+    return render_template(
+        "settings.html",
+        user=current_user
     )

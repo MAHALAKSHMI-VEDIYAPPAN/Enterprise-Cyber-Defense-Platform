@@ -2,6 +2,10 @@
 
 <div class="sidebar">
 
+    <!-- ==================================================
+         ECDP Logo / Branding
+         ================================================== -->
+
     <div class="logo">
 
         <h3>
@@ -15,7 +19,13 @@
 
     <hr>
 
+
+    <!-- ==================================================
+         Main Navigation
+         ================================================== -->
+
     <ul class="menu">
+
 
         <!-- ==================================================
              Dashboard
@@ -23,8 +33,11 @@
 
         <li>
             <a href="{{ url_for('dashboard') }}">
+
                 <i class="bi bi-speedometer2"></i>
+
                 <span>Dashboard</span>
+
             </a>
         </li>
 
@@ -35,8 +48,11 @@
 
         <li>
             <a href="{{ url_for('assets.assets') }}">
+
                 <i class="bi bi-pc-display"></i>
+
                 <span>Asset Inventory</span>
+
             </a>
         </li>
 
@@ -47,8 +63,11 @@
 
         <li>
             <a href="{{ url_for('scanner.scanner') }}">
+
                 <i class="bi bi-shield-check"></i>
+
                 <span>Vulnerability Scanner</span>
+
             </a>
         </li>
 
@@ -59,8 +78,11 @@
 
         <li>
             <a href="{{ url_for('threat.threat') }}">
+
                 <i class="bi bi-globe"></i>
+
                 <span>Threat Intelligence</span>
+
             </a>
         </li>
 
@@ -71,8 +93,11 @@
 
         <li>
             <a href="{{ url_for('cve.cve') }}">
+
                 <i class="bi bi-bug"></i>
+
                 <span>CVE Intelligence</span>
+
             </a>
         </li>
 
@@ -83,33 +108,23 @@
 
         <li>
             <a href="{{ url_for('incidents.incidents') }}">
+
                 <i class="bi bi-exclamation-triangle"></i>
+
                 <span>Incident Response</span>
+
             </a>
         </li>
 
 
         <!-- ==================================================
-             Future Modules
+             Security Operations
              ================================================== -->
 
         <li class="menu-section">
-            <span>Future Modules</span>
-        </li>
 
+            <span>Security Operations</span>
 
-        <!-- ==================================================
-             Reports
-             ================================================== -->
-
-        <li>
-            <a href="{{ url_for('reports.reports') }}">
-
-                <i class="bi bi-file-earmark-bar-graph"></i>
-
-                <span>Reports</span>
-
-            </a>
         </li>
 
 
@@ -144,38 +159,74 @@
 
 
         <!-- ==================================================
-             Settings
+             Reports
              ================================================== -->
 
         <li>
-            <a href="#" class="disabled-menu" onclick="return false;">
+            <a href="{{ url_for('reports.reports') }}">
+
+                <i class="bi bi-file-earmark-bar-graph"></i>
+
+                <span>Reports</span>
+
+            </a>
+        </li>
+
+
+        <!-- ==================================================
+             Audit Logs
+             ================================================== -->
+
+        <li>
+            <a href="{{ url_for('audit.audit_logs') }}">
+
+                <i class="bi bi-journal-text"></i>
+
+                <span>Audit Logs</span>
+
+            </a>
+        </li>
+
+
+        <!-- ==================================================
+             Future Modules
+             ================================================== -->
+
+        <li class="menu-section">
+
+            <span>Future Modules</span>
+
+        </li>
+
+        <!-- ==================================================
+     Settings
+     ================================================== -->
+
+        <li>
+            <a href="{{ url_for('auth.settings') }}">
 
                 <i class="bi bi-gear"></i>
 
                 <span>Settings</span>
 
-                <small>Coming Soon</small>
-
             </a>
         </li>
 
-    </ul>
 
-
-    <!-- ======================================================
+        <!-- ==================================================
          Logout
-         ====================================================== -->
+         ================================================== -->
 
-    <div class="logout">
+        <div class="logout">
 
-        <a href="{{ url_for('auth.logout') }}">
+            <a href="{{ url_for('auth.logout') }}">
 
-            <i class="bi bi-box-arrow-right"></i>
+                <i class="bi bi-box-arrow-right"></i>
 
-            <span>Logout</span>
+                <span>Logout</span>
 
-        </a>
+            </a>
 
-    </div>
+        </div>
 
 </div>
