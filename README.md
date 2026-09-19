@@ -34,6 +34,20 @@ workflows.
 
 ---
 
+# 🏗️ System Architecture
+
+The Enterprise Cyber Defense Platform (ECDP) follows a modular architecture
+that integrates authentication, asset management, vulnerability scanning,
+threat intelligence, CVE intelligence, incident response, remediation,
+AI-assisted security analysis, reporting, and audit logging into a unified
+cybersecurity platform.
+
+![ECDP System Architecture](docs/diagrams/ecdp_architecture.png)
+
+**Figure: Enterprise Cyber Defense Platform System Architecture**
+
+---
+
 # 🎯 Objectives
 
 The primary objectives of ECDP are:

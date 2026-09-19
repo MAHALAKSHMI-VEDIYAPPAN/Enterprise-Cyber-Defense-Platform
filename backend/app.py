@@ -8,6 +8,7 @@ from flask import (
 )
 
 from flask_login import login_required
+from flask_wtf.csrf import CSRFProtect
 
 from config import Config
 
@@ -70,6 +71,13 @@ app = Flask(
 app.config.from_object(
     Config
 )
+
+
+# ==========================================================
+# CSRF Protection
+# ==========================================================
+
+csrf = CSRFProtect()
 
 
 # ==========================================================
@@ -171,6 +179,10 @@ login_manager.init_app(
     app
 )
 
+csrf.init_app(
+    app
+)
+
 
 # ==========================================================
 # Register Blueprints
@@ -216,6 +228,7 @@ app.register_blueprint(
     remediation_bp
 )
 
+
 # ==========================================================
 # Audit Logs Blueprint
 # ==========================================================
@@ -241,28 +254,166 @@ def home():
 # Automated Security Recommendations
 # ==========================================================
 
-def generate_security_recommendations(total_assets, high_risk_assets, total_vulnerabilities, critical_vulnerabilities, high_vulnerabilities, total_incidents, open_incidents, critical_incidents, total_remediations, open_remediations, failed_scans):
+def generate_security_recommendations(
+    total_assets,
+    high_risk_assets,
+    total_vulnerabilities,
+    critical_vulnerabilities,
+    high_vulnerabilities,
+    total_incidents,
+    open_incidents,
+    critical_incidents,
+    total_remediations,
+    open_remediations,
+    failed_scans
+):
+
     recommendations = []
 
-    if critical_incidents > 0:
-        recommendations.append({"priority": "Critical", "title": "Investigate critical incidents", "reason": f"{critical_incidents} critical/high-severity incident(s) require attention.", "action": "Investigate affected incidents, contain associated threats, and document the resolution."})
-    if critical_vulnerabilities > 0:
-        recommendations.append({"priority": "Critical", "title": "Remediate critical vulnerabilities", "reason": f"{critical_vulnerabilities} critical vulnerability finding(s) were detected.", "action": "Apply the appropriate vendor security update or mitigation and perform a follow-up vulnerability scan."})
-    if high_risk_assets > 0:
-        recommendations.append({"priority": "High", "title": "Review high-risk assets", "reason": f"{high_risk_assets} of {total_assets} asset(s) are classified as High or Critical risk.", "action": "Review these assets and prioritize patching, hardening, exposure reduction, and follow-up scans."})
-    if high_vulnerabilities > 0:
-        recommendations.append({"priority": "High", "title": "Prioritize high-severity vulnerabilities", "reason": f"{high_vulnerabilities} high-severity vulnerability finding(s) were detected.", "action": "Prioritize remediation according to asset exposure, CVSS severity, and business impact."})
-    if open_incidents > 0:
-        recommendations.append({"priority": "High", "title": "Reduce open incident backlog", "reason": f"{open_incidents} incident(s) are currently open out of {total_incidents} total incident(s).", "action": "Assign owners, investigate outstanding incidents, and update their resolution status."})
-    if open_remediations > 0:
-        recommendations.append({"priority": "Medium", "title": "Complete pending remediations", "reason": f"{open_remediations} remediation task(s) are still open.", "action": "Review remediation owners and deadlines, complete the required fixes, and verify the results."})
-    if failed_scans > 0:
-        recommendations.append({"priority": "Medium", "title": "Investigate failed vulnerability scans", "reason": f"{failed_scans} scan(s) did not complete successfully.", "action": "Review scan errors, verify target availability and configuration, then rerun affected scans."})
-    if not recommendations:
-        recommendations.append({"priority": "Low", "title": "Maintain current security posture", "reason": "No major security conditions currently require automated escalation.", "action": "Continue routine monitoring, vulnerability scanning, incident review, and remediation verification."})
 
-    order = {"Critical": 1, "High": 2, "Medium": 3, "Low": 4}
-    recommendations.sort(key=lambda item: order.get(item["priority"], 99))
+    if critical_incidents > 0:
+
+        recommendations.append({
+            "priority": "Critical",
+            "title": "Investigate critical incidents",
+            "reason": (
+                f"{critical_incidents} critical/high-severity "
+                f"incident(s) require attention."
+            ),
+            "action": (
+                "Investigate affected incidents, contain associated "
+                "threats, and document the resolution."
+            )
+        })
+
+
+    if critical_vulnerabilities > 0:
+
+        recommendations.append({
+            "priority": "Critical",
+            "title": "Remediate critical vulnerabilities",
+            "reason": (
+                f"{critical_vulnerabilities} critical vulnerability "
+                f"finding(s) were detected."
+            ),
+            "action": (
+                "Apply the appropriate vendor security update or "
+                "mitigation and perform a follow-up vulnerability scan."
+            )
+        })
+
+
+    if high_risk_assets > 0:
+
+        recommendations.append({
+            "priority": "High",
+            "title": "Review high-risk assets",
+            "reason": (
+                f"{high_risk_assets} of {total_assets} asset(s) are "
+                f"classified as High or Critical risk."
+            ),
+            "action": (
+                "Review these assets and prioritize patching, hardening, "
+                "exposure reduction, and follow-up scans."
+            )
+        })
+
+
+    if high_vulnerabilities > 0:
+
+        recommendations.append({
+            "priority": "High",
+            "title": "Prioritize high-severity vulnerabilities",
+            "reason": (
+                f"{high_vulnerabilities} high-severity vulnerability "
+                f"finding(s) were detected."
+            ),
+            "action": (
+                "Prioritize remediation according to asset exposure, "
+                "CVSS severity, and business impact."
+            )
+        })
+
+
+    if open_incidents > 0:
+
+        recommendations.append({
+            "priority": "High",
+            "title": "Reduce open incident backlog",
+            "reason": (
+                f"{open_incidents} incident(s) are currently open "
+                f"out of {total_incidents} total incident(s)."
+            ),
+            "action": (
+                "Assign owners, investigate outstanding incidents, "
+                "and update their resolution status."
+            )
+        })
+
+
+    if open_remediations > 0:
+
+        recommendations.append({
+            "priority": "Medium",
+            "title": "Complete pending remediations",
+            "reason": (
+                f"{open_remediations} remediation task(s) "
+                f"are still open."
+            ),
+            "action": (
+                "Review remediation owners and deadlines, complete "
+                "the required fixes, and verify the results."
+            )
+        })
+
+
+    if failed_scans > 0:
+
+        recommendations.append({
+            "priority": "Medium",
+            "title": "Investigate failed vulnerability scans",
+            "reason": (
+                f"{failed_scans} scan(s) did not complete successfully."
+            ),
+            "action": (
+                "Review scan errors, verify target availability "
+                "and configuration, then rerun affected scans."
+            )
+        })
+
+
+    if not recommendations:
+
+        recommendations.append({
+            "priority": "Low",
+            "title": "Maintain current security posture",
+            "reason": (
+                "No major security conditions currently require "
+                "automated escalation."
+            ),
+            "action": (
+                "Continue routine monitoring, vulnerability scanning, "
+                "incident review, and remediation verification."
+            )
+        })
+
+
+    order = {
+        "Critical": 1,
+        "High": 2,
+        "Medium": 3,
+        "Low": 4
+    }
+
+
+    recommendations.sort(
+        key=lambda item: order.get(
+            item["priority"],
+            99
+        )
+    )
+
+
     return recommendations
 
 
@@ -416,6 +567,7 @@ def dashboard():
                 or vulnerability.get("cve_id")
             )
 
+
             if cve_id:
 
                 unique_cves.add(
@@ -489,21 +641,17 @@ def dashboard():
 
     total_remediations = Remediation.query.count()
 
-
     open_remediations = Remediation.query.filter_by(
         status="Open"
     ).count()
-
 
     in_progress_remediations = Remediation.query.filter_by(
         status="In Progress"
     ).count()
 
-
     verified_remediations = Remediation.query.filter_by(
         status="Verified"
     ).count()
-
 
     closed_remediations = Remediation.query.filter_by(
         status="Closed"
@@ -606,94 +754,147 @@ def dashboard():
     incident_trend = []
     remediation_trend = []
 
+
     # Cache incident/remediation records once to avoid
     # repeated database queries for every day.
+
     all_incidents = Incident.query.all()
     all_remediations = Remediation.query.all()
 
+
     for days_ago in range(6, -1, -1):
 
-        trend_date = today - timedelta(days=days_ago)
+        trend_date = today - timedelta(
+            days=days_ago
+        )
 
         trend_labels.append(
-            trend_date.strftime("%d %b")
+            trend_date.strftime(
+                "%d %b"
+            )
         )
+
 
         daily_scans = 0
         daily_vulnerabilities = 0
+
 
         for scan in all_scans:
 
             if not scan.scan_date:
                 continue
 
+
             scan_timestamp = scan.scan_date
 
             try:
+
                 scan_date = scan_timestamp.date()
+
             except AttributeError:
+
                 scan_date = scan_timestamp
+
 
             if scan_date != trend_date:
                 continue
 
+
             daily_scans += 1
 
+
             try:
+
                 vulnerabilities = json.loads(
-                    scan.vulnerabilities or "[]"
+                    scan.vulnerabilities
+                    or "[]"
                 )
 
-                if isinstance(vulnerabilities, list):
-                    daily_vulnerabilities += len(vulnerabilities)
+                if isinstance(
+                    vulnerabilities,
+                    list
+                ):
+
+                    daily_vulnerabilities += len(
+                        vulnerabilities
+                    )
 
             except (
                 TypeError,
                 ValueError,
                 json.JSONDecodeError
             ):
+
                 pass
 
-        scan_trend.append(daily_scans)
-        vulnerability_trend.append(daily_vulnerabilities)
+
+        scan_trend.append(
+            daily_scans
+        )
+
+        vulnerability_trend.append(
+            daily_vulnerabilities
+        )
+
 
         daily_incidents = 0
+
 
         for incident in all_incidents:
 
             if not incident.created_at:
                 continue
 
+
             incident_timestamp = incident.created_at
 
             try:
+
                 incident_date = incident_timestamp.date()
+
             except AttributeError:
+
                 incident_date = incident_timestamp
 
+
             if incident_date == trend_date:
+
                 daily_incidents += 1
 
-        incident_trend.append(daily_incidents)
+
+        incident_trend.append(
+            daily_incidents
+        )
+
 
         daily_remediations = 0
+
 
         for remediation in all_remediations:
 
             if not remediation.created_at:
                 continue
 
+
             remediation_timestamp = remediation.created_at
 
             try:
+
                 remediation_date = remediation_timestamp.date()
+
             except AttributeError:
+
                 remediation_date = remediation_timestamp
 
+
             if remediation_date == trend_date:
+
                 daily_remediations += 1
 
-        remediation_trend.append(daily_remediations)
+
+        remediation_trend.append(
+            daily_remediations
+        )
 
 
     # ======================================================
@@ -701,9 +902,7 @@ def dashboard():
     # ======================================================
 
     recent_scans = Scan.query.order_by(
-
         Scan.scan_date.desc()
-
     ).limit(
         5
     ).all()
@@ -714,9 +913,7 @@ def dashboard():
     # ======================================================
 
     recent_incidents = Incident.query.order_by(
-
         Incident.created_at.desc()
-
     ).limit(
         5
     ).all()
@@ -727,9 +924,7 @@ def dashboard():
     # ======================================================
 
     recent_audits = AuditLog.query.order_by(
-
         AuditLog.timestamp.desc()
-
     ).limit(
         10
     ).all()
@@ -944,6 +1139,7 @@ def dashboard():
         recent_audits=recent_audits
 
     )
+
 
 # ==========================================================
 # Create Database Tables
